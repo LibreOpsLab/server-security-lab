@@ -17,6 +17,12 @@ samba_dc_privileged: true
 # vmware: 32 GB workstation minus about 4 GB for the Windows host. proxmox: the 16 GB Proxmox VM minus about 1.5 GB for Proxmox itself.
 ram_budget_mb: {vmware: 28672, proxmox: 14336}
 
+# Friendly names that point at a guest (CNAMEs in Samba DNS; Traefik routes the web ones on docker01).
+lab_aliases: {cloud: docker01, pdf: docker01, vault: docker01, auth: docker01, grafana: docker01, mail: mail01, files: files01}
+
+# Where `scripts/gen-secrets.sh` keeps the generated secrets and the CA (gitignored).
+lab_secrets_dir: "{{ playbook_dir }}/../../secrets"
+
 ansible_user: root
 ansible_ssh_private_key_file: ~/.ssh/lab_admin
 ansible_host: "{{ lab_hosts[inventory_hostname].ip }}"

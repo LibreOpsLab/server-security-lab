@@ -1,0 +1,21 @@
+---
+# Identity: issue the DC's certificate on admin01, then build the Samba AD domain controller.
+- name: Issue the domain controller's certificate from the lab CA
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Issue samba-dc01 certificate (kept if it exists)
+      ansible.builtin.command:
+        argv:
+          - "{{ playbook_dir }}/../../pki/issue-cert.sh"
+          - "{{ lab_secrets_dir }}/ca"
+          - "samba-dc01.{{ lab_domain }}"
+          - "DNS:samba-dc01.{{ lab_domain }},DNS:{{ lab_domain }}"
+      register: dc_cert
+      changed_when: "'created' in dc_cert.stdout"
+
+- name: Build the domain controller
+  hosts: samba_dc
+  roles:
+    - samba_dc

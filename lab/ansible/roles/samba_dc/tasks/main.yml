@@ -1,0 +1,128 @@
+---
+# Samba Active Directory domain controller: the lab's single source of identity (LDAP, Kerberos, DNS).
+# Adapted from lab-small-business/samba/scripts/bootstrap-ad.sh as idempotent Ansible tasks, with its
+# password-policy hardening and firewall REMOVED: the lab starts relaxed, and the hardening week tightens it.
+
+- name: Answer the Kerberos realm question before the packages are installed
+  ansible.builtin.debconf:
+    name: krb5-config
+    question: krb5-config/default_realm
+    value: "{{ lab_realm }}"
+    vtype: string
+
+- name: Install the Samba AD packages
+  ansible.builtin.apt:
+    name:
+      - acl
+      - attr
+      - samba
+      - smbclient
+      - winbind
+      - libpam-winbind
+      - libnss-winbind
+      - krb5-user
+      - krb5-config
+      - ldb-tools
+    state: present
+    update_cache: true
+  environment:
+    DEBIAN_FRONTEND: noninteractive
+
+- name: Check whether the domain is already provisioned
+  ansible.builtin.stat:
+    path: /var/lib/samba/private/sam.ldb
+  register: samba_dc_db
+
+- name: Stop the standalone Samba services that samba-ad-dc replaces
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    state: stopped
+    enabled: false
+    masked: true
+  loop: [smbd, nmbd, winbind]
+  when: not samba_dc_db.stat.exists
+
+- name: Move the distribution smb.conf out of the way
+  ansible.builtin.command:
+    cmd: mv /etc/samba/smb.conf /etc/samba/smb.conf.pre-provision
+    removes: /etc/samba/smb.conf
+  when: not samba_dc_db.stat.exists
+
+# The password is on the command line for the length of this one command, inside an isolated container.
+# no_log keeps it out of Ansible's output; the trade-off is noted in docs/build/07-identity.md.
+- name: Provision the domain
+  ansible.builtin.command:
+    argv:
+      - samba-tool
+      - domain
+      - provision
+      - --use-rfc2307
+      - --realm={{ lab_realm }}
+      - --domain={{ lab_netbios }}
+      - --server-role=dc
+      - --dns-backend=SAMBA_INTERNAL
+      - --host-ip={{ lab_hosts['samba-dc01'].ip }}
+      - --adminpass={{ lookup('ansible.builtin.file', lab_secrets_dir ~ '/samba_admin_password') }}
+    creates: /var/lib/samba/private/sam.ldb
+  no_log: true
+
+- name: Use the generated Kerberos configuration
+  ansible.builtin.copy:
+    src: /var/lib/samba/private/krb5.conf
+    dest: /etc/krb5.conf
+    remote_src: true
+    mode: "0644"
+
+- name: Forward other DNS names to the firewall
+  ansible.builtin.lineinfile:
+    path: /etc/samba/smb.conf
+    insertafter: '^\[global\]'
+    regexp: '^\s*dns forwarder\s*='
+    line: "\tdns forwarder = {{ lab_gateway }}"
+  notify: Restart Samba AD
+
+- name: Allow the time service to read signed time requests
+  ansible.builtin.file:
+    path: /var/lib/samba/ntp_signd
+    state: directory
+    owner: root
+    group: _chrony
+    mode: "0750"
+
+- name: Start the domain controller service
+  ansible.builtin.systemd:
+    name: samba-ad-dc
+    state: started
+    enabled: true
+    masked: false
+
+# A relaxed domain password policy is the lab's default state (week 15 tightens it). It also has to be
+# relaxed for the lab's documented initial passwords to be accepted at all.
+- name: Set the relaxed lab password policy
+  ansible.builtin.command: samba-tool domain passwordsettings set {{ item }}
+  loop:
+    - --complexity=off
+    - --history-length=0
+    - --min-pwd-length=4
+    - --min-pwd-age=0
+    - --max-pwd-age=0
+    - --account-lockout-threshold=0
+  changed_when: false
+
+- name: Publish the TLS certificate for LDAPS
+  ansible.builtin.include_tasks: tls.yml
+
+- name: Add DNS records for the lab guests and their friendly names
+  ansible.builtin.include_tasks: dns.yml
+
+- name: Copy the user list and loader
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/../../data/{{ item }}"
+    dest: "{{ samba_dc_helper_dir }}/{{ item }}"
+    mode: "0755"
+  loop: [load-users.sh, users.csv]
+
+- name: Create the lab groups and users
+  ansible.builtin.command: "{{ samba_dc_helper_dir }}/load-users.sh {{ samba_dc_helper_dir }}/users.csv"
+  register: samba_dc_load_users
+  changed_when: "'created' in samba_dc_load_users.stdout"

@@ -1,0 +1,31 @@
+---
+- name: Create the TLS directory
+  ansible.builtin.file:
+    path: "{{ samba_dc_tls_dir }}"
+    state: directory
+    mode: "0750"
+
+- name: Copy the DC certificate, key and chain issued by the lab CA
+  ansible.builtin.copy:
+    src: "{{ lab_secrets_dir }}/ca/issued/samba-dc01.{{ lab_domain }}/{{ item.src }}"
+    dest: "{{ samba_dc_tls_dir }}/{{ item.dest }}"
+    mode: "{{ item.mode }}"
+  loop:
+    - {src: key.pem, dest: key.pem, mode: "0600"}
+    - {src: cert.pem, dest: cert.pem, mode: "0644"}
+    - {src: chain.pem, dest: chain.pem, mode: "0644"}
+  no_log: true
+  notify: Restart Samba AD
+
+- name: Tell Samba where its TLS files are
+  ansible.builtin.lineinfile:
+    path: /etc/samba/smb.conf
+    insertafter: '^\[global\]'
+    regexp: '^\s*{{ item.key }}\s*='
+    line: "\t{{ item.key }} = {{ item.value }}"
+  loop:
+    - {key: tls enabled, value: "yes"}
+    - {key: tls keyfile, value: "{{ samba_dc_tls_dir }}/key.pem"}
+    - {key: tls certfile, value: "{{ samba_dc_tls_dir }}/cert.pem"}
+    - {key: tls cafile, value: "{{ samba_dc_tls_dir }}/chain.pem"}
+  notify: Restart Samba AD

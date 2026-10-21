@@ -20,6 +20,7 @@ FORBIDDEN = [
     (r"Strict-Transport-Security|stsSeconds|HSTS", "no HSTS on the web tier (web-basics)"),
     (r"unattended-upgrades", "no automatic updates in the default build (week 15 adds patching)"),
     (r"fail2ban", "no brute-force protection in the default build (week 15 adds it)"),
+    (r"complexity=on|account-lockout-threshold=[1-9]", "domain password policy stays relaxed in the default build (week 15 tightens it)"),
 ]
 TEXT_SUFFIXES = {".yml", ".yaml", ".j2", ".conf", ".cnf", ".sh", ".cfg", ".ini", ".env", ".toml", ".json", ".xml"}
 
@@ -59,3 +60,8 @@ def test_chrony_uses_the_domain_controller_for_everyone_else():
 def test_node_exporter_installed_and_enabled():
     tasks = (LAB / "ansible/roles/baseline/tasks/main.yml").read_text()
     assert "prometheus-node-exporter" in tasks and "enabled: true" in tasks
+
+
+def test_samba_password_policy_is_relaxed_not_hardened():
+    tasks = (LAB / "ansible/roles/samba_dc/tasks/main.yml").read_text()
+    assert "complexity=off" in tasks and "account-lockout-threshold=0" in tasks and "min-pwd-length=4" in tasks

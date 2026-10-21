@@ -1,0 +1,36 @@
+---
+# Records are added with a Kerberos ticket so the Administrator password never appears on a command line.
+- name: Get a Kerberos ticket as Administrator
+  ansible.builtin.shell: set -o pipefail; echo "$ADMIN_PW" | kinit Administrator@{{ lab_realm }}
+  args:
+    executable: /bin/bash
+  environment:
+    ADMIN_PW: "{{ lookup('ansible.builtin.file', lab_secrets_dir ~ '/samba_admin_password') }}"
+  no_log: true
+  changed_when: false
+
+- name: Add an A record for each guest
+  ansible.builtin.shell: >-
+    set -o pipefail;
+    samba-tool dns query 127.0.0.1 {{ lab_domain }} {{ item.key }} A --use-kerberos=required 2>/dev/null | grep -q {{ item.value.ip }}
+    || samba-tool dns add 127.0.0.1 {{ lab_domain }} {{ item.key }} A {{ item.value.ip }} --use-kerberos=required
+  args:
+    executable: /bin/bash
+  loop: "{{ lab_hosts | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+  register: samba_dc_dns_a
+  changed_when: "'added successfully' in samba_dc_dns_a.stdout"
+
+- name: Add a CNAME for each friendly name
+  ansible.builtin.shell: >-
+    set -o pipefail;
+    samba-tool dns query 127.0.0.1 {{ lab_domain }} {{ item.key }} CNAME --use-kerberos=required 2>/dev/null | grep -q CNAME
+    || samba-tool dns add 127.0.0.1 {{ lab_domain }} {{ item.key }} CNAME {{ item.value }}.{{ lab_domain }} --use-kerberos=required
+  args:
+    executable: /bin/bash
+  loop: "{{ lab_aliases | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+  register: samba_dc_dns_cname
+  changed_when: "'added successfully' in samba_dc_dns_cname.stdout"

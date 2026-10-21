@@ -1,0 +1,3 @@
+---
+samba_dc_tls_dir: /etc/samba/tls
+samba_dc_helper_dir: /root/lab
