@@ -2,7 +2,7 @@
 [server]
 domain = grafana.{{ lab_domain }}
 root_url = https://grafana.{{ lab_domain }}/
-http_addr = 0.0.0.0
+http_addr = {{ lab_hosts['mon01'].ip }}
 
 [security]
 admin_user = admin

@@ -16,8 +16,13 @@ services:
       - ./traefik.yml:/etc/traefik/traefik.yml:ro
       - ./dynamic.yml:/etc/traefik/dynamic.yml:ro
       - ${LAB_CERT_DIR:-/opt/lab/certs}:/etc/traefik/certs:ro
+      # Deliberate weak default: Traefik reads the Docker socket to discover apps, and access to that socket is
+      # close to root on the host. A socket proxy or file-based routes would remove it (a hardening exercise).
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
 networks:
   lab-proxy:
     name: lab-proxy
+    ipam:
+      config:
+        - subnet: 172.30.0.0/24

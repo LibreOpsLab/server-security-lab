@@ -39,7 +39,7 @@ services:
       NEXTCLOUD_TRUSTED_DOMAINS: cloud.lab.internal
       OVERWRITEPROTOCOL: https
       OVERWRITECLIURL: https://cloud.lab.internal
-      TRUSTED_PROXIES: 172.16.0.0/12
+      TRUSTED_PROXIES: 172.30.0.0/24
     volumes:
       - nextcloud_data:/var/www/html
       # Single sign-on settings (rendered by Ansible) and the host's CA bundle, which includes the lab CA.

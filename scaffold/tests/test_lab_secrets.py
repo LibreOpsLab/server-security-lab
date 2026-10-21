@@ -13,6 +13,7 @@ NAMES = [
     "authelia_oidc_hmac", "authelia_oidc_nextcloud_secret", "nextcloud_db_password", "nextcloud_admin_password",
     "vaultwarden_admin_token", "grafana_admin_password", "radius_shared_secret", "mail_ldap_bind_password",
     "pbs_admin_password", "authelia_ldap_password",
+    "nextcloud_db_root_password",
 ]
 
 

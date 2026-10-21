@@ -1,6 +1,6 @@
 # The front door for building and checking the lab. Run from the lab/ folder on admin01.
 # Layers are added in build-guide order; `make help` lists what exists.
-.PHONY: help lint guests baseline trust identity services apps monitoring
+.PHONY: help lint guests baseline trust identity services apps monitoring backup
 help:
 	@grep -E '^[a-z-]+:.*##' $(MAKEFILE_LIST) | sed 's/:.*##/\t/'
 
@@ -24,6 +24,9 @@ apps: ## Deploy Traefik, NextCloud, Stirling PDF and Vaultwarden on the Docker V
 
 monitoring: ## Build Prometheus, Grafana, Loki and ship every guest's logs
 	cd ansible && ansible-playbook playbooks/60-monitoring.yml
+
+backup: ## Build the backup server and the nightly job
+	cd ansible && ansible-playbook playbooks/70-backup.yml
 
 lint: ## Static checks: yamllint, shellcheck, Ansible syntax
 	cd .. && yamllint -c lab/.yamllint lab

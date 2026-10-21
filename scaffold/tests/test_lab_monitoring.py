@@ -56,7 +56,7 @@ def test_alloy_on_every_guest_ships_ssh_journal_logs_and_counts_failed_logins():
 
 def test_alloy_on_mon01_also_listens_for_pfsense_syslog_on_1514():
     cfg = render(SHIP, "config.alloy.j2", inventory_hostname="mon01")
-    assert "loki.source.syslog" in cfg and "0.0.0.0:1514" in cfg
+    assert "loki.source.syslog" in cfg and f"{VARS['lab_hosts']['mon01']['ip']}:1514" in cfg
 
 
 def test_loki_config_is_valid_yaml_with_filesystem_storage():
@@ -74,3 +74,17 @@ def test_grafana_repository_is_signed_and_shared_by_both_roles():
 def test_playbook_builds_the_monitoring_guest_then_ships_logs_from_every_other_guest():
     play = (LAB / "ansible/playbooks/60-monitoring.yml").read_text()
     assert "monitoring" in play and "log_shipper" in play and "!monitoring" in play
+
+
+def test_listeners_bind_to_the_guests_own_address_not_every_interface():
+    cfg = render(SHIP, "config.alloy.j2", inventory_hostname="mon01")
+    assert f"{VARS['lab_hosts']['mon01']['ip']}:1514" in cfg and "0.0.0.0" not in cfg
+    tasks = (SHIP / "tasks/main.yml").read_text()
+    assert "lab_hosts[inventory_hostname].ip" in tasks and "0.0.0.0" not in tasks
+    ini = (MON / "templates/grafana-admin.ini.j2").read_text()
+    assert "http_addr = {{ lab_hosts['mon01'].ip }}" in ini
+
+
+def test_the_open_telemetry_endpoints_are_recorded_as_deliberate_weak_defaults():
+    loki = (MON / "templates/loki.yml.j2").read_text()
+    assert "auth_enabled: false" in loki and "deliberate" in loki.lower()

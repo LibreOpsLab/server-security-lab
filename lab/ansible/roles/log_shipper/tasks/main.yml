@@ -17,7 +17,7 @@
   ansible.builtin.lineinfile:
     path: /etc/default/alloy
     regexp: '^CUSTOM_ARGS='
-    line: 'CUSTOM_ARGS="--server.http.listen-addr=0.0.0.0:12345"'
+    line: 'CUSTOM_ARGS="--server.http.listen-addr={{ lab_hosts[inventory_hostname].ip }}:12345"'
   notify: Restart Alloy
 
 - name: Write the Alloy configuration

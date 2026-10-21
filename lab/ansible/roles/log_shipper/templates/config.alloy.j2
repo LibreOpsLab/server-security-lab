@@ -42,7 +42,7 @@ loki.process "ssh" {
 // The firewall sends its logs here (pfSense remote logging, UDP 1514).
 loki.source.syslog "pfsense" {
   listener {
-    address  = "0.0.0.0:1514"
+    address  = "{{ lab_hosts['mon01'].ip }}:1514"
     protocol = "udp"
     labels   = {job = "pfsense"}
   }

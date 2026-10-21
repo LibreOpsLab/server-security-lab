@@ -1,0 +1,48 @@
+---
+# Proxmox Backup Server in an LXC container. Not an officially supported layout: if it misbehaves, use the
+# local-storage fallback described in lab/proxmox/README.md.
+- name: Fetch the Proxmox repository signing key
+  ansible.builtin.get_url:
+    url: https://enterprise.proxmox.com/debian/proxmox-release-bookworm.gpg
+    dest: /etc/apt/keyrings/proxmox-release-bookworm.gpg
+    mode: "0644"
+
+- name: Add the Proxmox Backup Server (no-subscription) repository, restricted to that key
+  ansible.builtin.apt_repository:
+    repo: "deb [signed-by=/etc/apt/keyrings/proxmox-release-bookworm.gpg] http://download.proxmox.com/debian/pbs bookworm pbs-no-subscription"
+    filename: pbs
+    state: present
+    update_cache: true
+
+- name: Install Proxmox Backup Server
+  ansible.builtin.apt:
+    name: proxmox-backup-server
+    state: present
+  environment:
+    DEBIAN_FRONTEND: noninteractive
+
+- name: Create the datastore
+  ansible.builtin.shell: >-
+    set -o pipefail;
+    proxmox-backup-manager datastore list | grep -qw lab ||
+    proxmox-backup-manager datastore create lab {{ pbs_datastore_path }}
+  args:
+    executable: /bin/bash
+  register: pbs_datastore
+  changed_when: "'TASK OK' in pbs_datastore.stdout or pbs_datastore.stdout | length > 0"
+
+- name: Create the backup user with the generated password
+  ansible.builtin.shell: >-
+    set -o pipefail;
+    proxmox-backup-manager user list | grep -q 'backup@pbs' ||
+    proxmox-backup-manager user create backup@pbs --password "$PBS_PW"
+  args:
+    executable: /bin/bash
+  environment:
+    PBS_PW: "{{ lookup('ansible.builtin.file', lab_secrets_dir ~ '/pbs_admin_password') }}"
+  no_log: true
+  changed_when: false
+
+- name: Let that user back up to the datastore
+  ansible.builtin.command: proxmox-backup-manager acl update /datastore/lab DatastoreBackup --auth-id backup@pbs
+  changed_when: false

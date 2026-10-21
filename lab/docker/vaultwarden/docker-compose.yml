@@ -10,7 +10,9 @@ services:
     environment:
       DOMAIN: https://vault.lab.internal
       ADMIN_TOKEN: ${VAULTWARDEN_ADMIN_TOKEN}
-      SIGNUPS_ALLOWED: "true"
+      # Accounts are invited by the administrator (web vault > Admin), not self-registered.
+      SIGNUPS_ALLOWED: "false"
+      INVITATIONS_ALLOWED: "true"
     volumes:
       - vaultwarden_data:/data
     networks:

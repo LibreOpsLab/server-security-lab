@@ -46,7 +46,9 @@
   ansible.builtin.template:
     src: oidc.config.php.j2
     dest: "{{ docker_host_dir }}/nextcloud/oidc.config.php"
-    mode: "0644"
+    owner: root
+    group: "33"
+    mode: "0640"
   no_log: true
 
 # The .env files hold real passwords, so they are private to root and never logged.
@@ -61,7 +63,7 @@
       content: "LAB_CERT_DIR={{ docker_host_dir }}/certs\n"
     - stack: nextcloud
       content: |
-        NEXTCLOUD_DB_ROOT_PASS={{ (lookup('ansible.builtin.file', lab_secrets_dir ~ '/nextcloud_db_password') ~ 'root') | hash('sha256') }}
+        NEXTCLOUD_DB_ROOT_PASS={{ lookup('ansible.builtin.file', lab_secrets_dir ~ '/nextcloud_db_root_password') }}
         NEXTCLOUD_DB_PASS={{ lookup('ansible.builtin.file', lab_secrets_dir ~ '/nextcloud_db_password') }}
         NEXTCLOUD_ADMIN_PASSWORD={{ lookup('ansible.builtin.file', lab_secrets_dir ~ '/nextcloud_admin_password') }}
     - stack: vaultwarden

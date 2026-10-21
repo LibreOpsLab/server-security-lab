@@ -1,0 +1,52 @@
+---
+# Backups: Proxmox Backup Server on pbs01, a nightly job on Proxmox, and a restore test to prove it.
+- name: Build the backup server
+  hosts: backup
+  roles:
+    - pbs
+
+- name: Fetch the backup server's certificate fingerprint
+  hosts: backup
+  gather_facts: false
+  tasks:
+    - name: Read the fingerprint
+      ansible.builtin.shell: set -o pipefail; proxmox-backup-manager cert info | awk '/Fingerprint/ {print $NF}'
+      args:
+        executable: /bin/bash
+      register: pbs_fingerprint
+      changed_when: false
+
+- name: Set up the nightly job on Proxmox
+  hosts: proxmox
+  gather_facts: false
+  vars:
+    helper_dir: /root/lab
+    # Every Proxmox guest except the backup server itself.
+    backup_vmids: >-
+      {{ lab_hosts | dict2items | selectattr('value.kind', 'in', ['lxc', 'vm'])
+         | rejectattr('key', 'equalto', 'pbs01') | map(attribute='value.vmid') | join(',') }}
+  tasks:
+    - name: Copy the backup scripts
+      ansible.builtin.copy:
+        src: "{{ playbook_dir }}/../../proxmox/{{ item }}"
+        dest: "{{ helper_dir }}/{{ item }}"
+        mode: "0755"
+      loop: [backup-jobs.sh, restore-test.sh]
+
+    - name: Create the backup storage and job
+      ansible.builtin.command:
+        argv:
+          - "{{ helper_dir }}/backup-jobs.sh"
+          - --vmids
+          - "{{ backup_vmids }}"
+          - --server
+          - "{{ lab_hosts['pbs01'].ip }}"
+          - --fingerprint
+          - "{{ hostvars['pbs01'].pbs_fingerprint.stdout }}"
+      environment:
+        PBS_PASSWORD: "{{ lookup('ansible.builtin.file', lab_secrets_dir ~ '/pbs_admin_password') }}"
+      no_log: true
+      register: backup_job
+      changed_when: "'created' in backup_job.stdout or 'added' in backup_job.stdout"
+
+# Take a first backup and run `restore-test.sh 122` (any guest) by hand: see docs/build/16-backup-and-restore.md.

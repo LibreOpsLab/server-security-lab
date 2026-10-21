@@ -1,4 +1,6 @@
 # Managed by Ansible (role: monitoring). Loki in single-process mode, storing logs on local disk.
+# Deliberate weak default: Loki accepts and serves logs from anyone on the LAN, with no login or tenant
+# header. Anyone who can reach port 3100 can read every log or push fake ones. A hardening exercise.
 auth_enabled: false
 server:
   http_listen_port: 3100

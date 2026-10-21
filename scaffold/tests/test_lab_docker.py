@@ -80,3 +80,29 @@ def test_apps_playbook_installs_docker_from_the_distribution_not_an_unchecked_sc
     tasks = (ROLE / "tasks/main.yml").read_text()
     assert "docker.io" in tasks and "get.docker.com" not in tasks
     assert "docker_host" in (LAB / "ansible/playbooks/50-apps.yml").read_text()
+
+
+def test_oidc_config_with_the_client_secret_is_not_world_readable():
+    tasks = (ROLE / "tasks/main.yml").read_text()
+    block = tasks.split("Write NextCloud's single sign-on settings")[1].split("- name:")[0]
+    assert 'mode: "0640"' in block and 'group: "33"' in block  # readable by NextCloud's www-data only
+
+
+def test_nextcloud_database_root_password_is_its_own_secret_not_derived():
+    tasks = (ROLE / "tasks/main.yml").read_text()
+    assert "nextcloud_db_root_password" in tasks and "hash(" not in tasks
+    assert "nextcloud_db_root_password" in (LAB.parent / "scripts/gen-secrets.sh").read_text()
+
+
+def test_vaultwarden_does_not_allow_open_signups():
+    assert 'SIGNUPS_ALLOWED: "false"' in compose("vaultwarden")
+    assert 'INVITATIONS_ALLOWED: "true"' in compose("vaultwarden")
+
+
+def test_nextcloud_trusts_only_the_pinned_proxy_network():
+    assert "TRUSTED_PROXIES: 172.30.0.0/24" in compose("nextcloud")
+    assert "172.30.0.0/24" in compose("traefik") and "172.16.0.0/12" not in compose("nextcloud")
+
+
+def test_docker_socket_mount_is_documented_as_a_deliberate_weak_default():
+    assert "docker.sock" in compose("traefik") and "deliberate" in compose("traefik").lower()
