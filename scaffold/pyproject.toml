@@ -1,0 +1,17 @@
+[project]
+name = "sslab"
+version = "0.0.1"
+description = "Measure, harden, re-measure: turns audit and attack output into per-student, comparable evidence."
+requires-python = ">=3.11"
+# Stdlib first. No runtime dependencies.
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[tool.setuptools]
+packages = ["sslab", "sslab.collectors"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
