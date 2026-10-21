@@ -5,7 +5,7 @@ Infrastructure is code, so it is managed like code.
 1. **Fork** the upstream repo (private), clone it on `admin01`, and add `upstream` as a second remote:
    `git remote add upstream <upstream-url>`.
 2. **Branch per week** (`week-04`), commit as you go, open a pull request into your own `main`, and
-   merge it after your own review. A partner or the lecturer can review at AT2 checkpoints.
+   merge it after your own review. A partner or your instructor can review at assessment checkpoints.
 3. **Sync weekly:** `git fetch upstream`, read the change log, then merge `upstream/main` into `main`
    before starting the next week.
 4. **Tag the finished week** (`week-04-done`). A wiped PC is rebuilt from the tags.

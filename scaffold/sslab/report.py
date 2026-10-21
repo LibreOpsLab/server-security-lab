@@ -10,8 +10,8 @@ from .findings import LAYERS, SEVERITIES, Finding, Run, file_stem
 NO_FINDINGS = "No findings recorded. This is not the same as a clean result."
 
 CSS = """
-:root{--bg:#fff;--fg:#323E48;--muted:#5b6770;--card:#f5f5f5;--line:#dad9d7;--accent:#8547AD;--onaccent:#fff}
-@media (prefers-color-scheme: dark){:root{--bg:#1d2329;--fg:#e8eaec;--muted:#a7b0b7;--card:#272f36;--line:#3b454d;--accent:#b98ad6;--onaccent:#1d2329}}
+:root{--bg:#fff;--fg:#1F2933;--muted:#5b6770;--card:#f5f5f5;--line:#dad9d7;--accent:#4F46B5;--onaccent:#fff}
+@media (prefers-color-scheme: dark){:root{--bg:#1d2329;--fg:#e8eaec;--muted:#a7b0b7;--card:#272f36;--line:#3b454d;--accent:#a9a0f2;--onaccent:#1d2329}}
 body{font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--fg);margin:0;padding:1.5rem;line-height:1.5}
 main{max-width:60rem;margin:0 auto}h1{color:var(--accent);margin-top:0}
 table{border-collapse:collapse;width:100%;margin:.5rem 0 1.5rem}

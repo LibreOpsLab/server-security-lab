@@ -12,7 +12,7 @@ from .lynis import parse_lynis_index, parse_lynis_report
 from .nmap import parse_nmap_xml
 from .windows import parse_windows_audit
 
-# Placeholder until the lab spike picks the Windows audit tool (plan Task 9).
+# Placeholder until the lab validation picks the Windows audit tool (see docs/instructor-weak-defaults.md).
 _WIN_CMD = "powershell -NoProfile -File C:\\audit\\run-audit.ps1"
 
 COMMANDS: dict[str, Callable[[str], list[str]]] = {

@@ -1,6 +1,6 @@
 """Windows audit CSV to findings. Columns: Id,Name,Severity,Status. Only `Failed` rows become findings.
 
-The audit tool itself is chosen in the lab spike (plan Task 9); this parser matches a HardeningKitty-style list.
+The audit tool itself is chosen in the lab validation (see docs/instructor-weak-defaults.md); this parser matches a HardeningKitty-style list.
 """
 
 from __future__ import annotations

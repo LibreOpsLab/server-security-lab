@@ -1,7 +1,7 @@
-# Lecturer guide: what "default" leaves open, and the lab spike
+# Instructor guide: what "default" leaves open, and the lab validation
 
-Status: **draft, unverified.** Written before the lab spike. Every row is a candidate until it has been
-built and scanned on a real lab workstation (checklist at the end). Nothing in this list is a planted
+Status: **draft, unverified.** Written before the lab validation. Every row is a candidate until it has been
+built and scanned on a real lab workstation (checklist at the end). Contributions that verify a row are very welcome (see CONTRIBUTING.md). Nothing in this list is a planted
 trick: each is how the software behaves out of the box, or how a normal how-to build leaves it.
 
 "Default" in this unit means *functional but not secure*: built to the student's design, every service
@@ -31,13 +31,12 @@ Not 100 per cent closed. A healthy class result has closed findings in every lay
 least one **new** finding the hardening itself introduced (a rule too strict, a service now noisy). Those
 last two are where the reflection earns its marks.
 
-## Lab spike checklist (needs a real workstation)
+## Lab validation checklist (needs a real workstation)
 
 1. Build the lab from the repo on a lab workstation. At the end of the week 11 state, take the
    `pre-security-baseline` snapshot of every VM.
 2. Install `nmap`, `hydra`, `curl`, `smbclient` on `admin01`; Lynis on each Linux guest.
-3. Record real RAM use on `admin01` with the tools running, alongside the lab (32 GB budget in
-   `lab-design.md`).
+3. Record real RAM use on `admin01` with the tools running, alongside the lab (the reference workstation has 32 GB).
 4. Run `weeks/12-baseline-attack/check.sh` against every guest. Keep the raw tool output.
 5. Replace the placeholder fixtures in `scaffold/tests/fixtures/` with trimmed real output, rerun
    `python -m pytest`, and fix the parsers where reality differs.

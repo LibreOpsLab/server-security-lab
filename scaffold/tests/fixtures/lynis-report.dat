@@ -1,4 +1,4 @@
-# PLACEHOLDER fixture, hand-written in the Lynis report.dat format. Replace with real output (plan Task 9).
+# PLACEHOLDER fixture, hand-written in the Lynis report.dat format. Replace with real output (see docs/instructor-weak-defaults.md).
 report_version=1.0
 hardening_index=62
 warning[]=SSH-7412|SSH root login permitted|PermitRootLogin yes|-|

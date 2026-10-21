@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Security concern about the tooling
+    url: https://github.com/LibreOpsLab/server-security-lab/security/advisories/new
+    about: Please report vulnerabilities privately, not as a public issue.

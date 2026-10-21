@@ -46,9 +46,9 @@ def test_html_escapes_finding_text():
     assert "&lt;allowed&gt; &amp; more" in html and "<allowed>" not in html
 
 
-def test_html_has_dark_mode_and_brand_purple():
+def test_html_has_dark_mode_and_accent_colour():
     html = render_html(run())
-    assert "prefers-color-scheme: dark" in html and "#8547AD" in html
+    assert "prefers-color-scheme: dark" in html and "#4F46B5" in html
 
 
 def test_write_reports_pairs_with_json_name(tmp_path: Path):

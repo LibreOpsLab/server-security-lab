@@ -1,6 +1,6 @@
 # Portfolio
 
-Your AT2 evidence lives here and in `build/`.
+Your assessment evidence lives here and in `build/`.
 
 - `reports/` is written by `python -m sslab`. Commit every run; do not edit generated reports.
 - `student.toml` holds your name, fork and lab range (created in week 12).
