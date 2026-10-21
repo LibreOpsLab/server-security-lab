@@ -1,0 +1,7 @@
+---
+# Every guest and the admin machine trust the lab CA, so HTTPS and LDAPS to lab services validate.
+- name: Trust the lab certificate authority
+  hosts: lxc:vm:admin
+  become: true
+  roles:
+    - pki_trust

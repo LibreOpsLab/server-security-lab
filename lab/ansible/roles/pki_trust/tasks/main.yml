@@ -1,0 +1,12 @@
+---
+# Make this machine trust the lab's certificate authority (public certificates only; no private keys).
+# Adapted from the lab-small-business pki_trust role.
+- name: Install the lab root and issuing CA certificates
+  ansible.builtin.copy:
+    src: "{{ lab_secrets_dir }}/ca/{{ item.src }}"
+    dest: "/usr/local/share/ca-certificates/{{ item.dest }}"
+    mode: "0644"
+  loop:
+    - {src: root/certs/ca.cert.pem, dest: lab-root-ca.crt}
+    - {src: intermediate/certs/intermediate.cert.pem, dest: lab-issuing-ca.crt}
+  notify: Refresh the CA store

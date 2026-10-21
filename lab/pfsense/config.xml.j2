@@ -1,0 +1,104 @@
+<?xml version="1.0"?>
+<!--
+  Lab pfSense baseline, rendered from the inventory by render.py. Adapted from the lab-small-business
+  template. Import with Diagnostics > Backup & Restore > Restore configuration.
+
+  The template contains NO user accounts or passwords. After importing, use the console menu option 3
+  ("Reset webConfigurator password") to set the admin password.
+
+  The LAN firewall rule below is the pfSense default, "allow LAN to any". That is a deliberate weak
+  default: the security loop measures it, and the hardening week replaces it with rules that match the
+  design. Do not tighten it before the baseline.
+-->
+<pfsense>
+  <version>22.1</version>
+  <system>
+    <hostname>{{ hostname }}</hostname>
+    <domain>{{ lab_domain }}</domain>
+    <timezone>UTC</timezone>
+    <timeservers>{{ lab_dns[0] }}</timeservers>
+    <webgui>
+      <protocol>https</protocol>
+    </webgui>
+{% for ns in lab_dns %}
+    <dnsserver>{{ ns }}</dnsserver>
+{% endfor %}
+    <dnsallowoverride></dnsallowoverride>
+  </system>
+
+  <interfaces>
+    <wan>
+      <enable></enable>
+      <if>{{ wan_if }}</if>
+      <ipaddr>dhcp</ipaddr>
+      <blockbogons></blockbogons>
+    </wan>
+    <lan>
+      <enable></enable>
+      <if>{{ lan_if }}</if>
+      <ipaddr>{{ lab_gateway }}</ipaddr>
+      <subnet>{{ lab_subnet.split('/')[1] }}</subnet>
+    </lan>
+  </interfaces>
+
+  <dhcpd>
+    <lan>
+      <enable></enable>
+      <range>
+        <from>{{ dhcp_pool.start }}</from>
+        <to>{{ dhcp_pool.end }}</to>
+      </range>
+      <gateway>{{ lab_gateway }}</gateway>
+      <domain>{{ lab_domain }}</domain>
+{% for ns in lab_dns %}
+      <dnsserver>{{ ns }}</dnsserver>
+{% endfor %}
+      <defaultleasetime>7200</defaultleasetime>
+      <maxleasetime>86400</maxleasetime>
+    </lan>
+  </dhcpd>
+
+  <unbound>
+    <!-- DNS Resolver in forwarding mode, LAN only. Queries for the lab domain go to Samba AD. -->
+    <enable></enable>
+    <forwarding></forwarding>
+    <active_interface>lan</active_interface>
+    <outgoing_interface>wan</outgoing_interface>
+    <custom_options><![CDATA[
+server:
+  private-domain: "{{ lab_domain }}"
+forward-zone:
+  name: "{{ lab_domain }}."
+  forward-addr: {{ lab_dns[0] }}
+forward-zone:
+  name: "10.10.10.in-addr.arpa."
+  forward-addr: {{ lab_dns[0] }}
+]]></custom_options>
+  </unbound>
+
+  <nat>
+    <outbound>
+      <mode>automatic</mode>
+    </outbound>
+  </nat>
+
+  <filter>
+    <rule>
+      <descr>Default allow LAN to any (deliberate weak default for the security loop)</descr>
+      <interface>lan</interface>
+      <ipprotocol>inet</ipprotocol>
+      <protocol>any</protocol>
+      <source><network>lan</network></source>
+      <destination><any></any></destination>
+      <type>pass</type>
+    </rule>
+  </filter>
+
+  <syslog>
+    <!-- Send firewall logs to the monitoring guest (collector listens on UDP 1514). -->
+    <enable></enable>
+    <remoteserver>{{ lab_hosts['mon01'].ip }}:1514</remoteserver>
+    <logall></logall>
+    <sourceip>lan</sourceip>
+  </syslog>
+</pfsense>
