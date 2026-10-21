@@ -1,0 +1,7 @@
+# Managed by Ansible (role: mail). Check DMARC on incoming mail; report, do not reject (lab setting).
+Syslog          true
+Socket          inet:8893@127.0.0.1
+PidFile         /run/opendmarc/opendmarc.pid
+AuthservID      mail.{{ lab_domain }}
+TrustedAuthservIDs mail.{{ lab_domain }}
+RejectFailures  false

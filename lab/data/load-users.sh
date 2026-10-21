@@ -13,6 +13,7 @@ csv=${1:?usage: load-users.sh users.csv}
 tool=${SAMBA_TOOL:-samba-tool}
 allowed_groups=" staff finance admins wifi "
 ou=${LAB_USERS_OU:-LabUsers}
+domain=${LAB_DOMAIN:-lab.internal}
 
 fail() { echo "$csv: line $1: $2" >&2; exit 2; }
 
@@ -54,7 +55,7 @@ for i in "${!users[@]}"; do
   if "$tool" user show "$u" >/dev/null 2>&1; then
     echo "kept $u"
   else
-    "$tool" user create "$u" "$p" --given-name="${d%% *}" --surname="${d#* }" --userou="OU=$ou"
+    "$tool" user create "$u" "$p" --given-name="${d%% *}" --surname="${d#* }" --mail-address="$u@$domain" --userou="OU=$ou"
     echo "created $u"
   fi
   IFS=';' read -ra gs <<<"${groups[$i]}"

@@ -1,0 +1,4 @@
+---
+mail_cert_cn: "mail01.{{ lab_domain }}"
+mail_dkim_selector: lab
+mail_vmail_dir: /var/mail/vhosts

@@ -1,0 +1,35 @@
+# Managed by Ansible (role: mail). IMAP over TLS and LMTP delivery, authenticated against Samba AD.
+protocols = imap lmtp
+ssl = required
+ssl_cert = </etc/dovecot/tls/fullchain.pem
+ssl_key = </etc/dovecot/tls/key.pem
+ssl_min_protocol = TLSv1.2
+auth_username_format = %n
+
+mail_location = maildir:{{ mail_vmail_dir }}/%n
+mail_uid = vmail
+mail_gid = vmail
+
+passdb {
+  driver = ldap
+  args = /etc/dovecot/dovecot-ldap.conf.ext
+}
+userdb {
+  driver = static
+  args = uid=vmail gid=vmail home={{ mail_vmail_dir }}/%n
+}
+
+service lmtp {
+  unix_listener /var/spool/postfix/private/dovecot-lmtp {
+    mode = 0600
+    user = postfix
+    group = postfix
+  }
+}
+service auth {
+  unix_listener /var/spool/postfix/private/auth {
+    mode = 0660
+    user = postfix
+    group = postfix
+  }
+}

@@ -1,0 +1,120 @@
+---
+# Mail: Postfix (SMTP), Dovecot (IMAP, login, delivery), OpenDKIM and OpenDMARC. Mailboxes and logins come
+# from Samba AD. Adapted from lab-small-business/docker/mail, run natively in an LXC container, with
+# its tight relay settings relaxed to Postfix's defaults (the security loop measures them).
+
+- name: Install the mail packages
+  ansible.builtin.apt:
+    name: [postfix, postfix-ldap, dovecot-core, dovecot-imapd, dovecot-lmtpd, dovecot-ldap, opendkim, opendkim-tools, opendmarc, ca-certificates]
+    state: present
+    update_cache: true
+  environment:
+    DEBIAN_FRONTEND: noninteractive
+
+- name: Create the mail storage user and directory
+  ansible.builtin.user:
+    name: vmail
+    system: true
+    home: "{{ mail_vmail_dir }}"
+    create_home: true
+    shell: /usr/sbin/nologin
+
+- name: Create the certificate directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0750"
+  loop: [/etc/postfix/tls, /etc/dovecot/tls]
+
+- name: Install the mail server certificate and key issued by the lab CA
+  ansible.builtin.copy:
+    src: "{{ lab_secrets_dir }}/ca/issued/{{ mail_cert_cn }}/{{ item.src }}"
+    dest: "{{ item.dir }}/{{ item.src }}"
+    mode: "{{ item.mode }}"
+  loop:
+    - {src: fullchain.pem, dir: /etc/postfix/tls, mode: "0644"}
+    - {src: key.pem, dir: /etc/postfix/tls, mode: "0600"}
+    - {src: fullchain.pem, dir: /etc/dovecot/tls, mode: "0644"}
+    - {src: key.pem, dir: /etc/dovecot/tls, mode: "0600"}
+  no_log: true
+  notify: [Restart Postfix, Restart Dovecot]
+
+- name: Write the Postfix configuration
+  ansible.builtin.template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: "{{ item.mode }}"
+  loop:
+    - {src: main.cf.j2, dest: /etc/postfix/main.cf, mode: "0644"}
+    - {src: ldap-virtual-mailbox.cf.j2, dest: /etc/postfix/ldap-virtual-mailbox.cf, mode: "0640"}
+  notify: Restart Postfix
+
+- name: Run the Postfix SMTP listener outside a chroot so it can read the CA store for LDAP over TLS
+  ansible.builtin.command: postconf -F smtp/inet/chroot=n
+  changed_when: false
+  notify: Restart Postfix
+
+- name: Write the Dovecot configuration
+  ansible.builtin.template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: "{{ item.mode }}"
+  loop:
+    - {src: 99-lab.conf.j2, dest: /etc/dovecot/conf.d/99-lab.conf, mode: "0644"}
+    - {src: dovecot-ldap.conf.ext.j2, dest: /etc/dovecot/dovecot-ldap.conf.ext, mode: "0600"}
+  notify: Restart Dovecot
+
+- name: Create the DKIM signing key
+  ansible.builtin.shell: |
+    set -e
+    install -d -o opendkim -g opendkim -m 0750 /etc/opendkim/keys/{{ lab_domain }}
+    opendkim-genkey -b 1024 -d {{ lab_domain }} -s {{ mail_dkim_selector }} -D /etc/opendkim/keys/{{ lab_domain }}
+    chown opendkim:opendkim /etc/opendkim/keys/{{ lab_domain }}/{{ mail_dkim_selector }}.private
+  args:
+    executable: /bin/bash
+    creates: /etc/opendkim/keys/{{ lab_domain }}/{{ mail_dkim_selector }}.private
+  notify: Restart OpenDKIM
+
+- name: Write the OpenDKIM and OpenDMARC configuration
+  ansible.builtin.template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: "0644"
+  loop:
+    - {src: opendkim.conf.j2, dest: /etc/opendkim.conf}
+    - {src: opendmarc.conf.j2, dest: /etc/opendmarc.conf}
+  notify: [Restart OpenDKIM, Restart OpenDMARC]
+
+- name: Read the DKIM public key
+  ansible.builtin.shell: >-
+    set -o pipefail;
+    openssl rsa -in /etc/opendkim/keys/{{ lab_domain }}/{{ mail_dkim_selector }}.private -pubout -outform DER 2>/dev/null
+    | base64 -w0
+  args:
+    executable: /bin/bash
+  register: mail_dkim_public
+  changed_when: false
+
+# Publish the key in DNS so other servers can verify signatures. A 1024-bit key keeps the TXT record inside
+# one 255-character DNS string, which is fine for a closed lab (production mail should use 2048 bits).
+- name: Publish the DKIM key in the lab DNS
+  ansible.builtin.shell: |
+    set -o pipefail
+    echo "$ADMIN_PW" | kinit Administrator@{{ lab_realm }}
+    name={{ mail_dkim_selector }}._domainkey
+    samba-tool dns query 127.0.0.1 {{ lab_domain }} "$name" TXT --use-kerberos=required 2>/dev/null | grep -q DKIM1 ||
+      samba-tool dns add 127.0.0.1 {{ lab_domain }} "$name" TXT "v=DKIM1; k=rsa; p={{ mail_dkim_public.stdout }}" --use-kerberos=required
+  args:
+    executable: /bin/bash
+  environment:
+    ADMIN_PW: "{{ lookup('ansible.builtin.file', lab_secrets_dir ~ '/samba_admin_password') }}"
+  delegate_to: samba-dc01
+  no_log: true
+  changed_when: false
+
+- name: Start and enable the mail services
+  ansible.builtin.service:
+    name: "{{ item }}"
+    state: started
+    enabled: true
+  loop: [opendkim, opendmarc, dovecot, postfix]

@@ -1,0 +1,10 @@
+# Managed by Ansible (role: mail). Sign outgoing mail for {{ lab_domain }}.
+Syslog          yes
+UMask           002
+Domain          {{ lab_domain }}
+Selector        {{ mail_dkim_selector }}
+KeyFile         /etc/opendkim/keys/{{ lab_domain }}/{{ mail_dkim_selector }}.private
+Socket          inet:8891@127.0.0.1
+PidFile         /run/opendkim/opendkim.pid
+Mode            sv
+Canonicalization relaxed/simple

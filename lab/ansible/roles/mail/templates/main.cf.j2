@@ -1,0 +1,44 @@
+# Managed by Ansible (role: mail). Postfix for {{ lab_domain }}: receives mail, hands it to Dovecot, relays for the LAN.
+myhostname = mail.{{ lab_domain }}
+mydomain = {{ lab_domain }}
+myorigin = $mydomain
+inet_interfaces = all
+inet_protocols = ipv4
+
+# All mailboxes are virtual: valid recipients come from Samba AD over LDAP, delivery goes to Dovecot.
+mydestination =
+virtual_mailbox_domains = $mydomain
+virtual_mailbox_maps = ldap:/etc/postfix/ldap-virtual-mailbox.cf
+virtual_transport = lmtp:unix:private/dovecot-lmtp
+
+# Anything on the LAN may send mail through this server to anywhere. This is Postfix's own default
+# behaviour for the local subnet (mynetworks_style = subnet) and it is deliberately left as is:
+# the security loop's mail check finds it, and the hardening week narrows it.
+mynetworks = 127.0.0.0/8 {{ lab_subnet }}
+smtpd_relay_restrictions = permit_mynetworks, permit_sasl_authenticated, reject_unauth_destination
+smtpd_recipient_restrictions = permit_mynetworks, permit_sasl_authenticated, reject_unauth_destination
+
+# VRFY lets anyone ask "does this user exist?". It is on by default in Postfix and is left on on purpose
+# (a user-enumeration finding for the security loop). Set it to "yes" when you harden.
+disable_vrfy_command = no
+
+# Sender login through Dovecot.
+smtpd_sasl_auth_enable = yes
+smtpd_sasl_type = dovecot
+smtpd_sasl_path = private/auth
+smtpd_sasl_security_options = noanonymous
+smtpd_sasl_local_domain = $mydomain
+
+# TLS from the lab CA. STARTTLS is offered, not forced, on port 25.
+smtpd_tls_cert_file = /etc/postfix/tls/fullchain.pem
+smtpd_tls_key_file = /etc/postfix/tls/key.pem
+smtpd_tls_security_level = may
+smtpd_tls_auth_only = yes
+smtp_tls_security_level = may
+
+# DKIM signs outgoing mail, DMARC checks incoming mail.
+smtpd_milters = inet:127.0.0.1:8891, inet:127.0.0.1:8893
+non_smtpd_milters = $smtpd_milters
+milter_default_action = accept
+
+compatibility_level = 3.6

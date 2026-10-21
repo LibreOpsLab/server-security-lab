@@ -103,3 +103,9 @@ def test_at_least_two_users_use_the_attack_wordlists():
 def test_csv_uses_only_lab_internal_data():
     text = CSV.read_text()
     assert "@" not in text.replace("@lab.internal", "")
+
+
+def test_users_get_a_mail_address_in_the_lab_domain(loader):
+    r, log = loader(HEADER + "alice,Alice Nguyen,staff,Welcome2026\n")
+    assert r.returncode == 0
+    assert "--mail-address=alice@lab.internal" in log

@@ -1,6 +1,29 @@
 ---
 # Core services, one play per guest. Run after `make baseline`, `make trust` and `make identity`.
+- name: Issue the server certificates from the lab CA
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Issue each certificate (kept if it exists)
+      ansible.builtin.command:
+        argv:
+          - "{{ playbook_dir }}/../../pki/issue-cert.sh"
+          - "{{ lab_secrets_dir }}/ca"
+          - "{{ item.cn }}"
+          - "{{ item.san }}"
+      loop: "{{ lab_certificates }}"
+      loop_control:
+        label: "{{ item.cn }}"
+      register: issued_certs
+      changed_when: "'created' in issued_certs.stdout"
+
 - name: File server and SFTP
   hosts: files
   roles:
     - files_server
+
+- name: Mail server
+  hosts: mail
+  roles:
+    - mail

@@ -34,3 +34,20 @@
     label: "{{ item.key }}"
   register: samba_dc_dns_cname
   changed_when: "'added successfully' in samba_dc_dns_cname.stdout"
+
+# Mail routing and sender policy. The key for DKIM is published by the mail role once it exists.
+- name: Add the MX, SPF and DMARC records
+  ansible.builtin.shell: >-
+    set -o pipefail;
+    samba-tool dns query 127.0.0.1 {{ lab_domain }} {{ item.name }} {{ item.type }} --use-kerberos=required 2>/dev/null | grep -q '{{ item.match }}'
+    || samba-tool dns add 127.0.0.1 {{ lab_domain }} {{ item.name }} {{ item.type }} '{{ item.data }}' --use-kerberos=required
+  args:
+    executable: /bin/bash
+  loop:
+    - {name: "@", type: MX, match: "mail", data: "mail.{{ lab_domain }} 10"}
+    - {name: "@", type: TXT, match: "spf1", data: "v=spf1 ip4:{{ lab_hosts['mail01'].ip }} -all"}
+    - {name: _dmarc, type: TXT, match: "DMARC1", data: "v=DMARC1; p=none; rua=mailto:postmaster@{{ lab_domain }}"}
+  loop_control:
+    label: "{{ item.name }} {{ item.type }}"
+  register: samba_dc_dns_mail
+  changed_when: "'added successfully' in samba_dc_dns_mail.stdout"

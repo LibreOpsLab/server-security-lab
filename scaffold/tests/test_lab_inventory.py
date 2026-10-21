@@ -68,3 +68,16 @@ def test_hosts_yml_groups_cover_every_proxmox_guest_without_ips():
     guests = {n for n, h in HOSTS.items() if h["kind"] in ("lxc", "vm")}
     assert guests <= names and "pve01" in names
     assert "10.10.10." not in (LAB / "inventory" / "hosts.yml").read_text()  # addresses live in one place
+
+
+def test_ldap_names_are_derived_consistently_from_the_domain():
+    dc = ",".join(f"DC={part}" for part in VARS["lab_domain"].split("."))
+    assert VARS["lab_base_dn"] == dc
+    assert VARS["lab_users_dn"] == f"OU=LabUsers,{dc}" and VARS["lab_service_dn"] == f"OU=LabService,{dc}"
+    assert VARS["lab_ldap_uri"] == f"ldaps://samba-dc01.{VARS['lab_domain']}"
+
+
+def test_certificates_cover_the_aliases_and_wildcard_for_the_web_tier():
+    certs = {c["cn"]: c["san"] for c in VARS["lab_certificates"]}
+    assert certs["mail01.lab.internal"].count("DNS:") >= 2 and "DNS:*.lab.internal" in certs["docker01.lab.internal"]
+    assert {"mail01.lab.internal", "auth01.lab.internal", "docker01.lab.internal", "mon01.lab.internal"} <= set(certs)

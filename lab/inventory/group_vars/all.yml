@@ -7,6 +7,22 @@ lab_subnet: 10.10.10.0/24
 lab_gateway: 10.10.10.1
 lab_dns: [10.10.10.21, 10.10.10.1]
 proxmox_host_ip: 10.10.10.5
+
+# Directory names derived from the domain (LDAP search bases and the service-account location).
+lab_base_dn: DC=lab,DC=internal
+lab_users_dn: OU=LabUsers,DC=lab,DC=internal
+lab_service_dn: OU=LabService,DC=lab,DC=internal
+lab_ldap_uri: ldaps://samba-dc01.lab.internal
+lab_mail_account: svc-mail
+
+# Server certificates issued by the lab CA on admin01, and who needs which names.
+lab_certificates:
+  - {cn: mail01.lab.internal, san: "DNS:mail01.lab.internal,DNS:mail.lab.internal"}
+  - {cn: auth01.lab.internal, san: "DNS:auth01.lab.internal,DNS:auth.lab.internal"}
+  - {cn: radius01.lab.internal, san: "DNS:radius01.lab.internal"}
+  - {cn: mon01.lab.internal, san: "DNS:mon01.lab.internal,DNS:grafana.lab.internal"}
+  - {cn: files01.lab.internal, san: "DNS:files01.lab.internal,DNS:files.lab.internal"}
+  - {cn: docker01.lab.internal, san: "DNS:docker01.lab.internal,DNS:*.lab.internal"}
 dhcp_pool: {start: 10.10.10.100, end: 10.10.10.199}
 
 # Samba AD in an unprivileged LXC is unreliable (ACLs, xattrs, idmap), so the DC is privileged.
