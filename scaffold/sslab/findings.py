@@ -32,7 +32,7 @@ class Run:
     not_run: list[str] = field(default_factory=list)
 
 
-def _stem(run: Run) -> str:
+def file_stem(run: Run) -> str:
     stamp = run.started.replace(":", "").replace("-", "")
     return f"{run.label}-{run.tool}-{run.host}-{stamp}"
 
@@ -40,10 +40,10 @@ def _stem(run: Run) -> str:
 def save_run(run: Run, outdir: Path) -> Path:
     """Write the run as JSON. Never overwrites: a clash gets -2, -3, ..."""
     outdir.mkdir(parents=True, exist_ok=True)
-    path = outdir / f"{_stem(run)}.json"
+    path = outdir / f"{file_stem(run)}.json"
     n = 2
     while path.exists():
-        path = outdir / f"{_stem(run)}-{n}.json"
+        path = outdir / f"{file_stem(run)}-{n}.json"
         n += 1
     path.write_text(json.dumps(asdict(run), indent=2) + "\n", encoding="utf-8")
     return path
