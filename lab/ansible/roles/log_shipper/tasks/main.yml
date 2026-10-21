@@ -1,0 +1,34 @@
+---
+# Grafana Alloy on every guest: ships the system journal to Loki and exposes its own metrics.
+- name: Install Alloy
+  ansible.builtin.apt:
+    name: alloy
+    state: present
+    update_cache: true
+
+- name: Let Alloy read the system journal
+  ansible.builtin.user:
+    name: alloy
+    groups: systemd-journal
+    append: true
+  notify: Restart Alloy
+
+- name: Make Alloy listen for metrics on the LAN so Prometheus can scrape it
+  ansible.builtin.lineinfile:
+    path: /etc/default/alloy
+    regexp: '^CUSTOM_ARGS='
+    line: 'CUSTOM_ARGS="--server.http.listen-addr=0.0.0.0:12345"'
+  notify: Restart Alloy
+
+- name: Write the Alloy configuration
+  ansible.builtin.template:
+    src: config.alloy.j2
+    dest: /etc/alloy/config.alloy
+    mode: "0644"
+  notify: Restart Alloy
+
+- name: Start and enable Alloy
+  ansible.builtin.service:
+    name: alloy
+    state: started
+    enabled: true

@@ -1,0 +1,51 @@
+// Managed by Ansible (role: log_shipper). Grafana Alloy ships this guest's logs to Loki on mon01 and counts
+// failed SSH logins as a metric, which Prometheus scrapes (port 12345) and the SshFailedLogins alert uses.
+
+loki.write "lab" {
+  endpoint {
+    url = "http://{{ lab_hosts['mon01'].ip }}:3100/loki/api/v1/push"
+  }
+  external_labels = {host = "{{ inventory_hostname }}"}
+}
+
+loki.relabel "journal" {
+  forward_to = []
+  rule {
+    source_labels = ["__journal__systemd_unit"]
+    target_label  = "unit"
+  }
+}
+
+loki.source.journal "system" {
+  max_age       = "12h"
+  relabel_rules = loki.relabel.journal.rules
+  labels        = {job = "journal"}
+  forward_to    = [loki.process.ssh.receiver]
+}
+
+loki.process "ssh" {
+  stage.match {
+    selector = "{unit=\"ssh.service\"} |~ \"Failed password\""
+    stage.metrics {
+      metric.counter {
+        name        = "ssh_failed_logins_total"
+        description = "Failed SSH password logins seen in the journal"
+        match_all   = true
+        action      = "inc"
+      }
+    }
+  }
+  forward_to = [loki.write.lab.receiver]
+}
+{% if inventory_hostname == 'mon01' %}
+
+// The firewall sends its logs here (pfSense remote logging, UDP 1514).
+loki.source.syslog "pfsense" {
+  listener {
+    address  = "0.0.0.0:1514"
+    protocol = "udp"
+    labels   = {job = "pfsense"}
+  }
+  forward_to = [loki.write.lab.receiver]
+}
+{% endif %}

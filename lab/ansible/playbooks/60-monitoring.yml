@@ -1,0 +1,12 @@
+---
+# Monitoring and logging. Run after `make apps` so the Traefik route to Grafana exists.
+- name: Build the monitoring guest
+  hosts: monitoring
+  roles:
+    - monitoring
+    - log_shipper
+
+- name: Ship logs from every other guest
+  hosts: lxc:vm:!monitoring
+  roles:
+    - log_shipper

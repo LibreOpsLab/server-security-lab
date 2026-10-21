@@ -1,0 +1,6 @@
+# Managed by Ansible (role: monitoring). No mail or chat receivers: alerts are read in the Alertmanager and
+# Prometheus web pages. Wiring a receiver (for example the lab mail server) is a good exercise.
+route:
+  receiver: default
+receivers:
+  - name: default

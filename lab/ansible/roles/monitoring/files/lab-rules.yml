@@ -1,0 +1,28 @@
+---
+groups:
+  - name: lab
+    rules:
+      - alert: HostDown
+        expr: up{job="nodes"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "{{ $labels.instance }} stopped reporting"
+
+      - alert: DiskAlmostFull
+        expr: node_filesystem_avail_bytes{fstype!~"tmpfs|overlay"} / node_filesystem_size_bytes{fstype!~"tmpfs|overlay"} < 0.15
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "{{ $labels.instance }} has less than 15% free on {{ $labels.mountpoint }}"
+
+      # Fed by Alloy, which counts "Failed password" lines in each guest's SSH log. The baseline attack
+      # (weak-password guessing) should make this fire; if it does not, the monitoring missed it.
+      - alert: SshFailedLogins
+        expr: increase(loki_process_custom_ssh_failed_logins_total[5m]) > 5
+        labels:
+          severity: warning
+        annotations:
+          summary: "Repeated failed SSH logins on {{ $labels.instance }}"

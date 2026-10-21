@@ -1,0 +1,9 @@
+# Managed by Ansible (role: monitoring). Grafana settings; Grafana reads this file instead of grafana.ini and uses its built-in defaults for the rest.
+[server]
+domain = grafana.{{ lab_domain }}
+root_url = https://grafana.{{ lab_domain }}/
+http_addr = 0.0.0.0
+
+[security]
+admin_user = admin
+admin_password = {{ lookup('ansible.builtin.file', lab_secrets_dir ~ '/grafana_admin_password') }}

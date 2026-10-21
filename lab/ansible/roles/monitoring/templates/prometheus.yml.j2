@@ -1,0 +1,33 @@
+# Managed by Ansible (role: monitoring). Scrape every lab guest's node exporter, plus the monitoring stack itself.
+global:
+  scrape_interval: 30s
+  evaluation_interval: 30s
+
+rule_files:
+  - /etc/prometheus/rules/lab.yml
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ['localhost:9093']
+
+scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets: ['localhost:9090']
+  - job_name: nodes
+    static_configs:
+      - targets:
+{% for name, h in lab_hosts.items() %}
+{% if h.kind in ['lxc', 'vm'] %}
+          - '{{ h.ip }}:9100'
+{% endif %}
+{% endfor %}
+  - job_name: alloy
+    static_configs:
+      - targets:
+{% for name, h in lab_hosts.items() %}
+{% if h.kind in ['lxc', 'vm'] %}
+          - '{{ h.ip }}:12345'
+{% endif %}
+{% endfor %}

@@ -1,0 +1,28 @@
+---
+# Grafana, Loki and Alloy come from Grafana's own signed apt repository (they are not in Debian).
+# Trust model: the repository key is fetched once over HTTPS; packages are then verified by apt. Compare the
+# key's fingerprint with the one on grafana.com/docs when you build (see docs/build/15-monitoring.md).
+- name: Install what apt needs for an HTTPS repository
+  ansible.builtin.apt:
+    name: [ca-certificates, gnupg]
+    state: present
+    update_cache: true
+
+- name: Create the keyring directory
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: "0755"
+
+- name: Fetch the repository signing key
+  ansible.builtin.get_url:
+    url: "{{ grafana_repo_key_url }}"
+    dest: /etc/apt/keyrings/grafana.asc
+    mode: "0644"
+
+- name: Add the repository, restricted to that key
+  ansible.builtin.apt_repository:
+    repo: "deb [signed-by=/etc/apt/keyrings/grafana.asc] https://apt.grafana.com stable main"
+    filename: grafana
+    state: present
+    update_cache: true

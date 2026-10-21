@@ -1,0 +1,92 @@
+---
+# mon01: Prometheus (metrics), Alertmanager, Loki (logs) and Grafana (dashboards).
+- name: Install the monitoring packages
+  ansible.builtin.apt:
+    name: [prometheus, prometheus-alertmanager, grafana, loki]
+    state: present
+    update_cache: true
+
+- name: Write the Prometheus configuration
+  ansible.builtin.template:
+    src: prometheus.yml.j2
+    dest: /etc/prometheus/prometheus.yml
+    mode: "0644"
+  notify: Restart Prometheus
+
+- name: Create the rules directory and install the lab alert rules
+  ansible.builtin.file:
+    path: /etc/prometheus/rules
+    state: directory
+    mode: "0755"
+
+- name: Install the alert rules
+  ansible.builtin.copy:
+    src: lab-rules.yml
+    dest: /etc/prometheus/rules/lab.yml
+    mode: "0644"
+    validate: promtool check rules %s
+  notify: Restart Prometheus
+
+- name: Write the Alertmanager configuration
+  ansible.builtin.template:
+    src: alertmanager.yml.j2
+    dest: /etc/prometheus/alertmanager.yml
+    mode: "0644"
+  notify: Restart Alertmanager
+
+- name: Write the Loki configuration
+  ansible.builtin.template:
+    src: loki.yml.j2
+    dest: /etc/loki/config.yml
+    mode: "0644"
+  notify: Restart Loki
+
+- name: Provision the Grafana data sources, dashboard provider and the lab dashboard
+  ansible.builtin.template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: "0644"
+  loop:
+    - {src: datasources.yml.j2, dest: /etc/grafana/provisioning/datasources/lab.yml}
+    - {src: dashboards.yml.j2, dest: /etc/grafana/provisioning/dashboards/lab.yml}
+  notify: Restart Grafana
+
+- name: Create the dashboards directory
+  ansible.builtin.file:
+    path: /var/lib/grafana/dashboards
+    state: directory
+    owner: grafana
+    group: grafana
+    mode: "0755"
+
+- name: Install the lab overview dashboard
+  ansible.builtin.copy:
+    src: lab-overview.json
+    dest: /var/lib/grafana/dashboards/lab-overview.json
+    owner: grafana
+    group: grafana
+    mode: "0644"
+  notify: Restart Grafana
+
+- name: Set the Grafana address and admin password
+  ansible.builtin.template:
+    src: grafana-admin.ini.j2
+    dest: /etc/grafana/grafana-lab.ini
+    owner: root
+    group: grafana
+    mode: "0640"
+  no_log: true
+
+- name: Start Grafana with the lab settings merged over the defaults
+  ansible.builtin.lineinfile:
+    path: /etc/default/grafana-server
+    regexp: '^#?CONF_FILE='
+    line: "CONF_FILE=/etc/grafana/grafana-lab.ini"
+  notify: Restart Grafana
+
+- name: Start and enable the monitoring services
+  ansible.builtin.service:
+    name: "{{ item }}"
+    state: started
+    enabled: true
+  loop: [prometheus, prometheus-alertmanager, loki, grafana-server]
