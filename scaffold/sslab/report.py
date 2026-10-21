@@ -48,7 +48,7 @@ def _sorted(findings: list[Finding]) -> list[Finding]:
 
 def _meta(run: Run) -> list[tuple[str, str]]:
     return [
-        ("Student", run.student), ("Fork", run.fork), ("Host", run.host), ("Lab range", run.lab_range),
+        ("Student", run.student), ("Repository", run.fork), ("Host", run.host), ("Lab range", run.lab_range),
         ("Label", run.label), ("Tool", run.tool), ("Started (UTC)", run.started),
     ]
 

@@ -25,4 +25,4 @@ jobs:
         working-directory: scaffold
         run: python -m pytest -q
       - name: Shellcheck the week scripts
-        run: shellcheck weeks/*/check.sh
+        run: shellcheck scripts/*.sh weeks/*/check.sh

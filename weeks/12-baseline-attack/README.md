@@ -15,7 +15,7 @@ anything you do not own or have written permission to test.
 
    ```toml
    student = "Your Name"
-   fork = "yourname/server-security-lab"
+   fork = "yourname/server-security-lab"   # your private copy
    ```
 
 4. **Install the tools on `admin01`** (all open source): `nmap`, `hydra`, `curl`, `smbclient`. Lynis is

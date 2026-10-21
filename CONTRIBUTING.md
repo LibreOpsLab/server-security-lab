@@ -32,7 +32,7 @@ real labs** and **clearer for learners**.
 ```bash
 cd scaffold
 python -m pytest            # all tests; no lab or real tools needed (commands are injected)
-shellcheck ../weeks/*/check.sh
+shellcheck ../scripts/*.sh ../weeks/*/check.sh
 ```
 
 Work test-first: write the failing test, watch it fail, then make it pass. Tests inject a fake `runner`, so
@@ -41,7 +41,7 @@ nothing in the suite touches the network.
 ## Pull requests
 
 1. Open an issue first for anything larger than a fix, so we can agree the shape.
-2. Branch from `main`, keep the change focused, add or update tests and the [changelog](CHANGELOG.md).
+2. Fork this repo (contributions go through public forks; your *course* work uses a private copy, see the README), branch from `main`, keep the change focused, add or update tests and the [changelog](CHANGELOG.md).
 3. Explain what changed and why, and for a parser change, include the real output that motivated it.
 4. CI must pass (tests and shellcheck).
 

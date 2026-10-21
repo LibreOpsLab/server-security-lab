@@ -4,7 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 A hands-on build repo for teaching **server and infrastructure security**, designed for classrooms, but
-usable for self-study. Learners fork it, build a small business platform week by week, then do what
+usable for self-study. Learners take a private copy of it, build a small business platform week by week, then do what
 real engineers do: **attack it, harden it, attack it again, and explain the difference.**
 
 > **Status: early.** The tooling is tested against hand-written sample output. It has not yet been
@@ -49,8 +49,9 @@ Python 3.11+ standard library only; no database, no services to run.
 ## Quick start
 
 ```bash
-# 1. Fork this repo (make the fork private), clone it on your admin machine
-git clone https://github.com/<you>/server-security-lab.git && cd server-security-lab
+# 1. Make your own PRIVATE copy (needs git and the GitHub CLI, logged in with `gh auth login`)
+curl -fsSLO https://raw.githubusercontent.com/LibreOpsLab/server-security-lab/main/scripts/create-private-copy.sh
+bash create-private-copy.sh && cd server-security-lab
 
 # 2. Check the tooling works
 cd scaffold && python -m pytest && cd ..
@@ -61,6 +62,11 @@ weeks/12-baseline-attack/check.sh <host> [<host> ...]
 ```
 
 Reports land in `portfolio/reports/`. Commit them without editing them.
+
+> **Why a private copy, not a GitHub fork?** A fork of a public repo is always public, and your build
+> will contain details of your lab. The script makes a private repo with the same history and adds this
+> repo as `upstream`, so `git fetch upstream` and `git merge upstream/main` work just like a fork. The
+> manual steps are in [docs/git-workflow.md](docs/git-workflow.md).
 
 ## Repository layout
 
