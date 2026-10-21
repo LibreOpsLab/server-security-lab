@@ -5,13 +5,17 @@ real labs** and **clearer for learners**.
 
 ## Most wanted
 
-1. **Real tool output.** Run the week 12 checks on a real lab and send trimmed, anonymised output of Lynis
+1. **Verify a lab component on a real build.** Every row in `docs/build/STATUS.md` is `unverified` until
+   someone has built it on a real lab workstation and confirmed it against `docs/build/18-verify.md`. Pick
+   a role or guide, build it, fix what does not match reality, and send a pull request that updates its
+   status and the guide.
+2. **Real tool output.** Run the week 12 checks on a real lab and send trimmed, anonymised output of Lynis
    (`lynis-report.dat`), `nmap -oX`, and a Windows audit to replace the hand-written fixtures in
    `scaffold/tests/fixtures/`. Parsers that break on real output are the highest-value bug reports.
-2. **Verifying the weak defaults** in [docs/instructor-weak-defaults.md](docs/instructor-weak-defaults.md):
+3. **Verifying the weak defaults** in [docs/instructor-weak-defaults.md](docs/instructor-weak-defaults.md):
    does a normal build really have this, and does the named attack really find it?
-3. A **Windows audit collector** for an open-source tool (the parser assumes a HardeningKitty-style CSV).
-4. Week guides for other platforms or distributions, and clearer wording anywhere a learner could get stuck.
+4. A **Windows audit collector** for an open-source tool (the parser assumes a HardeningKitty-style CSV).
+5. Week guides for other platforms or distributions, and clearer wording anywhere a learner could get stuck.
 
 ## Ground rules
 

@@ -19,10 +19,14 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python }}
-      - name: Install test dependency
-        run: python -m pip install pytest
+      - name: Install test dependencies
+        run: python -m pip install pytest pyyaml jinja2
+      - name: Install Ansible and yamllint
+        run: python -m pip install ansible-core ansible-lint yamllint
       - name: Tests
         working-directory: scaffold
         run: python -m pytest -q
-      - name: Shellcheck the week scripts
-        run: shellcheck scripts/*.sh weeks/*/check.sh
+      - name: Shellcheck the week and lab scripts
+        run: shellcheck scripts/*.sh weeks/*/check.sh $(find lab -name '*.sh')
+      - name: Lab static checks (yamllint, Ansible syntax)
+        run: make -C lab lint

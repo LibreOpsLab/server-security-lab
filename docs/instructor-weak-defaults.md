@@ -9,15 +9,21 @@ working, nothing hardened. A vendor-default install is not a usable platform.
 
 ## Candidate weak defaults
 
-| Where               | What is open by default                                                                                                                                        | Found by                        | Closed in                          |
-| ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------- | ---------------------------------- |
-| Linux hosts (SSH)   | Password login on; root login not blocked on some images; weak lab password policy                                                                             | Lynis, `ssh-weak-creds`         | Week 15                            |
-| Lab accounts        | Weeks 1-9 use one documented lab password so the build is quick (**decision needed**: it must be on the attack wordlist for `ssh-weak-creds` to find anything) | `ssh-weak-creds`                | Week 15 (second factor, key login) |
-| nginx / web         | Version in the `Server` header; no HSTS, CSP, X-Frame-Options or nosniff                                                                                       | `web-basics`, nmap              | Week 15                            |
-| Postfix             | `VRFY` enabled (the Postfix default); relaying allowed for the local subnet, which includes `admin01`                                                          | `mail-basics`                   | Week 15                            |
-| Samba file server   | A "public notices" share with `guest ok = yes`, as many how-tos create it (**add to the week 7 design**)                                                       | `anon-directory`                | Week 15                            |
-| Services            | Unneeded daemons left running after install; cleartext FTP if the legacy SFTP exercise leaves vsftpd on                                                        | `enum-services`, Lynis          | Week 15                            |
-| pfSense             | Permissive LAN-to-LAN and LAN-to-firewall rules from the default "allow LAN" rule                                                                              | `enum-services`, student review | Week 15                            |
+These are now built, not just planned: each row names the Ansible role or template that leaves the default
+in place. Still **unverified** on a real lab until the first build (`docs/build/STATUS.md`).
+
+| Where                        | What is open by default                                                                                | Left by (role/template)                 | Found by                | Closed in |
+| ----------------------------- | ---------------------------------------------------------------------------------------------------- | ---------------------------------------- | ----------------------- | --------- |
+| Linux hosts (SSH)             | Password login on; no lockout, short lab passwords accepted                                            | `baseline`, `samba_dc` (password policy) | Lynis, `ssh-weak-creds` | Week 15   |
+| Lab accounts                  | `lab/data/users.csv` gives most staff one shared password; two accounts (`test`, `user`) use a weaker one | `samba_dc` (`load-users.sh`)             | `ssh-weak-creds`        | Week 15   |
+| Web tier (Traefik/NextCloud)  | No HSTS, CSP, X-Frame-Options or nosniff; server banners visible                                       | `docker_host` (`dynamic.yml.j2`)         | `web-basics`, nmap      | Week 15   |
+| Postfix                       | `VRFY` enabled; relaying allowed for the whole lab subnet                                               | `mail` (`main.cf.j2`)                    | `mail-basics`           | Week 15   |
+| Samba file server             | A "notices" share with `guest ok = yes`                                                                | `files_server` (`smb.conf.j2`)           | `anon-directory`        | Week 15   |
+| pfSense                       | Default "allow LAN to any" firewall rule                                                               | `lab/pfsense/config.xml.j2`              | `enum-services`, review | Week 15   |
+| Docker socket                 | Traefik can read the Docker socket, close to root access on `docker01`                                 | `docker_host` (Traefik compose)          | student review          | Week 15   |
+| Monitoring and logs           | Loki and Alloy's metrics port accept anyone on the LAN with no login                                   | `monitoring`, `log_shipper`              | `enum-services`         | Week 15   |
+| Windows 11 (if built)         | No account lockout, default audit policy, firewall profiles as installed                               | (built by hand; no Ansible role)         | Windows audit           | Week 15   |
+| Updates                       | No automatic security updates configured on any guest                                                  | `baseline` (deliberately omitted)        | Lynis                   | Week 15   |
 | Windows 11 / Server | No account lockout, default audit policy, firewall profiles as installed                                                                                       | Windows audit                   | Week 15                            |
 | Updates             | No automatic security updates configured                                                                                                                       | Lynis                           | Week 15                            |
 
