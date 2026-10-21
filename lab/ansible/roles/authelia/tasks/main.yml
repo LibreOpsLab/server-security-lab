@@ -1,0 +1,36 @@
+---
+# Authelia from its official Debian package, pinned to a version and verified by checksum.
+- name: Refuse to continue without a package checksum
+  ansible.builtin.assert:
+    that: authelia_deb_sha256 | length > 0
+    fail_msg: >-
+      Set authelia_deb_sha256 in roles/authelia/defaults/main.yml (or group_vars) to the .deb checksum from
+      the Authelia release page for v{{ authelia_version }}. See docs/build/11-single-sign-on.md.
+
+- name: Download the pinned Authelia package
+  ansible.builtin.get_url:
+    url: "https://github.com/authelia/authelia/releases/download/v{{ authelia_version }}/authelia_{{ authelia_version }}-1_amd64.deb"
+    dest: "/root/authelia_{{ authelia_version }}.deb"
+    checksum: "sha256:{{ authelia_deb_sha256 }}"
+    mode: "0644"
+
+- name: Install the package
+  ansible.builtin.apt:
+    deb: "/root/authelia_{{ authelia_version }}.deb"
+
+- name: Write the configuration, checking it with Authelia first
+  ansible.builtin.template:
+    src: configuration.yml.j2
+    dest: /etc/authelia/configuration.yml
+    owner: authelia
+    group: authelia
+    mode: "0600"
+    validate: authelia validate-config --config %s
+  no_log: true
+  notify: Restart Authelia
+
+- name: Start and enable Authelia
+  ansible.builtin.service:
+    name: authelia
+    state: started
+    enabled: true

@@ -12,7 +12,7 @@ if [ "${1:-}" = "--dir" ]; then dir=${2:?--dir needs a path}; fi
 names=(
   samba_admin_password authelia_jwt_secret authelia_session_secret authelia_storage_key authelia_oidc_hmac
   authelia_oidc_nextcloud_secret nextcloud_db_password nextcloud_admin_password vaultwarden_admin_token
-  grafana_admin_password radius_shared_secret mail_ldap_bind_password pbs_admin_password
+  grafana_admin_password radius_shared_secret mail_ldap_bind_password pbs_admin_password authelia_ldap_password
 )
 
 umask 077
@@ -28,6 +28,14 @@ new_secret() { # name file
 }
 
 for n in "${names[@]}"; do new_secret "$n" "$dir/$n"; done
+# Authelia signs OIDC tokens with this RSA key (a PEM file, so it is created differently from the text secrets).
+if [ -f "$dir/authelia_oidc_key.pem" ]; then
+  echo "kept authelia_oidc_key"
+else
+  openssl genrsa -out "$dir/authelia_oidc_key.pem" 2048 2>/dev/null
+  chmod 600 "$dir/authelia_oidc_key.pem"
+  echo "created authelia_oidc_key"
+fi
 new_secret ca_root_passphrase "$dir/ca/root.pass"
 new_secret ca_intermediate_passphrase "$dir/ca/intermediate.pass"
 

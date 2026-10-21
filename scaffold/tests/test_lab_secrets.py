@@ -12,7 +12,7 @@ NAMES = [
     "samba_admin_password", "authelia_jwt_secret", "authelia_session_secret", "authelia_storage_key",
     "authelia_oidc_hmac", "authelia_oidc_nextcloud_secret", "nextcloud_db_password", "nextcloud_admin_password",
     "vaultwarden_admin_token", "grafana_admin_password", "radius_shared_secret", "mail_ldap_bind_password",
-    "pbs_admin_password",
+    "pbs_admin_password", "authelia_ldap_password",
 ]
 
 
@@ -110,3 +110,14 @@ def test_issue_cert_rejects_a_hostile_common_name(secrets):
     d, _ = secrets
     r = run(REPO / "lab" / "pki" / "issue-cert.sh", str(d / "ca"), "x; rm -rf /")
     assert r.returncode == 2 and "invalid common name" in r.stderr
+
+
+def test_creates_an_oidc_signing_key_for_authelia(secrets):
+    d, _ = secrets
+    key = d / "authelia_oidc_key.pem"
+    assert key.is_file() and oct(key.stat().st_mode)[-3:] == "600"
+    r = subprocess.run(["openssl", "rsa", "-in", str(key), "-check", "-noout"], capture_output=True, text=True)
+    assert r.returncode == 0, r.stderr
+    before = key.read_bytes()
+    run(GEN, "--dir", str(d))
+    assert key.read_bytes() == before

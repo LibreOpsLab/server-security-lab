@@ -81,3 +81,10 @@ def test_certificates_cover_the_aliases_and_wildcard_for_the_web_tier():
     certs = {c["cn"]: c["san"] for c in VARS["lab_certificates"]}
     assert certs["mail01.lab.internal"].count("DNS:") >= 2 and "DNS:*.lab.internal" in certs["docker01.lab.internal"]
     assert {"mail01.lab.internal", "auth01.lab.internal", "docker01.lab.internal", "mon01.lab.internal"} <= set(certs)
+
+
+def test_every_service_account_secret_is_one_gen_secrets_creates():
+    gen = (LAB.parent / "scripts" / "gen-secrets.sh").read_text()
+    accounts = VARS["lab_service_accounts"]
+    assert {a["name"] for a in accounts} >= {"svc-mail", "svc-authelia"}
+    assert all(a["secret"] in gen for a in accounts)

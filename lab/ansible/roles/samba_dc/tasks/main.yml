@@ -127,26 +127,33 @@
   register: samba_dc_load_users
   changed_when: "'created' in samba_dc_load_users.stdout"
 
-# One account that services use to read the directory (mail lookups today; SSO and RADIUS use their own).
+# Accounts that services use to read the directory (mail lookups, single sign-on). Each has its own generated
+# password, set once; the password is on the command line only for that one command (no_log keeps it out of output).
 - name: Make sure the service account container exists
   ansible.builtin.shell: set -o pipefail; samba-tool ou list | grep -qx 'OU=LabService' || samba-tool ou create OU=LabService
   args:
     executable: /bin/bash
   register: samba_dc_service_ou
-  changed_when: "'created' in samba_dc_service_ou.stdout"
+  changed_when: "'dded' in samba_dc_service_ou.stdout"
 
-- name: Create the mail service account with its generated password
+- name: Create the service accounts with their generated passwords
   ansible.builtin.shell: >-
-    samba-tool user show {{ lab_mail_account }} >/dev/null 2>&1 ||
-    samba-tool user create {{ lab_mail_account }} "$MAIL_PW" --userou=OU=LabService
+    samba-tool user show {{ item.name }} >/dev/null 2>&1 ||
+    samba-tool user create {{ item.name }} "$SERVICE_PW" --userou=OU=LabService
   args:
     executable: /bin/bash
   environment:
-    MAIL_PW: "{{ lookup('ansible.builtin.file', lab_secrets_dir ~ '/mail_ldap_bind_password') }}"
+    SERVICE_PW: "{{ lookup('ansible.builtin.file', lab_secrets_dir ~ '/' ~ item.secret) }}"
+  loop: "{{ lab_service_accounts }}"
+  loop_control:
+    label: "{{ item.name }}"
   no_log: true
-  register: samba_dc_mail_account
-  changed_when: "'created' in samba_dc_mail_account.stdout"
+  register: samba_dc_service_accounts
+  changed_when: "'added successfully' in samba_dc_service_accounts.stdout"
 
-- name: Never expire the service account password
-  ansible.builtin.command: samba-tool user setexpiry {{ lab_mail_account }} --noexpiry
+- name: Never expire the service account passwords
+  ansible.builtin.command: samba-tool user setexpiry {{ item.name }} --noexpiry
+  loop: "{{ lab_service_accounts }}"
+  loop_control:
+    label: "{{ item.name }}"
   changed_when: false

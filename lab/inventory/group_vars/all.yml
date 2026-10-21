@@ -15,6 +15,11 @@ lab_service_dn: OU=LabService,DC=lab,DC=internal
 lab_ldap_uri: ldaps://samba-dc01.lab.internal
 lab_mail_account: svc-mail
 
+# Accounts that services use to read the directory, each with the generated secret that holds its password.
+lab_service_accounts:
+  - {name: svc-mail, secret: mail_ldap_bind_password}
+  - {name: svc-authelia, secret: authelia_ldap_password}
+
 # Server certificates issued by the lab CA on admin01, and who needs which names.
 lab_certificates:
   - {cn: mail01.lab.internal, san: "DNS:mail01.lab.internal,DNS:mail.lab.internal"}

@@ -46,10 +46,10 @@ def test_dkim_and_dmarc_are_wired_as_milters_and_dns_records_published():
     assert "_domainkey" in tasks and "opendkim-genkey" in tasks and "delegate_to: samba-dc01" in tasks
 
 
-def test_samba_role_creates_the_ldap_service_account_from_the_secret():
+def test_samba_role_creates_the_service_accounts_from_secrets_without_logging_them():
     tasks = (LAB / "ansible/roles/samba_dc/tasks/main.yml").read_text()
-    block = tasks.split("Create the mail service account")[1].split("- name:")[0]
-    assert "lab_mail_account" in block and "mail_ldap_bind_password" in block and "no_log: true" in block
+    block = tasks.split("Create the service accounts")[1].split("- name:")[0]
+    assert "lab_service_accounts" in block and "lookup" in block and "no_log: true" in block
 
 
 def test_services_playbook_issues_certificates_then_builds_mail():

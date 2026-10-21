@@ -1,0 +1,76 @@
+---
+# Managed by Ansible (role: authelia). Single sign-on for the lab apps, with Samba AD as the user directory.
+# Secrets come from the gitignored secrets folder on admin01 and end up only in this root-readable file.
+theme: auto
+
+server:
+  address: 'tcp://0.0.0.0:9091/'
+
+log:
+  level: info
+
+identity_validation:
+  reset_password:
+    jwt_secret: '{{ lookup("ansible.builtin.file", lab_secrets_dir ~ "/authelia_jwt_secret") }}'
+
+authentication_backend:
+  ldap:
+    implementation: activedirectory
+    address: '{{ lab_ldap_uri }}'
+    timeout: 5s
+    start_tls: false
+    tls:
+      minimum_version: TLS1.2
+    base_dn: '{{ lab_base_dn }}'
+    additional_users_dn: 'OU=LabUsers'
+    additional_groups_dn: 'CN=Users'
+    user: 'CN=svc-authelia,{{ lab_service_dn }}'
+    password: '{{ lookup("ansible.builtin.file", lab_secrets_dir ~ "/authelia_ldap_password") }}'
+
+# TOTP is the second factor. Registration links are written to a file (see notifier below).
+totp:
+  issuer: '{{ lab_domain }}'
+
+access_control:
+  # The lab's relaxed default: any signed-in user may open any protected site, with one factor.
+  # Administrators need a second factor. The hardening week writes a stricter, per-application policy.
+  default_policy: one_factor
+  rules:
+    - domain: '*.{{ lab_domain }}'
+      policy: two_factor
+      subject: 'group:admins'
+
+session:
+  secret: '{{ lookup("ansible.builtin.file", lab_secrets_dir ~ "/authelia_session_secret") }}'
+  cookies:
+    - domain: '{{ lab_domain }}'
+      authelia_url: 'https://{{ authelia_portal_host }}'
+      default_redirection_url: '{{ authelia_default_redirect }}'
+
+storage:
+  encryption_key: '{{ lookup("ansible.builtin.file", lab_secrets_dir ~ "/authelia_storage_key") }}'
+  local:
+    path: /var/lib/authelia/db.sqlite3
+
+# No mail relay is wired in: one-time links (for example TOTP registration) are written to this file.
+# Read it with: sudo cat /var/lib/authelia/notification.txt
+notifier:
+  filesystem:
+    filename: /var/lib/authelia/notification.txt
+
+identity_providers:
+  oidc:
+    hmac_secret: '{{ lookup("ansible.builtin.file", lab_secrets_dir ~ "/authelia_oidc_hmac") }}'
+    jwks:
+      - key: |
+          {{ lookup("ansible.builtin.file", lab_secrets_dir ~ "/authelia_oidc_key.pem") | indent(10) }}
+    clients:
+      - client_id: nextcloud
+        client_name: NextCloud
+        client_secret: '$plaintext${{ lookup("ansible.builtin.file", lab_secrets_dir ~ "/authelia_oidc_nextcloud_secret") }}'
+        public: false
+        authorization_policy: one_factor
+        redirect_uris:
+          - '{{ authelia_nextcloud_redirect }}'
+        scopes: [openid, profile, email, groups]
+        token_endpoint_auth_method: client_secret_basic
