@@ -1,0 +1,38 @@
+# Vaultwarden: a lightweight password manager server compatible with the Bitwarden apps.
+# The web vault sits behind Authelia (forward auth). The paths that the Bitwarden apps and browser extensions
+# call (/api, /identity, /notifications) cannot do a browser login, so they are routed without Authelia;
+# they still need a valid Bitwarden login. Apps use their own master password; SSO covers the web vault only.
+services:
+  vaultwarden:
+    image: vaultwarden/server:1.32.7
+    container_name: vaultwarden
+    restart: unless-stopped
+    environment:
+      DOMAIN: https://vault.lab.internal
+      ADMIN_TOKEN: ${VAULTWARDEN_ADMIN_TOKEN}
+      SIGNUPS_ALLOWED: "true"
+    volumes:
+      - vaultwarden_data:/data
+    networks:
+      - lab-proxy
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=lab-proxy
+      - traefik.http.services.vaultwarden.loadbalancer.server.port=80
+      # Web vault: Authelia first.
+      - traefik.http.routers.vaultwarden-web.rule=Host(`vault.lab.internal`)
+      - traefik.http.routers.vaultwarden-web.tls=true
+      - traefik.http.routers.vaultwarden-web.middlewares=authelia@file
+      - traefik.http.routers.vaultwarden-web.service=vaultwarden
+      # Bitwarden apps and extensions: no browser login possible, so no Authelia on these paths.
+      - traefik.http.routers.vaultwarden-api.rule=Host(`vault.lab.internal`) && (PathPrefix(`/api`) || PathPrefix(`/identity`) || PathPrefix(`/notifications`) || PathPrefix(`/events`))
+      - traefik.http.routers.vaultwarden-api.tls=true
+      - traefik.http.routers.vaultwarden-api.priority=100
+      - traefik.http.routers.vaultwarden-api.service=vaultwarden
+
+networks:
+  lab-proxy:
+    external: true
+
+volumes:
+  vaultwarden_data:

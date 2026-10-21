@@ -1,0 +1,101 @@
+---
+# The Docker VM: Docker from the Ubuntu repositories, then Traefik and the three apps from lab/docker.
+- name: Install Docker and the Compose plugin from the distribution
+  ansible.builtin.apt:
+    name: [docker.io, docker-compose-v2]
+    state: present
+    update_cache: true
+
+- name: Start and enable Docker
+  ansible.builtin.service:
+    name: docker
+    state: started
+    enabled: true
+
+- name: Create the directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0755"
+  loop:
+    - "{{ docker_host_dir }}"
+    - "{{ docker_host_dir }}/certs"
+
+- name: Install the server certificate and key issued by the lab CA
+  ansible.builtin.copy:
+    src: "{{ lab_secrets_dir }}/ca/issued/{{ docker_host_cert_cn }}/{{ item }}"
+    dest: "{{ docker_host_dir }}/certs/{{ item }}"
+    mode: "{{ '0600' if item == 'key.pem' else '0644' }}"
+  loop: [fullchain.pem, key.pem]
+  no_log: true
+
+- name: Copy each stack
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/../../docker/{{ item }}/"
+    dest: "{{ docker_host_dir }}/{{ item }}/"
+    mode: preserve
+  loop: "{{ docker_host_stacks }}"
+
+- name: Write Traefik's dynamic configuration
+  ansible.builtin.template:
+    src: dynamic.yml.j2
+    dest: "{{ docker_host_dir }}/traefik/dynamic.yml"
+    mode: "0644"
+
+- name: Write NextCloud's single sign-on settings
+  ansible.builtin.template:
+    src: oidc.config.php.j2
+    dest: "{{ docker_host_dir }}/nextcloud/oidc.config.php"
+    mode: "0644"
+  no_log: true
+
+# The .env files hold real passwords, so they are private to root and never logged.
+- name: Write the private environment files from the generated secrets
+  ansible.builtin.copy:
+    dest: "{{ docker_host_dir }}/{{ item.stack }}/.env"
+    content: "{{ item.content }}"
+    mode: "0600"
+  no_log: true
+  loop:
+    - stack: traefik
+      content: "LAB_CERT_DIR={{ docker_host_dir }}/certs\n"
+    - stack: nextcloud
+      content: |
+        NEXTCLOUD_DB_ROOT_PASS={{ (lookup('ansible.builtin.file', lab_secrets_dir ~ '/nextcloud_db_password') ~ 'root') | hash('sha256') }}
+        NEXTCLOUD_DB_PASS={{ lookup('ansible.builtin.file', lab_secrets_dir ~ '/nextcloud_db_password') }}
+        NEXTCLOUD_ADMIN_PASSWORD={{ lookup('ansible.builtin.file', lab_secrets_dir ~ '/nextcloud_admin_password') }}
+    - stack: vaultwarden
+      content: "VAULTWARDEN_ADMIN_TOKEN={{ lookup('ansible.builtin.file', lab_secrets_dir ~ '/vaultwarden_admin_token') }}\n"
+
+- name: Start Traefik first (it creates the shared lab-proxy network)
+  ansible.builtin.command: docker compose up -d
+  args:
+    chdir: "{{ docker_host_dir }}/traefik"
+  register: docker_host_traefik
+  changed_when: "'Started' in docker_host_traefik.stderr or 'Created' in docker_host_traefik.stderr"
+
+- name: Start the apps
+  ansible.builtin.command: docker compose up -d
+  args:
+    chdir: "{{ docker_host_dir }}/{{ item }}"
+  loop: [nextcloud, stirling-pdf, vaultwarden]
+  register: docker_host_apps
+  changed_when: "'Started' in docker_host_apps.stderr or 'Created' in docker_host_apps.stderr"
+
+- name: Wait for NextCloud to finish its first-run install
+  ansible.builtin.command: docker exec --user www-data nextcloud-app php occ status --no-warnings
+  register: docker_host_nc_status
+  until: "'installed: true' in docker_host_nc_status.stdout"
+  retries: 40
+  delay: 15
+  changed_when: false
+
+- name: Install the OpenID Connect Login app in NextCloud
+  ansible.builtin.shell: >-
+    set -o pipefail;
+    docker exec --user www-data nextcloud-app php occ app:list | grep -q oidc_login ||
+    docker exec --user www-data nextcloud-app php occ app:install oidc_login
+  args:
+    executable: /bin/bash
+  register: docker_host_oidc_app
+  changed_when: "'installed' in docker_host_oidc_app.stdout"

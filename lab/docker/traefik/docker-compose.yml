@@ -1,0 +1,23 @@
+# Traefik: the reverse proxy in front of every web app on docker01. Adapted from lab-small-business.
+# Certificates come from the lab CA; there is no ACME/Let's Encrypt because the lab has no public DNS.
+services:
+  traefik:
+    image: traefik:v3.1
+    container_name: traefik
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - lab-proxy
+    volumes:
+      - ./traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./dynamic.yml:/etc/traefik/dynamic.yml:ro
+      - ${LAB_CERT_DIR:-/opt/lab/certs}:/etc/traefik/certs:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+networks:
+  lab-proxy:
+    name: lab-proxy

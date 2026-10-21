@@ -1,0 +1,4 @@
+---
+docker_host_dir: /opt/lab
+docker_host_cert_cn: "docker01.{{ lab_domain }}"
+docker_host_stacks: [traefik, nextcloud, stirling-pdf, vaultwarden]

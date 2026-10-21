@@ -1,0 +1,43 @@
+# Managed by Ansible (role: docker_host). Traefik dynamic configuration.
+tls:
+  options:
+    default:
+      minVersion: VersionTLS12
+  certificates:
+    - certFile: /etc/traefik/certs/fullchain.pem
+      keyFile: /etc/traefik/certs/key.pem
+
+http:
+  middlewares:
+    # Anything without its own login goes through Authelia first (forward auth).
+    authelia:
+      forwardAuth:
+        address: "http://{{ lab_hosts['auth01'].ip }}:9091/api/authz/forward-auth"
+        trustForwardHeader: true
+        authResponseHeaders:
+          - Remote-User
+          - Remote-Groups
+          - Remote-Email
+          - Remote-Name
+
+  routers:
+    # The Authelia sign-in portal runs on auth01 and is published here with the lab certificate.
+    authelia-portal:
+      rule: "Host(`{{ authelia_portal_host | default('auth.' ~ lab_domain) }}`)"
+      service: authelia-portal-svc
+      tls: true
+    # Grafana runs on mon01.
+    grafana:
+      rule: "Host(`grafana.{{ lab_domain }}`)"
+      service: grafana-svc
+      tls: true
+
+  services:
+    authelia-portal-svc:
+      loadBalancer:
+        servers:
+          - url: "http://{{ lab_hosts['auth01'].ip }}:9091"
+    grafana-svc:
+      loadBalancer:
+        servers:
+          - url: "http://{{ lab_hosts['mon01'].ip }}:3000"

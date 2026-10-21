@@ -1,6 +1,6 @@
 # The front door for building and checking the lab. Run from the lab/ folder on admin01.
 # Layers are added in build-guide order; `make help` lists what exists.
-.PHONY: help lint guests baseline trust identity services
+.PHONY: help lint guests baseline trust identity services apps
 help:
 	@grep -E '^[a-z-]+:.*##' $(MAKEFILE_LIST) | sed 's/:.*##/\t/'
 
@@ -18,6 +18,9 @@ identity: ## Build Samba AD, DNS records and the lab users
 
 services: ## Build the file server, SSO, mail and Wi-Fi authentication guests
 	cd ansible && ansible-playbook playbooks/40-services.yml
+
+apps: ## Deploy Traefik, NextCloud, Stirling PDF and Vaultwarden on the Docker VM
+	cd ansible && ansible-playbook playbooks/50-apps.yml
 
 lint: ## Static checks: yamllint, shellcheck, Ansible syntax
 	cd .. && yamllint -c lab/.yamllint lab
