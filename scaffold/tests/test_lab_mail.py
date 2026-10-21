@@ -61,3 +61,29 @@ def test_services_playbook_issues_certificates_then_builds_mail():
 def test_dc_publishes_mx_spf_and_dmarc_records():
     dns = (LAB / "ansible/roles/samba_dc/tasks/dns.yml").read_text()
     assert "type: MX" in dns and "v=spf1" in dns and "v=DMARC1" in dns and "_dmarc" in dns
+
+
+def test_spf_record_data_embeds_literal_quote_characters_as_one_txt_string():
+    # samba-tool dns add's TXT handling splits an UNQUOTED value on whitespace into several DNS
+    # character-strings, which receivers then join with NO separator ("v=spf1ip4:...-all"). The fix is to
+    # embed literal double-quote characters around the content, so samba-tool sees one quoted token.
+    import yaml
+
+    dns = yaml.safe_load((LAB / "ansible/roles/samba_dc/tasks/dns.yml").read_text())
+    task = next(t for t in dns if "loop" in t and isinstance(t["loop"], list)
+                and any(isinstance(i, dict) and "spf1" in str(i.get("data", "")) for i in t["loop"]))
+    spf = next(i for i in task["loop"] if isinstance(i, dict) and "spf1" in str(i.get("data", "")))
+    # The rendered value must start and end with a literal `"` character, not just the YAML string quoting.
+    quote = chr(34)
+    assert spf["data"][0] == quote and spf["data"][-1] == quote
+    assert "v=spf1" in spf["data"] and "-all" in spf["data"]
+
+
+def test_mx_record_is_also_a_single_quoted_data_value():
+    import yaml
+
+    dns = yaml.safe_load((LAB / "ansible/roles/samba_dc/tasks/dns.yml").read_text())
+    task = next(t for t in dns if "loop" in t and isinstance(t["loop"], list) and any(i.get("type") == "MX" for i in t["loop"]))
+    mx = next(i for i in task["loop"] if i["type"] == "MX")
+    quote = chr(34)
+    assert mx["data"][0] == quote and mx["data"][-1] == quote

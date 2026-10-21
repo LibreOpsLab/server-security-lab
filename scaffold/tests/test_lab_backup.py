@@ -88,12 +88,13 @@ def test_local_fallback_backs_up_to_local_storage_without_pbs(pve):
     assert "--storage local" in log() and "pvesm add" not in log()
 
 
-def test_password_goes_to_the_private_file_not_the_command_line(pve):
+def test_password_is_not_printed_by_the_job_script_itself(pve):
+    # pvesm's own CLI needs --password on its argv (a pre-staged password file is deleted by the PBS
+    # storage plugin when --password is absent), so the trade-off here matches the samba-tool Ruling:
+    # visible briefly in `ps` on this one trusted host, never printed or logged by this script.
     run, log, state = pve
     r = run(JOBS, "--vmids", "121", "--server", "10.10.10.27", "--fingerprint", "AA:BB")
-    assert "not-a-real-secret" not in r.stdout + r.stderr + log()
-    pw = state.parent / "pw" / "lab-pbs.pw"
-    assert pw.read_text() == "not-a-real-secret" and oct(pw.stat().st_mode)[-3:] == "600"
+    assert "not-a-real-secret" not in r.stdout + r.stderr
 
 
 def test_restore_test_restores_latest_backup_of_a_container_unplugged_and_cleans_up(pve):
@@ -156,3 +157,11 @@ def test_refuses_to_run_if_the_scratch_vmid_already_exists(pve):
     r = run(RESTORE, "122", "--rto", "600")
     assert r.returncode == 2 and "1122" in r.stderr
     assert "pct destroy 1122" not in log()  # must never touch a guest it did not create
+
+
+def test_pvesm_add_passes_the_password_inline_not_via_a_pre_written_file(pve):
+    # pvesm's PBS storage plugin deletes any pre-staged password file when --password is not given,
+    # so the file-then-add approach silently loses the credential. Pass it with --password instead.
+    run, log, _ = pve
+    assert run(JOBS, "--vmids", "121", "--server", "10.10.10.27", "--fingerprint", "AA:BB").returncode == 0
+    assert "--password not-a-real-secret" in log()

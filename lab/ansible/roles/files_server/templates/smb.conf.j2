@@ -6,7 +6,9 @@
     kerberos method = secrets and keytab
     server string = Lab file server
 
-    # Domain users and groups appear as plain names (alice, staff) and get stable ids from their RID.
+    # Domain users and groups appear as plain names (alice, lab-staff) and get stable ids from their RID.
+    # The AD group for staff is "lab-staff", not "staff": Debian ships a local group literally called
+    # "staff" (gid 50), and NSS order (files before winbind) would resolve @staff to that one, not the AD group.
     winbind use default domain = yes
     winbind enum users = yes
     winbind enum groups = yes
@@ -28,7 +30,7 @@
 [staff]
     comment = Staff documents
     path = {{ files_server_share_root }}/staff
-    valid users = @staff
+    valid users = @lab-staff
     read only = no
 
 [finance]

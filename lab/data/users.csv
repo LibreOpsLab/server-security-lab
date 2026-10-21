@@ -1,13 +1,13 @@
 username,display_name,groups,initial_password
 # The lab's staff. Initial passwords are a documented lab convention (see docs/instructor-weak-defaults.md):
 # most staff share one, and two accounts are the kind real networks forget about, so the baseline attack finds them.
-alice,Alice Nguyen,staff;wifi,Welcome2026
-bob,Bob Tran,staff;wifi,Welcome2026
-carol,Carol Singh,finance;staff,Welcome2026
+alice,Alice Nguyen,lab-staff;wifi,Welcome2026
+bob,Bob Tran,lab-staff;wifi,Welcome2026
+carol,Carol Singh,finance;lab-staff,Welcome2026
 dave,Dave Okafor,finance;wifi,Welcome2026
-erin,Erin Walsh,admins;staff;wifi,Welcome2026
+erin,Erin Walsh,admins;lab-staff;wifi,Welcome2026
 labadmin,Lab Administrator,admins,Welcome2026
 # Leftover test account that nobody removed.
-test,Test Account,staff,changeme
+test,Test Account,lab-staff,changeme
 # Shared account on the reception computer.
-user,Reception Kiosk,staff,password
+user,Reception Kiosk,lab-staff,password

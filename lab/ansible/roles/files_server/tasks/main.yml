@@ -43,7 +43,7 @@
     group: "{{ item.group }}"
     mode: "{{ item.mode }}"
   loop:
-    - {name: staff, group: staff, mode: "2770"}
+    - {name: staff, group: lab-staff, mode: "2770"}
     - {name: finance, group: finance, mode: "2770"}
     - {name: notices, group: root, mode: "0755"}
 
@@ -59,7 +59,7 @@
       {{ lookup('ansible.builtin.file', files_server_users_csv).splitlines()[1:]
          | reject('match', '^\s*(#|$)')
          | map('split', ',')
-         | selectattr('2', 'search', 'staff')
+         | selectattr('2', 'search', 'lab-staff')
          | map(attribute=0) | list }}
 
 - name: Create each staff member's SFTP directory (the chroot must be owned by root)

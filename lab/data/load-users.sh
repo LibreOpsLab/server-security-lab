@@ -11,7 +11,7 @@ set -euo pipefail
 
 csv=${1:?usage: load-users.sh users.csv}
 tool=${SAMBA_TOOL:-samba-tool}
-allowed_groups=" staff finance admins wifi "
+allowed_groups=" lab-staff finance admins wifi "
 ou=${LAB_USERS_OU:-LabUsers}
 domain=${LAB_DOMAIN:-lab.internal}
 

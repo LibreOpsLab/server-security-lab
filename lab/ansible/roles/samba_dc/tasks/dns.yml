@@ -43,10 +43,13 @@
     || samba-tool dns add 127.0.0.1 {{ lab_domain }} {{ item.name }} {{ item.type }} '{{ item.data }}' --use-kerberos=required
   args:
     executable: /bin/bash
+  # Each data value is wrapped in its own literal double quotes: samba-tool dns add splits an unquoted
+  # value on whitespace into several DNS character-strings, which receivers then join with no separator
+  # ("v=spf1ip4:...-all"); a quoted value stays one character-string.
   loop:
-    - {name: "@", type: MX, match: "mail", data: "mail.{{ lab_domain }} 10"}
-    - {name: "@", type: TXT, match: "spf1", data: "v=spf1 ip4:{{ lab_hosts['mail01'].ip }} -all"}
-    - {name: _dmarc, type: TXT, match: "DMARC1", data: "v=DMARC1; p=none; rua=mailto:postmaster@{{ lab_domain }}"}
+    - {name: "@", type: MX, match: "mail", data: "\"mail.{{ lab_domain }} 10\""}
+    - {name: "@", type: TXT, match: "spf1", data: "\"v=spf1 ip4:{{ lab_hosts['mail01'].ip }} -all\""}
+    - {name: _dmarc, type: TXT, match: "DMARC1", data: "\"v=DMARC1; p=none; rua=mailto:postmaster@{{ lab_domain }}\""}
   loop_control:
     label: "{{ item.name }} {{ item.type }}"
   register: samba_dc_dns_mail

@@ -26,10 +26,11 @@ if [ "$local_only" = 0 ]; then
   [ -n "$server" ] && [ -n "$fingerprint" ] || { echo "--server and --fingerprint are required (or use --local)" >&2; exit 2; }
   [ -n "${PBS_PASSWORD:-}" ] || { echo "set PBS_PASSWORD in the environment" >&2; exit 2; }
   if ! pvesm status | grep -q "^$storage "; then
-    pw_dir=${PW_DIR:-/etc/pve/priv/storage}
-    mkdir -p "$pw_dir"
-    (umask 077; printf '%s' "$PBS_PASSWORD" >"$pw_dir/$storage.pw")
-    pvesm add pbs "$storage" --server "$server" --datastore lab --username backup@pbs --fingerprint "$fingerprint"
+    # pvesm's PBS plugin removes any password file staged ahead of time when --password is not given on
+    # this command, so the password must be passed here directly (visible briefly in `ps` on this one
+    # trusted host; never printed or logged by this script).
+    pvesm add pbs "$storage" --server "$server" --datastore lab --username backup@pbs \
+      --fingerprint "$fingerprint" --password "$PBS_PASSWORD"
     echo "added storage $storage"
   fi
 fi
