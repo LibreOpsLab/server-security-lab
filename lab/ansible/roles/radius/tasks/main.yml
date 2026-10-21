@@ -1,0 +1,93 @@
+---
+# FreeRADIUS for WPA-Enterprise: PEAP with MSCHAPv2, checked against Samba AD through winbind.
+- name: Answer the Kerberos realm question
+  ansible.builtin.debconf:
+    name: krb5-config
+    question: krb5-config/default_realm
+    value: "{{ lab_realm }}"
+    vtype: string
+
+- name: Install FreeRADIUS and the domain-member packages
+  ansible.builtin.apt:
+    name: [freeradius, freeradius-utils, winbind, libnss-winbind, libpam-winbind, samba, krb5-user]
+    state: present
+    update_cache: true
+  environment:
+    DEBIAN_FRONTEND: noninteractive
+
+- name: Write smb.conf for a domain member
+  ansible.builtin.template:
+    src: smb.conf.j2
+    dest: /etc/samba/smb.conf
+    mode: "0644"
+  notify: Restart winbind
+
+- name: Join the domain (shared steps)
+  ansible.builtin.include_role:
+    name: domain_join
+    tasks_from: join.yml
+
+- name: Let the FreeRADIUS user talk to winbind
+  ansible.builtin.user:
+    name: freerad
+    groups: winbindd_priv
+    append: true
+  notify: Restart FreeRADIUS
+
+- name: Allow that group to reach winbind's privileged socket
+  ansible.builtin.file:
+    path: /var/lib/samba/winbindd_privileged
+    owner: root
+    group: winbindd_priv
+    mode: "0750"
+
+- name: Install the RADIUS server certificate and key issued by the lab CA
+  ansible.builtin.copy:
+    src: "{{ lab_secrets_dir }}/ca/issued/{{ radius_cert_cn }}/{{ item.src }}"
+    dest: "{{ radius_conf_dir }}/certs/lab-{{ item.src }}"
+    owner: freerad
+    group: freerad
+    mode: "{{ item.mode }}"
+  loop:
+    - {src: fullchain.pem, mode: "0644"}
+    - {src: key.pem, mode: "0600"}
+    - {src: chain.pem, mode: "0644"}
+  no_log: true
+  notify: Restart FreeRADIUS
+
+- name: Point the EAP module at the lab certificate and make PEAP the default
+  ansible.builtin.lineinfile:
+    path: "{{ radius_conf_dir }}/mods-available/eap"
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  loop:
+    - {regexp: '^\s*default_eap_type\s*=', line: "\tdefault_eap_type = peap"}
+    - {regexp: '^\s*private_key_file\s*=', line: "\t\tprivate_key_file = ${certdir}/lab-key.pem"}
+    - {regexp: '^\s*certificate_file\s*=', line: "\t\tcertificate_file = ${certdir}/lab-fullchain.pem"}
+    - {regexp: '^\s*ca_file\s*=', line: "\t\tca_file = ${certdir}/lab-chain.pem"}
+  notify: Restart FreeRADIUS
+
+- name: Write the clients and MS-CHAP configuration
+  ansible.builtin.template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: root
+    group: freerad
+    mode: "0640"
+  loop:
+    - {src: clients.conf.j2, dest: "{{ radius_conf_dir }}/clients.conf"}
+    - {src: mschap.j2, dest: "{{ radius_conf_dir }}/mods-available/mschap"}
+  no_log: true
+  notify: Restart FreeRADIUS
+
+- name: Keep a copy of the eapol_test configuration for the learner
+  ansible.builtin.template:
+    src: eapol_test.conf.j2
+    dest: /root/eapol_test.conf.example
+    mode: "0644"
+
+- name: Start and enable FreeRADIUS
+  ansible.builtin.service:
+    name: freeradius
+    state: started
+    enabled: true

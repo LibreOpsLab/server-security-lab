@@ -1,0 +1,7 @@
+# Managed by Ansible (role: radius). Who may talk to this RADIUS server.
+# The wireless access point (or eapol_test on admin01) sits on the lab LAN and shares one secret.
+client lab-lan {
+    ipaddr = {{ lab_subnet }}
+    secret = {{ lookup('ansible.builtin.file', lab_secrets_dir ~ '/radius_shared_secret') }}
+    shortname = lab-lan
+}

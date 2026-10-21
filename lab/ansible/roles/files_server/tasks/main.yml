@@ -23,37 +23,17 @@
     validate: testparm -s %s
   notify: Restart Samba file services
 
-- name: Let the system look up domain users and groups through winbind
-  ansible.builtin.lineinfile:
-    path: /etc/nsswitch.conf
-    regexp: "^{{ item }}:"
-    line: "{{ item }}: files systemd winbind"
-  loop: [passwd, group]
+- name: Join the domain (shared steps)
+  ansible.builtin.include_role:
+    name: domain_join
+    tasks_from: join.yml
 
-- name: Check whether the machine is already joined
-  ansible.builtin.command: net ads testjoin
-  register: files_server_joined
-  changed_when: false
-  failed_when: false
-
-# The Administrator password is fed to kinit on stdin, so it is never on a command line.
-- name: Join the domain
-  ansible.builtin.shell: set -o pipefail; echo "$ADMIN_PW" | kinit Administrator@{{ lab_realm }} && net ads join -k
-  args:
-    executable: /bin/bash
-  environment:
-    ADMIN_PW: "{{ lookup('ansible.builtin.file', lab_secrets_dir ~ '/samba_admin_password') }}"
-  no_log: true
-  changed_when: true
-  when: files_server_joined.rc != 0
-  notify: Restart Samba file services
-
-- name: Start and enable the file services
+- name: Start and enable the file sharing service
   ansible.builtin.service:
     name: "{{ item }}"
     state: started
     enabled: true
-  loop: [winbind, smbd]
+  loop: [smbd]
 
 - name: Create the share directories
   ansible.builtin.file:

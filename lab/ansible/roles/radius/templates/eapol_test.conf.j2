@@ -1,0 +1,13 @@
+# Managed by Ansible (role: radius). Test a wireless (WPA-Enterprise) login without a wireless card.
+# Copy this file, replace CHANGE-ME with a real wifi-group user's password, then run on admin01:
+#   eapol_test -c eapol_test.conf -a {{ lab_hosts['radius01'].ip }} -s "$(cat lab/secrets/radius_shared_secret)"
+# A successful exchange ends with "SUCCESS". A user outside the wifi group is rejected.
+network={
+    ssid="lab-wifi"
+    key_mgmt=WPA-EAP
+    eap=PEAP
+    identity="alice"
+    password="CHANGE-ME"
+    phase2="auth=MSCHAPV2"
+    ca_cert="/usr/local/share/ca-certificates/lab-root-ca.crt"
+}

@@ -1,0 +1,3 @@
+---
+radius_cert_cn: "radius01.{{ lab_domain }}"
+radius_conf_dir: /etc/freeradius/3.0

@@ -32,3 +32,8 @@
   hosts: auth
   roles:
     - authelia
+
+- name: Wi-Fi authentication
+  hosts: radius
+  roles:
+    - radius

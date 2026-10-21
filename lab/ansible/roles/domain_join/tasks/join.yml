@@ -1,0 +1,32 @@
+---
+# Shared steps: let the system see domain users through winbind, then join the domain.
+# Include this from a role AFTER it has written /etc/samba/smb.conf.
+- name: Let the system look up domain users and groups through winbind
+  ansible.builtin.lineinfile:
+    path: /etc/nsswitch.conf
+    regexp: "^{{ item }}:"
+    line: "{{ item }}: files systemd winbind"
+  loop: [passwd, group]
+
+- name: Check whether the machine is already joined
+  ansible.builtin.command: net ads testjoin
+  register: domain_join_status
+  changed_when: false
+  failed_when: false
+
+# The Administrator password is fed to kinit on stdin, so it is never on a command line.
+- name: Join the domain
+  ansible.builtin.shell: set -o pipefail; echo "$ADMIN_PW" | kinit Administrator@{{ lab_realm }} && net ads join -k
+  args:
+    executable: /bin/bash
+  environment:
+    ADMIN_PW: "{{ lookup('ansible.builtin.file', lab_secrets_dir ~ '/samba_admin_password') }}"
+  no_log: true
+  changed_when: true
+  when: domain_join_status.rc != 0
+
+- name: Start and enable winbind
+  ansible.builtin.service:
+    name: winbind
+    state: started
+    enabled: true

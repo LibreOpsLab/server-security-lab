@@ -1,0 +1,11 @@
+# Managed by Ansible (role: radius). A domain member (no shares) so FreeRADIUS can check passwords via winbind.
+[global]
+    workgroup = {{ lab_netbios }}
+    realm = {{ lab_realm }}
+    security = ads
+    kerberos method = secrets and keytab
+    winbind use default domain = yes
+    idmap config * : backend = tdb
+    idmap config * : range = 3000-7999
+    idmap config {{ lab_netbios }} : backend = rid
+    idmap config {{ lab_netbios }} : range = 10000-999999

@@ -41,8 +41,9 @@ def test_sftp_is_chrooted_for_the_staff_group():
 
 
 def test_join_does_not_put_the_admin_password_on_a_command_line():
-    tasks = (ROLE / "tasks/main.yml").read_text()
-    assert "kinit" in tasks and "net ads join -k" in tasks and "-U Administrator%" not in tasks
+    join = (LAB / "ansible/roles/domain_join/tasks/join.yml").read_text()
+    assert "kinit" in join and "net ads join -k" in join and "-U Administrator%" not in join
+    assert "domain_join" in (ROLE / "tasks/main.yml").read_text()  # files01 reuses the shared join steps
 
 
 def test_files_play_is_part_of_the_services_playbook():
