@@ -1,2 +1,3 @@
-# Follow `source` directives so shellcheck can read the shared helper files.
+# Follow `source` directives, resolving relative paths from each script's own folder.
 external-sources=true
+source-path=SCRIPTDIR
