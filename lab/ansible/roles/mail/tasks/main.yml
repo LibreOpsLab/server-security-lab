@@ -47,11 +47,18 @@
   loop:
     - {src: main.cf.j2, dest: /etc/postfix/main.cf, mode: "0644"}
     - {src: ldap-virtual-mailbox.cf.j2, dest: /etc/postfix/ldap-virtual-mailbox.cf, mode: "0640"}
+  no_log: true  # ldap-virtual-mailbox.cf.j2 renders the LDAP bind password; keep it out of --diff output
   notify: Restart Postfix
 
-- name: Run the Postfix SMTP listener outside a chroot so it can read the CA store for LDAP over TLS
-  ansible.builtin.command: postconf -F smtp/inet/chroot=n
+- name: Check whether the SMTP listener is already outside a chroot
+  ansible.builtin.command: postconf -h smtp/inet/chroot
+  register: mail_chroot_setting
   changed_when: false
+
+- name: Run the SMTP listener outside a chroot so it can read the CA store for LDAP over TLS
+  ansible.builtin.command: postconf -F smtp/inet/chroot=n
+  when: mail_chroot_setting.stdout != 'n'
+  changed_when: true
   notify: Restart Postfix
 
 - name: Write the Dovecot configuration
@@ -83,6 +90,20 @@
   loop:
     - {src: opendkim.conf.j2, dest: /etc/opendkim.conf}
     - {src: opendmarc.conf.j2, dest: /etc/opendmarc.conf}
+  notify: [Restart OpenDKIM, Restart OpenDMARC]
+
+# Debian's init scripts pass their own default socket (a unix socket) unless /etc/default/<name> says
+# otherwise, which would silently override the inet socket the .conf files above just set.
+- name: Make the init scripts use the same inet socket as the configuration files
+  ansible.builtin.lineinfile:
+    path: "{{ item.path }}"
+    regexp: "^SOCKET="
+    line: "SOCKET=\"{{ item.socket }}\""
+    create: true
+    mode: "0644"
+  loop:
+    - {path: /etc/default/opendkim, socket: "inet:8891@127.0.0.1"}
+    - {path: /etc/default/opendmarc, socket: "inet:8893@127.0.0.1"}
   notify: [Restart OpenDKIM, Restart OpenDMARC]
 
 - name: Read the DKIM public key

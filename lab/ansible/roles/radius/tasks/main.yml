@@ -60,6 +60,10 @@
     path: "{{ radius_conf_dir }}/mods-available/eap"
     regexp: "{{ item.regexp }}"
     line: "{{ item.line }}"
+    # lineinfile edits the LAST matching line by default. The real eap file has a top-level
+    # default_eap_type and another, later one inside the nested peap{} block; without firstmatch this
+    # silently edits the wrong (inner) one.
+    firstmatch: true
   loop:
     - {regexp: '^\s*default_eap_type\s*=', line: "\tdefault_eap_type = peap"}
     - {regexp: '^\s*private_key_file\s*=', line: "\t\tprivate_key_file = ${certdir}/lab-key.pem"}

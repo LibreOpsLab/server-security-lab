@@ -48,3 +48,16 @@ def test_eapol_test_template_is_peap_mschapv2_with_no_real_password():
 def test_domain_join_is_shared_and_radius_is_built_by_the_services_playbook():
     assert "domain_join" in (ROLE / "tasks/main.yml").read_text()
     assert "role: radius" in (LAB / "ansible/playbooks/40-services.yml").read_text().replace("- radius", "role: radius") or "radius" in (LAB / "ansible/playbooks/40-services.yml").read_text()
+
+
+def test_default_eap_type_edit_targets_the_first_match_not_the_last():
+    # Ansible's lineinfile replaces the LAST matching line by default. FreeRADIUS's real eap file has
+    # default_eap_type at the top level AND again inside the nested peap{} block; without firstmatch,
+    # this edit would silently land on the wrong (inner) one.
+    import yaml
+
+    tasks = yaml.safe_load((LAB / "ansible/roles/radius/tasks/main.yml").read_text())
+    task = next(t for t in tasks if "ansible.builtin.lineinfile" in t
+                and any(isinstance(i, dict) and "default_eap_type" in str(i.get("regexp", "")) for i in t["loop"]))
+    assert task["ansible.builtin.lineinfile"].get("firstmatch") is True, \
+        "add firstmatch: true, or lineinfile edits the peap{} inner line"

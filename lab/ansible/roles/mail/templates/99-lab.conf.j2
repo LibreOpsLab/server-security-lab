@@ -16,7 +16,10 @@ passdb {
 }
 userdb {
   driver = static
-  args = uid=vmail gid=vmail home={{ mail_vmail_dir }}/%n
+  # allow_all_users: a static userdb cannot answer "does this user exist?" on its own, and the LDAP passdb
+  # (auth_bind) cannot do password-less lookups either. Without this, every LMTP delivery tempfails.
+  # Postfix already validates the recipient over LDAP before handing mail to Dovecot (main.cf.j2).
+  args = uid=vmail gid=vmail home={{ mail_vmail_dir }}/%n allow_all_users=yes
 }
 
 service lmtp {

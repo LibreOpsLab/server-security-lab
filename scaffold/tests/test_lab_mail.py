@@ -87,3 +87,45 @@ def test_mx_record_is_also_a_single_quoted_data_value():
     mx = next(i for i in task["loop"] if i["type"] == "MX")
     quote = chr(34)
     assert mx["data"][0] == quote and mx["data"][-1] == quote
+
+
+def test_postfix_config_task_hides_the_ldap_bind_password_from_diff_output():
+    import yaml
+
+    tasks = yaml.safe_load((ROLE / "tasks/main.yml").read_text())
+    task = next(t for t in tasks if "ansible.builtin.template" in t
+                and any(isinstance(i, dict) and "ldap-virtual-mailbox" in str(i.get("src", "")) for i in t["loop"]))
+    assert task.get("no_log") is True
+
+
+def test_dovecot_userdb_allows_lookups_without_a_separate_passdb_round_trip():
+    # A static userdb with an LDAP auth_bind passdb cannot answer "does this user exist?" on its own;
+    # without allow_all_users, Dovecot tempfails every LMTP delivery.
+    conf = (ROLE / "templates/99-lab.conf.j2").read_text()
+    assert "allow_all_users=yes" in conf
+
+
+def test_opendkim_and_opendmarc_socket_overrides_match_the_conf_files():
+    # Debian's init scripts for both daemons read /etc/default/<name> and, if SOCKET is unset there, pass
+    # their own default (a unix socket), overriding the inet socket set in opendkim.conf/opendmarc.conf.
+    import yaml
+
+    tasks = yaml.safe_load((ROLE / "tasks/main.yml").read_text())
+    task = next(t for t in tasks if "ansible.builtin.lineinfile" in t
+                and any(isinstance(i, dict) and "default/opendkim" in str(i.get("path", "")) for i in t.get("loop", [])))
+    sockets = {i["path"]: i["socket"] for i in task["loop"]}
+    assert sockets["/etc/default/opendkim"] == "inet:8891@127.0.0.1"
+    assert sockets["/etc/default/opendmarc"] == "inet:8893@127.0.0.1"
+    assert "inet:8891@127.0.0.1" in (ROLE / "templates/opendkim.conf.j2").read_text()
+    assert "inet:8893@127.0.0.1" in (ROLE / "templates/opendmarc.conf.j2").read_text()
+
+
+def test_postconf_chroot_task_can_actually_report_changed_and_notify():
+    # A task with changed_when: false can never trigger its own notify. The chroot setting must be
+    # checked and only changed (and only then notify) when it is not already correct.
+    import yaml
+
+    tasks = yaml.safe_load((ROLE / "tasks/main.yml").read_text())
+    task = next(t for t in tasks if "ansible.builtin.command" in t and "postconf -F" in str(t["ansible.builtin.command"]))
+    assert task.get("changed_when") is not False and "notify" in task
+    assert "when" in task  # it only runs (and so only reports changed) when the setting is actually wrong
