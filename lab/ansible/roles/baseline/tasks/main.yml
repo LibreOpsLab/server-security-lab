@@ -1,0 +1,62 @@
+---
+# A functional baseline, deliberately NOT hardened. Adapted from the lab-small-business `common` role with
+# the firewall, SSH lockdown, automatic updates and sysctl hardening removed: hardening is the learner's
+# job in the hardening week, and the default state is what they measure first.
+
+- name: Install the baseline packages
+  ansible.builtin.apt:
+    name:
+      - chrony
+      - curl
+      - ca-certificates
+      - openssh-server
+      - prometheus-node-exporter
+      - ldap-utils
+      - dnsutils
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Install the QEMU guest agent on virtual machines
+  ansible.builtin.apt:
+    name: qemu-guest-agent
+    state: present
+  when: lab_hosts[inventory_hostname].kind == 'vm'
+
+- name: Set the time zone
+  ansible.builtin.command: timedatectl set-timezone {{ baseline_timezone }}
+  changed_when: false
+  failed_when: false
+
+- name: Point time at the domain controller (Kerberos needs tight clock sync)
+  ansible.builtin.template:
+    src: chrony.conf.j2
+    dest: /etc/chrony/chrony.conf
+    mode: "0644"
+  notify: Restart chrony
+
+- name: Keep SSH password login on (the lab's default state)
+  ansible.builtin.template:
+    src: 10-lab.conf.j2
+    dest: /etc/ssh/sshd_config.d/10-lab.conf
+    mode: "0644"
+  notify: Restart sshd
+
+- name: Add the lab hosts to /etc/hosts
+  ansible.builtin.blockinfile:
+    path: /etc/hosts
+    marker: "# {mark} lab hosts"
+    block: |
+      {% for name, h in lab_hosts.items() %}
+      {{ h.ip }} {{ name }}.{{ lab_domain }} {{ name }}
+      {% endfor %}
+
+- name: Make sure the monitoring exporter and time service are running
+  ansible.builtin.service:
+    name: "{{ item }}"
+    state: started
+    enabled: true
+  loop:
+    - prometheus-node-exporter
+    - chrony
+    - ssh

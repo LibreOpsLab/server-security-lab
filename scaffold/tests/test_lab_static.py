@@ -34,3 +34,9 @@ def test_shellcheck_clean():
     scripts = [str(p) for p in [*LAB.rglob("*.sh"), *(REPO / "scripts").glob("*.sh"), *REPO.glob("weeks/*/check.sh")]]
     r = subprocess.run(["shellcheck", *scripts], capture_output=True, text=True)
     assert r.returncode == 0, r.stdout
+
+
+@pytest.mark.skipif(shutil.which("ansible-lint") is None, reason="ansible-lint not installed")
+def test_ansible_lint_clean():
+    r = subprocess.run(["ansible-lint", "-q", "--offline", "playbooks", "roles"], cwd=LAB / "ansible", capture_output=True, text=True)
+    assert r.returncode == 0, r.stdout + r.stderr[-800:]

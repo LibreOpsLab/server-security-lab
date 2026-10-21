@@ -1,0 +1,12 @@
+# Managed by Ansible (role: baseline).
+{% if inventory_hostname == 'samba-dc01' %}
+# The domain controller takes time from the firewall and serves it, signed, to domain members.
+server {{ lab_gateway }} iburst
+allow {{ lab_subnet }}
+ntpsigndsocket /var/lib/samba/ntp_signd
+{% else %}
+# Everyone else follows the domain controller.
+server {{ lab_hosts['samba-dc01'].ip }} iburst
+{% endif %}
+makestep 1.0 3
+driftfile /var/lib/chrony/chrony.drift
