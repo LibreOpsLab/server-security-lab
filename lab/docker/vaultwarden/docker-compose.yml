@@ -27,7 +27,7 @@ services:
       - traefik.http.routers.vaultwarden-web.middlewares=authelia@file
       - traefik.http.routers.vaultwarden-web.service=vaultwarden
       # Bitwarden apps and extensions: no browser login possible, so no Authelia on these paths.
-      - traefik.http.routers.vaultwarden-api.rule=Host(`vault.lab.internal`) && (PathPrefix(`/api`) || PathPrefix(`/identity`) || PathPrefix(`/notifications`) || PathPrefix(`/events`))
+      - traefik.http.routers.vaultwarden-api.rule=Host(`vault.lab.internal`) && PathPrefix(`/api`,`/identity`,`/notifications`,`/events`,`/alive`)
       - traefik.http.routers.vaultwarden-api.tls=true
       - traefik.http.routers.vaultwarden-api.priority=100
       - traefik.http.routers.vaultwarden-api.service=vaultwarden

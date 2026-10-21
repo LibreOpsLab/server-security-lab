@@ -16,11 +16,11 @@
     <hostname>{{ hostname }}</hostname>
     <domain>{{ lab_domain }}</domain>
     <timezone>UTC</timezone>
-    <timeservers>{{ lab_dns[0] }}</timeservers>
+    <timeservers>{{ pfsense_upstream_ntp }}</timeservers>
     <webgui>
       <protocol>https</protocol>
     </webgui>
-{% for ns in lab_dns %}
+{% for ns in pfsense_upstream_dns %}
     <dnsserver>{{ ns }}</dnsserver>
 {% endfor %}
     <dnsallowoverride></dnsallowoverride>

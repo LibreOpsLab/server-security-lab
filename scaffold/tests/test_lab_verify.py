@@ -96,3 +96,39 @@ def test_the_five_weak_defaults_are_all_checked_by_name():
     text = (CHECKS / "20-weak-defaults.sh").read_text()
     for needle in ("VRFY", "smbclient", "Strict-Transport-Security", "PasswordAuthentication", "enum"):
         assert needle in text
+
+
+def test_vrfy_check_distinguishes_disabled_vrfy_from_the_ehlo_banner(tmp_path):
+    # grep '^25[02]' also matches Postfix's own multi-line EHLO reply ("250-mail...", "250 ..."), so the
+    # old check reported VRFY as present even when disable_vrfy_command=yes (which replies 502 and says so
+    # in the text). Extract just the logic and feed it both real-world SMTP transcripts.
+    script = (CHECKS / "20-weak-defaults.sh").read_text()
+    import re
+
+    snippet = re.split(r"# mail-basics: VRFY is on.*\n", script, maxsplit=1)[1]
+    snippet = re.split(r"\n# anon-directory", snippet, maxsplit=1)[0]
+    fake_nc = tmp_path / "nc"
+    fake_nc.write_text('#!/usr/bin/env bash\ncat "$TRANSCRIPT"\n')
+    fake_nc.chmod(0o755)
+
+    def run(transcript):
+        wrapper = tmp_path / "check.sh"
+        wrapper.write_text(f'#!/usr/bin/env bash\nmissing=""\nm=x\n{snippet}\necho "missing:$missing"\n')
+        wrapper.chmod(0o755)
+        import os
+        import subprocess
+        env = {**os.environ, "PATH": f"{tmp_path}:{os.environ['PATH']}", "TRANSCRIPT": str(transcript)}
+        return subprocess.run(["bash", str(wrapper)], capture_output=True, text=True, env=env).stdout
+
+    enabled = tmp_path / "enabled.txt"
+    enabled.write_text("250-mail.lab.internal\r\n250-PIPELINING\r\n252 2.0.0 alice\r\n221 2.0.0 Bye\r\n")
+    disabled = tmp_path / "disabled.txt"
+    disabled.write_text("250-mail.lab.internal\r\n250-PIPELINING\r\n502 5.5.1 VRFY command is disabled\r\n221 2.0.0 Bye\r\n")
+
+    assert "VRFY" not in run(enabled)
+    assert "VRFY" in run(disabled)
+
+
+def test_admin01_is_included_in_the_baseline_so_the_ntp_check_has_something_to_check():
+    play = (REPO / "lab" / "ansible" / "playbooks" / "20-baseline.yml").read_text()
+    assert "admin" in play

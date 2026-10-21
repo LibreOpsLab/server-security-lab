@@ -9,9 +9,10 @@ missing=""
 m=$(lab_ip mail01); f=$(lab_ip files01); d=$(lab_ip docker01)
 # enum: the management and service ports an attacker enumerates are open
 for target in "$f:22" "$m:25" "$d:80"; do nc -z -w3 "${target%%:*}" "${target##*:}" || missing="$missing enum($target)"; done
-# mail-basics: VRFY is on
+# mail-basics: VRFY is on. Postfix's own EHLO reply starts with "250", so matching any 25x line would
+# also match the banner; only the literal refusal text is unambiguous.
 v=$(printf 'EHLO lab\r\nVRFY alice\r\nQUIT\r\n' | nc -w4 "$m" 25)
-echo "$v" | grep -q '^25[02]' || missing="$missing VRFY"
+echo "$v" | grep -qi "VRFY command is disabled" && missing="$missing VRFY"
 # anon-directory: the public share lists without a login
 smbclient -N -L "//$f" 2>/dev/null | grep -q "notices" || missing="$missing smbclient-notices"
 # web-basics: no Strict-Transport-Security header on the web tier

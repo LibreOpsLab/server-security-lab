@@ -6,6 +6,12 @@ lab_netbios: LAB
 lab_subnet: 10.10.10.0/24
 lab_gateway: 10.10.10.1
 lab_dns: [10.10.10.21, 10.10.10.1]
+
+# Real upstream resolvers and time servers, used only where a guest genuinely needs internet-facing
+# ones: pfSense's own default forwarder (everything not covered by the lab.internal forward-zone) and
+# its NTP source. Never the DC, and never pfSense's own address: both would create a resolution/time loop.
+pfsense_upstream_dns: [1.1.1.1, 9.9.9.9]
+pfsense_upstream_ntp: pool.ntp.org
 proxmox_host_ip: 10.10.10.5
 
 # Directory names derived from the domain (LDAP search bases and the service-account location).

@@ -60,3 +60,25 @@ def test_missing_inventory_value_fails_loudly(tmp_path):
 def test_squid_doc_states_the_agreed_settings():
     doc = (PF / "squid.md").read_text()
     assert "3128" in doc and "no SSL" in doc and "CE" in doc and "curl -x" in doc
+
+
+def test_system_dns_forwarders_are_not_the_dc_or_pfsense_itself():
+    # pfSense's own <system><dnsserver> list is what Unbound (in forwarding mode) uses as the default
+    # forwarder for everything not covered by a specific forward-zone. Pointing it at the DC and/or at
+    # pfSense's own LAN address creates a resolution loop; it must be a real upstream resolver.
+    root = ET.fromstring(render())
+    servers = [e.text for e in root.findall("system/dnsserver")]
+    assert servers, "no system dnsserver entries"
+    assert "10.10.10.21" not in servers and "10.10.10.1" not in servers
+
+
+def test_dhcp_still_hands_clients_the_dc_first_for_dns():
+    root = ET.fromstring(render())
+    assert [e.text for e in root.findall("dhcpd/lan/dnsserver")] == ["10.10.10.21", "10.10.10.1"]
+
+
+def test_pfsense_own_time_source_is_not_the_domain_controller():
+    # The DC's chrony (baseline role) already takes its time from pfSense; pointing pfSense's own
+    # <timeservers> back at the DC creates a loop with no real upstream for either side.
+    root = ET.fromstring(render())
+    assert root.find("system/timeservers").text != "10.10.10.21"

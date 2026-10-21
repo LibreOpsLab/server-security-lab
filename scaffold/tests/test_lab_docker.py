@@ -41,7 +41,7 @@ def test_stirling_and_the_vault_web_ui_use_forward_auth_but_not_the_bitwarden_ap
     vault = compose("vaultwarden")
     web = re.search(r"vaultwarden-web\.middlewares=(\S+)", vault)
     assert web and web.group(1) == "authelia@file"
-    assert "vaultwarden-api.middlewares" not in vault and "PathPrefix(`/api`)" in vault
+    assert "vaultwarden-api.middlewares" not in vault and "PathPrefix(`/api`" in vault
 
 
 def test_nextcloud_database_is_on_a_named_volume_not_a_bind_mount():
@@ -106,3 +106,9 @@ def test_nextcloud_trusts_only_the_pinned_proxy_network():
 
 def test_docker_socket_mount_is_documented_as_a_deliberate_weak_default():
     assert "docker.sock" in compose("traefik") and "deliberate" in compose("traefik").lower()
+
+
+def test_vaultwarden_alive_healthcheck_bypasses_sso_like_the_rest_of_the_api():
+    # /alive is Vaultwarden's own liveness endpoint; it was missing from the unauthenticated router's
+    # path list, so it went through the SSO router and returned a redirect instead of a health status.
+    assert "PathPrefix(`/api`,`/identity`,`/notifications`,`/events`,`/alive`)" in compose("vaultwarden")

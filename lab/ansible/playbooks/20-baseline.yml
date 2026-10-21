@@ -1,7 +1,9 @@
 ---
-# Give every guest the functional baseline. Debian LXC templates ship without Python, so bootstrap it first.
+# Give every guest the functional baseline, admin01 included (so its own clock also follows the DC;
+# verify's NTP check runs on whichever machine you invoke it from, which is normally admin01).
+# Debian LXC templates ship without Python, so bootstrap it first.
 - name: Bootstrap Python on the guests
-  hosts: lxc:vm
+  hosts: lxc:vm:admin
   gather_facts: false
   tasks:
     - name: Install Python if it is missing
@@ -9,6 +11,6 @@
       changed_when: false
 
 - name: Apply the baseline
-  hosts: lxc:vm
+  hosts: lxc:vm:admin
   roles:
     - baseline
