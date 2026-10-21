@@ -28,6 +28,8 @@ anything you do not own or have written permission to test.
    ```
 
 6. **Commit the reports** in `portfolio/reports/` without editing them.
+6a. **Brief the manager.** Run `python -m sslab impact --before <your default report> --after <same report> --out portfolio/reports` to get a blank impact table (use the same file for both --before and --after here; the first conversation is about the baseline alone). Fill it in, copy `portfolio/templates/manager-briefing.md` to `portfolio/manager-briefing-1.md` and write it, then have the conversation with your instructor.
+
 7. **Read your own results.** For each finding, write one line in your threat model: was it predicted?
    What would an attacker do with it?
 

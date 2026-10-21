@@ -20,6 +20,8 @@ Same tools, same scripts, same hosts as week 12. The only thing that changed is 
 5. Remediate what you chose, then run the check again so the comparison shows it.
 6. Finish `portfolio/reflection.md`.
 
+5a. **Brief the manager again.** Run `python -m sslab impact --before <week 12 report> --after <this week's report>` and fill it in, copy the briefing template to `portfolio/manager-briefing-2.md`, and have the second conversation: what changed, what's still open, and why.
+
 ## What you hand in
 
 The `hardened` reports, the comparison reports, your remediation record and your finished reflection. You

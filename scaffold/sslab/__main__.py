@@ -12,6 +12,7 @@ from typing import Callable
 from .attacks import run_attacks
 from .collectors import COMMANDS, collect
 from .compare import compare, write_comparison
+from .impact import impact_table, impact_table_html
 from .findings import Run, load_run, save_run
 from .report import write_reports
 from .scope import ScopeError, load_scope
@@ -77,12 +78,22 @@ def main(argv: list[str] | None = None, runner: Runner | None = None) -> int:
     c.add_argument("--before", type=Path, required=True)
     c.add_argument("--after", type=Path, required=True)
     c.add_argument("--out", type=Path, default=Path("portfolio/reports"))
+    i = sub.add_parser("impact", help="a blank table for the manager conversation: what each finding means for the business")
+    i.add_argument("--before", type=Path, required=True)
+    i.add_argument("--after", type=Path, required=True)
+    i.add_argument("--out", type=Path, default=Path("portfolio/reports"))
     args = ap.parse_args(argv)
     try:
-        if args.cmd == "compare":
-            md, html = write_comparison(
-                compare(load_run(args.before), load_run(args.after)), args.out
-            )
+        if args.cmd in ("compare", "impact"):
+            c = compare(load_run(args.before), load_run(args.after))
+            if args.cmd == "compare":
+                md, html = write_comparison(c, args.out)
+            else:
+                args.out.mkdir(parents=True, exist_ok=True)
+                stem = f"impact-{c.before.host}-{args.after.stem}"
+                md, html = args.out / f"{stem}.md", args.out / f"{stem}.html"
+                md.write_text(impact_table(c), encoding="utf-8")
+                html.write_text(impact_table_html(c), encoding="utf-8")
             print(f"wrote {md} and {html}")
             return 0
         nets = load_scope(args.scope)

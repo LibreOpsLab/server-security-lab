@@ -251,3 +251,23 @@ def test_check_scripts_pass_shellcheck():
     scripts = [str(p) for p in REPO.glob("weeks/*/check.sh")]
     assert scripts, "no check.sh scripts found"
     assert subprocess.run(["shellcheck", *scripts]).returncode == 0
+
+
+def test_impact_cli_writes_a_file(env):
+    main(argv(env, "audit", "--label", "default", "--target", "10.10.0.5", "--tools", "lynis"), runner=lynis)
+    main(argv(env, "audit", "--label", "hardened", "--target", "10.10.0.5", "--tools", "lynis"), runner=lynis_hardened)
+    before = next((env / "reports").glob("default-lynis-*.json"))
+    after = next((env / "reports").glob("hardened-lynis-*.json"))
+    assert main(["impact", "--before", str(before), "--after", str(after), "--out", str(env / "reports")]) == 0
+    assert next((env / "reports").glob("impact-*.md")).exists()
+
+
+def test_impact_cli_rejects_different_students(env):
+    main(argv(env, "audit", "--label", "default", "--target", "10.10.0.5", "--tools", "lynis"), runner=lynis)
+    before = next((env / "reports").glob("default-lynis-*.json"))
+    other = env / "reports" / "other.json"
+    import json
+    data = json.loads(before.read_text())
+    data["student"] = "sam"
+    other.write_text(json.dumps(data))
+    assert main(["impact", "--before", str(before), "--after", str(other), "--out", str(env / "reports")], runner=lynis) == 2
