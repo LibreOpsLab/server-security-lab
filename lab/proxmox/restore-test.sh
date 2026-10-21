@@ -25,6 +25,14 @@ elif qm status "$vmid" >/dev/null 2>&1; then kind=vm
 else echo "no guest with VMID $vmid" >&2; exit 2; fi
 
 scratch=$((vmid + 1000))
+
+# The scratch guest must not already exist: the cleanup trap below destroys it unconditionally, and must
+# never be allowed to destroy something this script did not create.
+if { [ "$kind" = lxc ] && pct status "$scratch" >/dev/null 2>&1; } || { [ "$kind" = vm ] && qm status "$scratch" >/dev/null 2>&1; }; then
+  echo "guest $scratch already exists: refusing to overwrite or destroy it. Free that VMID first." >&2
+  exit 2
+fi
+
 # Keep only this guest's backups even if the listing is not filtered, then take the newest.
 volid=$(pvesm list "$storage" --vmid "$vmid" | awk -v id="/$vmid/" 'NR > 1 && index($1, id) {print $1}' | sort | tail -1)
 [ -n "$volid" ] || { echo "no backup of $vmid found on $storage" >&2; exit 2; }

@@ -88,3 +88,24 @@ def test_every_service_account_secret_is_one_gen_secrets_creates():
     accounts = VARS["lab_service_accounts"]
     assert {a["name"] for a in accounts} >= {"svc-mail", "svc-authelia"}
     assert all(a["secret"] in gen for a in accounts)
+
+
+def test_ansible_host_is_defined_only_for_real_lab_hosts_not_localhost():
+    # The implicit `localhost` ansible uses for connection: local plays must never evaluate lab_hosts[inventory_hostname].
+    text = (LAB / "inventory" / "group_vars" / "all.yml").read_text()
+    assert "lab_hosts.get(inventory_hostname" in text or "hostvars[inventory_hostname]" in text
+
+
+def test_docker01_connects_as_the_cloud_image_user_not_root():
+    inv = yaml.safe_load((LAB / "inventory" / "hosts.yml").read_text())
+    docker01 = inv["all"]["children"]["vm"]["children"]["docker"]["hosts"]["docker01"]
+    assert docker01["ansible_user"] == "ubuntu" and docker01["ansible_become"] is True
+
+
+def test_ssh_key_name_is_consistent_between_inventory_and_guest_creation():
+    key_path = VARS["ansible_ssh_private_key_file"]
+    guest_sh = (LAB / "proxmox" / "guest.sh").read_text()
+    # The private key's basename (without extension) must be what guest.sh installs as the guest's authorized key.
+    import pathlib
+    stem = pathlib.Path(key_path).stem
+    assert stem in guest_sh

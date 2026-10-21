@@ -71,3 +71,7 @@ def test_week_map_references_every_guide():
     week_map = (BUILD / "WEEK-MAP.md").read_text()
     for name in GUIDES:
         assert name in week_map, name
+
+
+def test_admin01_guide_generates_the_key_name_automation_expects():
+    assert "lab_admin" in text("04-admin01")

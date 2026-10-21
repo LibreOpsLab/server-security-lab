@@ -18,8 +18,19 @@ real small business would run its administration.
 3. Install git and clone this repo (or your own private copy, see
    [05-the-repo-inventory-and-secrets.md](05-the-repo-inventory-and-secrets.md)).
 4. Install Ansible: `sudo apt install ansible` (or `pipx install ansible-core`).
-5. Generate an SSH key pair here (`ssh-keygen -t ed25519`) and copy the public key to `pve01`'s
-   `authorized_keys` if you have not already.
+5. Generate the SSH key pair the automation expects — the name matters, it is read from
+   `ansible_ssh_private_key_file` in the inventory:
+
+   ```bash
+   ssh-keygen -t ed25519 -f ~/.ssh/lab_admin -N ''
+   ```
+
+   Copy `~/.ssh/lab_admin.pub` to `pve01`'s `/root/.ssh/lab_admin.pub` (`guest.sh` installs it on every
+   guest it creates; `pve01` itself needs it copied by hand once, since nothing created it yet):
+
+   ```bash
+   ssh-copy-id -i ~/.ssh/lab_admin.pub root@10.10.10.5
+   ```
 
 ## Check it worked
 

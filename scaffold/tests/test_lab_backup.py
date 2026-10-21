@@ -23,10 +23,21 @@ case "$name $1" in
     echo "lab-pbs:backup/vm/130/2026-10-21T01:00:00Z  pbs-vm  backup  1 130" ;;
   "pvesh get") [ -e "$STATE/job" ] && echo '[{"id":"lab-nightly"}]' || echo '[]' ;;
   "pvesh create") touch "$STATE/job" ;;
-  "pct status") [ "$2" = 122 ] || [ "$2" = 1122 ] && { [ -e "$STATE/failstart" ] && echo "status: stopped" || echo "status: running"; exit 0; } || exit 2 ;;
-  "pct start") [ -e "$STATE/failstart" ] && exit 1 ;;
-  "qm status") [ "$2" = 130 ] || [ "$2" = 1130 ] && { echo "status: running"; exit 0; } || exit 2 ;;
+  "pct status")
+    if [ "$2" = 122 ]; then echo "status: running"; exit 0; fi  # the real guest
+    if [ "$2" = 1122 ] && [ -e "$STATE/ct-1122-exists" ]; then
+      [ -e "$STATE/failstart" ] && echo "status: stopped" || echo "status: running"
+      exit 0
+    fi
+    exit 2 ;;
+  "pct restore") touch "$STATE/ct-1122-exists" ;;
+  "pct start") [ -e "$STATE/failstart" ] && exit 1 || true ;;
+  "qm status")
+    if [ "$2" = 130 ]; then echo "status: running"; exit 0; fi  # the real guest
+    if [ "$2" = 1130 ] && [ -e "$STATE/vm-1130-exists" ]; then echo "status: running"; exit 0; fi
+    exit 2 ;;
 esac
+if [ "$name" = qmrestore ]; then touch "$STATE/vm-1130-exists"; fi
 exit 0
 """
 
@@ -137,3 +148,11 @@ def test_backup_playbook_lists_every_guest_except_the_backup_server_itself():
     play = (LAB / "ansible/playbooks/70-backup.yml").read_text()
     assert "backup-jobs.sh" in play and "restore-test.sh" in play and "pbs_admin_password" in play
     assert "pbs01" in play and "rejectattr" in play  # the backup server is not in its own job
+
+
+def test_refuses_to_run_if_the_scratch_vmid_already_exists(pve):
+    run, log, state = pve
+    (state / "ct-1122-exists").touch()  # scratch guest 1122 already exists for some other reason
+    r = run(RESTORE, "122", "--rto", "600")
+    assert r.returncode == 2 and "1122" in r.stderr
+    assert "pct destroy 1122" not in log()  # must never touch a guest it did not create

@@ -40,3 +40,8 @@ def test_shellcheck_clean():
 def test_ansible_lint_clean():
     r = subprocess.run(["ansible-lint", "-q", "--offline", "playbooks", "roles"], cwd=LAB / "ansible", capture_output=True, text=True)
     assert r.returncode == 0, r.stdout + r.stderr[-800:]
+
+
+def test_ansible_cfg_uses_a_callback_both_pip_and_pipx_ansible_ship():
+    cfg = (LAB / "ansible" / "ansible.cfg").read_text()
+    assert "stdout_callback = default" in cfg or "stdout_callback = yaml" not in cfg
