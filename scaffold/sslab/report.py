@@ -21,6 +21,15 @@ tr:nth-child(even) td{background:var(--card)}.meta{color:var(--muted)}
 """
 
 
+_MD_SPECIAL = str.maketrans({c: "\\" + c for c in "\\`*[]|"})
+
+
+def md(text: str) -> str:
+    """Make untrusted text (banners, tool output) inert in Markdown: one line, no tags, links or tables."""
+    one_line = " ".join(str(text).split())
+    return one_line.replace("<", "&lt;").replace(">", "&gt;").translate(_MD_SPECIAL)
+
+
 def esc(text: str) -> str:
     return _html.escape(text, quote=True)
 
@@ -45,9 +54,9 @@ def _meta(run: Run) -> list[tuple[str, str]]:
 
 
 def render_markdown(run: Run) -> str:
-    out = [f"# {run.tool} report: {run.host} ({run.label})", ""]
-    out += [f"- **{k}:** {v}" for k, v in _meta(run)]
-    out += [f"- **{k}:** {v}" for k, v in run.metrics.items()]
+    out = [f"# {md(run.tool)} report: {md(run.host)} ({md(run.label)})", ""]
+    out += [f"- **{k}:** {md(v)}" for k, v in _meta(run)]
+    out += [f"- **{md(k)}:** {md(v)}" for k, v in run.metrics.items()]
     out.append("")
     if not run.findings:
         out += [NO_FINDINGS, ""]
@@ -56,10 +65,10 @@ def render_markdown(run: Run) -> str:
         if not rows:
             continue
         out += [f"## {layer.capitalize()}", "", "| Severity | Finding | Detail |", "| --- | --- | --- |"]
-        out += [f"| {f.severity} | {f.title} | {f.detail.replace('|', '/')} |" for f in rows]
+        out += [f"| {md(f.severity)} | {md(f.title)} | {md(f.detail)} |" for f in rows]
         out.append("")
     if run.not_run:
-        out += ["## Not run", "", *[f"- {t}" for t in run.not_run], ""]
+        out += ["## Not run", "", *[f"- {md(t)}" for t in run.not_run], ""]
     return "\n".join(out)
 
 

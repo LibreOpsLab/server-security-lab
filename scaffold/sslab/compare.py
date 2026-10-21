@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from .findings import SEVERITIES, Run, file_stem
-from .report import esc, html_page
+from .report import esc, html_page, md
 
 # Gaps first: what is still open or new matters more than what was closed.
 ORDER = ("unchanged", "new", "reduced", "not_compared", "closed")
@@ -76,16 +76,16 @@ def _title(c: Comparison) -> str:
 
 def render_comparison_markdown(c: Comparison) -> str:
     b, a = c.before, c.after
-    out = [f"# {_title(c)}", "", _summary(c), ""]
+    out = [f"# {md(_title(c))}", "", _summary(c), ""]
     if not a.findings and not a.not_run:
         out += [CAUTION, ""]
-    out += [f"- **Student:** {b.student} ({b.fork})", f"- **Before:** {b.label}, {b.started}",
-            f"- **After:** {a.label}, {a.started}", *[f"- {m}" for m in _metrics(c)], ""]
+    out += [f"- **Student:** {md(b.student)} ({md(b.fork)})", f"- **Before:** {md(b.label)}, {md(b.started)}",
+            f"- **After:** {md(a.label)}, {md(a.started)}", *[f"- {md(m)}" for m in _metrics(c)], ""]
     out += ["| State | Layer | Finding | Before | After |", "| --- | --- | --- | --- | --- |"]
-    out += [f"| {LABELS.get(r.state, r.state)} | {r.layer} | {r.title} | {r.before or '-'} | {r.after or '-'} |" for r in c.rows]
+    out += [f"| {LABELS.get(r.state, r.state)} | {md(r.layer)} | {md(r.title)} | {r.before or '-'} | {r.after or '-'} |" for r in c.rows]
     out.append("")
     if a.not_run:
-        out += ["## Not run in the after run", "", *[f"- {t}" for t in a.not_run], ""]
+        out += ["## Not run in the after run", "", *[f"- {md(t)}" for t in a.not_run], ""]
     return "\n".join(out)
 
 

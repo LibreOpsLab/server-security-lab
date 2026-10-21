@@ -1,0 +1,24 @@
+---
+# Week 15 starter. Nothing here is finished hardening: every TODO is yours to decide and write.
+# Run against a clone first: ansible-playbook -i build/inventory build/harden.yml --check --diff
+- name: Harden Linux hosts
+  hosts: linux
+  become: true
+  tasks:
+    # TODO (host): SSH. Which settings from your week 12 report does this close? Disable root login and
+    # password authentication only if you have confirmed key login works first.
+
+    # TODO (host): automatic security updates, and a way to see that they ran.
+
+    # TODO (host): remove or stop services your design does not need.
+
+    # TODO (identity): password policy and lockout. Note what it costs your users.
+
+    # TODO (network): host firewall rules that match your design's allowed flows, nothing more.
+    - name: Placeholder so the playbook parses
+      ansible.builtin.debug:
+        msg: "Replace me with your first control"
+
+# TODO (service): web headers, mail relay and VRFY, anonymous share access. One play per service is fine.
+# TODO (network): pfSense rule changes are recorded in build/pfsense-changes.md (the GUI is allowed, the record is not optional).
+# TODO (identity): second factor for administration, least-privilege accounts.

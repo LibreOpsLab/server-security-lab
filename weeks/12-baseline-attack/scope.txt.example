@@ -1,0 +1,4 @@
+# Your lab ranges, one CIDR per line. The tools refuse anything outside these.
+# Copy to portfolio/scope.txt and edit. Write it BEFORE you test.
+# Use a /32 for one machine, e.g. 10.10.0.5/32.
+10.10.0.0/24

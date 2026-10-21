@@ -61,3 +61,23 @@ def test_metrics_shown_in_both_formats():
     r = run(metrics={"hardening_index": "62"})
     assert "hardening_index" in render_markdown(r) and "62" in render_markdown(r)
     assert "hardening_index" in render_html(r)
+
+
+HOSTILE = "x|y\n| forged | row |\n<script>alert(1)</script> [click](http://evil.example) `cmd` *b*"
+
+
+def test_markdown_neutralises_hostile_finding_text():
+    r = run(findings=[Finding("a", "host", HOSTILE, "high", HOSTILE)], student=HOSTILE, not_run=[HOSTILE], metrics={HOSTILE: HOSTILE})
+    md = render_markdown(r)
+    assert "<script>" not in md and "[click](" not in md and "forged" in md  # text kept, markup dead
+    table_rows = [l for l in md.splitlines() if l.startswith("| ") and "high" in l]
+    assert len(table_rows) == 1 and md.count("\n| forged") == 0  # no forged row starting a line
+    assert all(l.startswith(("#", "-", "|", "<", "\\", " ")) or l == "" or "forged" not in l for l in md.splitlines())
+
+
+def test_comparison_markdown_neutralises_hostile_text():
+    from sslab.compare import compare, render_comparison_markdown
+
+    a = run(findings=[Finding("a", "host", HOSTILE, "high", "")])
+    md = render_comparison_markdown(compare(a, run(label="hardened", findings=[Finding("a", "host", HOSTILE, "high", "")])))
+    assert "<script>" not in md and "[click](" not in md and "\n| forged" not in md
