@@ -13,6 +13,7 @@ Infrastructure is code, so it is managed like code.
    git clone https://github.com/<you>/server-security-lab.git && cd server-security-lab
    git remote add upstream https://github.com/LibreOpsLab/server-security-lab.git
    ```
+
 2. **Branch per week** (`week-04`), commit as you go, open a pull request into your own `main`, and
    merge it after your own review. A partner or your instructor can review at assessment checkpoints.
 3. **Sync weekly:** `git fetch upstream`, read the change log, then merge `upstream/main` into `main`

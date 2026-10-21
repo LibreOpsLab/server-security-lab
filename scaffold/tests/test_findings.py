@@ -5,9 +5,22 @@ from sslab.findings import Finding, Run, load_run, save_run
 
 def make_run(**kw) -> Run:
     base = dict(
-        label="default", tool="lynis", host="docker01", student="alex", fork="alex/server-security-lab",
-        lab_range="10.10.0.0/24", started="2026-11-16T01:02:03Z",
-        findings=[Finding("lynis:SSH-7440", "host", "Root login allowed", "high", "PermitRootLogin yes")],
+        label="default",
+        tool="lynis",
+        host="docker01",
+        student="alex",
+        fork="alex/server-security-lab",
+        lab_range="10.10.0.0/24",
+        started="2026-11-16T01:02:03Z",
+        findings=[
+            Finding(
+                "lynis:SSH-7440",
+                "host",
+                "Root login allowed",
+                "high",
+                "PermitRootLogin yes",
+            )
+        ],
         not_run=[],
     )
     base.update(kw)

@@ -18,7 +18,11 @@ def test_out_of_range_ip_refused():
 
 
 def test_hostname_resolving_outside_range_refused():
-    resolve = lambda name: (name, [], ["10.10.0.5", "93.184.216.34"])  # one good, one bad: refuse
+    resolve = lambda name: (
+        name,
+        [],
+        ["10.10.0.5", "93.184.216.34"],
+    )  # one good, one bad: refuse
     with pytest.raises(ScopeError):
         require_in_scope("docker01.lab", NETS, resolve=resolve)
 

@@ -14,8 +14,8 @@ Same tools, same scripts, same hosts as week 12. The only thing that changed is 
    ```
 
 3. Read the comparison reports in `portfolio/reports/` (`compare-*.md`). They list the gaps first:
-   *unchanged* (still open), *new* (something your hardening introduced) and *reduced*, then *closed*.
-   *Not compared* means a tool did not run this time; fix that and run again.
+   _unchanged_ (still open), _new_ (something your hardening introduced) and _reduced_, then _closed_.
+   _Not compared_ means a tool did not run this time; fix that and run again.
 4. Pick each finding that is still open and decide: remediate it, or accept it and say why.
 5. Remediate what you chose, then run the check again so the comparison shows it.
 6. Finish `portfolio/reflection.md`.

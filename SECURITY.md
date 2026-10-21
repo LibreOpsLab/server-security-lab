@@ -19,7 +19,7 @@ from the internet, and put the permission boundary in writing.
 If you find a flaw in the code here (for example a way for hostile scan output to execute code, escape the
 report escaping, or bypass the scope check), please report it privately:
 
-1. Use **Report a vulnerability** under the repository's *Security* tab (GitHub private vulnerability
+1. Use **Report a vulnerability** under the repository's _Security_ tab (GitHub private vulnerability
    reporting), or
 2. If that is unavailable, message the repository owner on GitHub and ask for a private channel.
 

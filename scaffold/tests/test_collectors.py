@@ -15,7 +15,9 @@ def read(name: str) -> str:
 
 
 def collect_args(**kw):
-    base = dict(target="10.10.0.5", nets=NETS, label="default", student="alex", fork="alex/ssl")
+    base = dict(
+        target="10.10.0.5", nets=NETS, label="default", student="alex", fork="alex/ssl"
+    )
     base.update(kw)
     return base
 
@@ -24,7 +26,9 @@ def test_lynis_findings_and_index():
     fs = parse_lynis_report(read("lynis-report.dat"))
     assert len(fs) == 4
     root = next(f for f in fs if f.id == "lynis:SSH-7412")
-    assert root.severity == "high" and root.layer == "host"  # warnings are high, suggestions medium
+    assert (
+        root.severity == "high" and root.layer == "host"
+    )  # warnings are high, suggestions medium
     assert next(f for f in fs if f.id == "lynis:AUTH-9286").severity == "medium"
     assert next(f for f in fs if f.id == "lynis:NETW-3200").layer == "network"
     assert parse_lynis_index(read("lynis-report.dat")) == 62
@@ -34,7 +38,9 @@ def test_nmap_open_ports_only_with_versions():
     fs = parse_nmap_xml(read("nmap.xml"))
     assert [f.id for f in fs] == ["nmap:22/tcp", "nmap:21/tcp", "nmap:80/tcp"]
     assert "OpenSSH 8.2p1" in fs[0].detail
-    assert next(f for f in fs if f.id == "nmap:21/tcp").severity == "medium"  # cleartext protocol
+    assert (
+        next(f for f in fs if f.id == "nmap:21/tcp").severity == "medium"
+    )  # cleartext protocol
     assert all(f.layer == "service" for f in fs)
 
 
@@ -45,9 +51,15 @@ def test_windows_failed_checks_only():
 
 
 def test_collect_lynis_builds_run_with_index_metric():
-    run = collect("lynis", runner=lambda cmd: read("lynis-report.dat"), **collect_args())
+    run = collect(
+        "lynis", runner=lambda cmd: read("lynis-report.dat"), **collect_args()
+    )
     assert run.tool == "lynis" and run.label == "default" and run.host == "10.10.0.5"
-    assert run.metrics == {"hardening_index": "62"} and len(run.findings) == 4 and run.not_run == []
+    assert (
+        run.metrics == {"hardening_index": "62"}
+        and len(run.findings) == 4
+        and run.not_run == []
+    )
     assert run.lab_range == "10.10.0.0/24" and run.started.endswith("Z")
 
 
@@ -87,4 +99,8 @@ def test_garbled_tool_output_lands_in_not_run():
 def test_malformed_index_does_not_discard_the_findings():
     text = "warning[]=AUTH-1|weak password policy|-|\nhardening_index=\n"
     run = collect("lynis", runner=lambda cmd: text, **collect_args())
-    assert [f.id for f in run.findings] == ["lynis:AUTH-1"] and run.not_run == [] and run.metrics == {}
+    assert (
+        [f.id for f in run.findings] == ["lynis:AUTH-1"]
+        and run.not_run == []
+        and run.metrics == {}
+    )

@@ -17,10 +17,19 @@ def parse_nmap_xml(text: str) -> list[Finding]:
             continue
         svc = port.find("service")
         name = svc.get("name", "unknown") if svc is not None else "unknown"
-        version = " ".join(filter(None, (svc.get("product"), svc.get("version")))) if svc is not None else ""
+        version = (
+            " ".join(filter(None, (svc.get("product"), svc.get("version"))))
+            if svc is not None
+            else ""
+        )
         pid, proto = port.get("portid"), port.get("protocol")
-        out.append(Finding(
-            f"nmap:{pid}/{proto}", "service", f"Open port {pid}/{proto} ({name})",
-            "medium" if name in CLEARTEXT else "info", version or "version not detected",
-        ))
+        out.append(
+            Finding(
+                f"nmap:{pid}/{proto}",
+                "service",
+                f"Open port {pid}/{proto} ({name})",
+                "medium" if name in CLEARTEXT else "info",
+                version or "version not detected",
+            )
+        )
     return out

@@ -25,7 +25,7 @@ real labs** and **clearer for learners**.
   the report escaping (`md()` / `esc()`); add a test with hostile input for any new renderer.
 - **No secrets or real data** in fixtures, examples or reports. Use documentation addresses or `10.10.0.0/24`.
 - **LF line endings** (`.gitattributes` and `.editorconfig` enforce this).
-- Docs in Markdown, diagrams in Mermaid, and record the *why* as well as the how.
+- Docs in Markdown, diagrams in Mermaid, and record the _why_ as well as the how.
 
 ## Development
 
@@ -41,7 +41,7 @@ nothing in the suite touches the network.
 ## Pull requests
 
 1. Open an issue first for anything larger than a fix, so we can agree the shape.
-2. Fork this repo (contributions go through public forks; your *course* work uses a private copy, see the README), branch from `main`, keep the change focused, add or update tests and the [changelog](CHANGELOG.md).
+2. Fork this repo (contributions go through public forks; your _course_ work uses a private copy, see the README), branch from `main`, keep the change focused, add or update tests and the [changelog](CHANGELOG.md).
 3. Explain what changed and why, and for a parser change, include the real output that motivated it.
 4. CI must pass (tests and shellcheck).
 

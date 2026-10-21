@@ -1,7 +1,7 @@
 # Week 12: attack your lab as built
 
 You have a working platform. This week you find out how weak it is, before you change anything. The
-threat model you wrote this week says what *should* go wrong; this run shows what *does*.
+threat model you wrote this week says what _should_ go wrong; this run shows what _does_.
 
 **Your lab only.** The tools refuse any target outside the ranges you write in your scope file. Never test
 anything you do not own or have written permission to test.

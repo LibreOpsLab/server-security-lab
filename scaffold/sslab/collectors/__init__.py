@@ -16,7 +16,11 @@ from .windows import parse_windows_audit
 _WIN_CMD = "powershell -NoProfile -File C:\\audit\\run-audit.ps1"
 
 COMMANDS: dict[str, Callable[[str], list[str]]] = {
-    "lynis": lambda ip: ["ssh", ip, "sudo lynis audit system --quiet >/dev/null 2>&1; sudo cat /var/log/lynis-report.dat"],
+    "lynis": lambda ip: [
+        "ssh",
+        ip,
+        "sudo lynis audit system --quiet >/dev/null 2>&1; sudo cat /var/log/lynis-report.dat",
+    ],
     "nmap": lambda ip: ["nmap", "-sV", "-oX", "-", ip],
     "windows": lambda ip: ["ssh", ip, _WIN_CMD],
 }
@@ -39,7 +43,9 @@ def collect(
     if tool not in COMMANDS:
         raise ValueError(f"unknown tool {tool!r}; known: {', '.join(COMMANDS)}")
     ip = require_in_scope(target, nets)  # raises ScopeError before anything runs
-    run = Run(label, tool, target, student, fork, ", ".join(str(n) for n in nets), now())
+    run = Run(
+        label, tool, target, student, fork, ", ".join(str(n) for n in nets), now()
+    )
     try:
         out = runner(COMMANDS[tool](ip))
         if tool == "lynis":

@@ -30,7 +30,9 @@ class Run:
     started: str  # UTC, ISO 8601, e.g. 2026-11-16T01:02:03Z
     findings: list[Finding] = field(default_factory=list)
     not_run: list[str] = field(default_factory=list)
-    metrics: dict[str, str] = field(default_factory=dict)  # scores, e.g. {"hardening_index": "62"}
+    metrics: dict[str, str] = field(
+        default_factory=dict
+    )  # scores, e.g. {"hardening_index": "62"}
 
 
 def file_stem(run: Run) -> str:

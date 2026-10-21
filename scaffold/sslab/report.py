@@ -48,8 +48,13 @@ def _sorted(findings: list[Finding]) -> list[Finding]:
 
 def _meta(run: Run) -> list[tuple[str, str]]:
     return [
-        ("Student", run.student), ("Repository", run.fork), ("Host", run.host), ("Lab range", run.lab_range),
-        ("Label", run.label), ("Tool", run.tool), ("Started (UTC)", run.started),
+        ("Student", run.student),
+        ("Repository", run.fork),
+        ("Host", run.host),
+        ("Lab range", run.lab_range),
+        ("Label", run.label),
+        ("Tool", run.tool),
+        ("Started (UTC)", run.started),
     ]
 
 
@@ -64,7 +69,12 @@ def render_markdown(run: Run) -> str:
         rows = _sorted([f for f in run.findings if f.layer == layer])
         if not rows:
             continue
-        out += [f"## {layer.capitalize()}", "", "| Severity | Finding | Detail |", "| --- | --- | --- |"]
+        out += [
+            f"## {layer.capitalize()}",
+            "",
+            "| Severity | Finding | Detail |",
+            "| --- | --- | --- |",
+        ]
         out += [f"| {md(f.severity)} | {md(f.title)} | {md(f.detail)} |" for f in rows]
         out.append("")
     if run.not_run:
@@ -74,18 +84,33 @@ def render_markdown(run: Run) -> str:
 
 def render_html(run: Run) -> str:
     body = [f"<h1>{esc(run.tool)} report: {esc(run.host)} ({esc(run.label)})</h1>"]
-    body.append('<p class="meta">' + " · ".join(f"{esc(k)}: {esc(v)}" for k, v in _meta(run) + list(run.metrics.items())) + "</p>")
+    body.append(
+        '<p class="meta">'
+        + " · ".join(
+            f"{esc(k)}: {esc(v)}" for k, v in _meta(run) + list(run.metrics.items())
+        )
+        + "</p>"
+    )
     if not run.findings:
         body.append(f"<p>{esc(NO_FINDINGS)}</p>")
     for layer in LAYERS:
         rows = _sorted([f for f in run.findings if f.layer == layer])
         if not rows:
             continue
-        body.append(f"<h2>{layer.capitalize()}</h2><table><thead><tr><th>Severity</th><th>Finding</th><th>Detail</th></tr></thead><tbody>")
-        body += [f"<tr><td>{esc(f.severity)}</td><td>{esc(f.title)}</td><td>{esc(f.detail)}</td></tr>" for f in rows]
+        body.append(
+            f"<h2>{layer.capitalize()}</h2><table><thead><tr><th>Severity</th><th>Finding</th><th>Detail</th></tr></thead><tbody>"
+        )
+        body += [
+            f"<tr><td>{esc(f.severity)}</td><td>{esc(f.title)}</td><td>{esc(f.detail)}</td></tr>"
+            for f in rows
+        ]
         body.append("</tbody></table>")
     if run.not_run:
-        body.append("<h2>Not run</h2><ul>" + "".join(f"<li>{esc(t)}</li>" for t in run.not_run) + "</ul>")
+        body.append(
+            "<h2>Not run</h2><ul>"
+            + "".join(f"<li>{esc(t)}</li>" for t in run.not_run)
+            + "</ul>"
+        )
     return html_page(f"{run.tool} {run.host} {run.label}", "".join(body))
 
 

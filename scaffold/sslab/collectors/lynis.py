@@ -16,8 +16,16 @@ def parse_lynis_report(text: str) -> list[Finding]:
     for line in text.splitlines():
         for prefix, severity in (("warning[]=", "high"), ("suggestion[]=", "medium")):
             if line.startswith(prefix):
-                test_id, title, detail, *_ = line[len(prefix):].split("|") + ["", ""]
-                out.append(Finding(f"lynis:{test_id}", _layer(test_id), title, severity, detail if detail != "-" else ""))
+                test_id, title, detail, *_ = line[len(prefix) :].split("|") + ["", ""]
+                out.append(
+                    Finding(
+                        f"lynis:{test_id}",
+                        _layer(test_id),
+                        title,
+                        severity,
+                        detail if detail != "-" else "",
+                    )
+                )
     return out
 
 
@@ -26,6 +34,8 @@ def parse_lynis_index(text: str) -> int | None:
         if line.startswith("hardening_index="):
             try:
                 return int(line.split("=", 1)[1])
-            except ValueError:  # an interrupted audit can leave this empty; the findings are still real
+            except (
+                ValueError
+            ):  # an interrupted audit can leave this empty; the findings are still real
                 return None
     return None

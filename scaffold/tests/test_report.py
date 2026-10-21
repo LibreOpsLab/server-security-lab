@@ -6,11 +6,22 @@ from sslab.report import render_html, render_markdown, write_reports
 
 def run(**kw) -> Run:
     base = dict(
-        label="default", tool="lynis", host="docker01", student="alex", fork="alex/server-security-lab",
-        lab_range="10.10.0.0/24", started="2026-11-16T01:02:03Z",
+        label="default",
+        tool="lynis",
+        host="docker01",
+        student="alex",
+        fork="alex/server-security-lab",
+        lab_range="10.10.0.0/24",
+        started="2026-11-16T01:02:03Z",
         findings=[
             Finding("a", "host", "Low thing", "low", "minor"),
-            Finding("b", "host", "Root login <allowed> & more", "high", "PermitRootLogin yes"),
+            Finding(
+                "b",
+                "host",
+                "Root login <allowed> & more",
+                "high",
+                "PermitRootLogin yes",
+            ),
             Finding("c", "network", "Open port", "medium", "22/tcp"),
         ],
         not_run=[],
@@ -21,7 +32,14 @@ def run(**kw) -> Run:
 
 def test_markdown_header_carries_identifiers():
     md = render_markdown(run())
-    for s in ("alex", "alex/server-security-lab", "docker01", "10.10.0.0/24", "default", "2026-11-16T01:02:03Z"):
+    for s in (
+        "alex",
+        "alex/server-security-lab",
+        "docker01",
+        "10.10.0.0/24",
+        "default",
+        "2026-11-16T01:02:03Z",
+    ):
         assert s in md
 
 
@@ -67,17 +85,34 @@ HOSTILE = "x|y\n| forged | row |\n<script>alert(1)</script> [click](http://evil.
 
 
 def test_markdown_neutralises_hostile_finding_text():
-    r = run(findings=[Finding("a", "host", HOSTILE, "high", HOSTILE)], student=HOSTILE, not_run=[HOSTILE], metrics={HOSTILE: HOSTILE})
+    r = run(
+        findings=[Finding("a", "host", HOSTILE, "high", HOSTILE)],
+        student=HOSTILE,
+        not_run=[HOSTILE],
+        metrics={HOSTILE: HOSTILE},
+    )
     md = render_markdown(r)
-    assert "<script>" not in md and "[click](" not in md and "forged" in md  # text kept, markup dead
+    assert (
+        "<script>" not in md and "[click](" not in md and "forged" in md
+    )  # text kept, markup dead
     table_rows = [l for l in md.splitlines() if l.startswith("| ") and "high" in l]
-    assert len(table_rows) == 1 and md.count("\n| forged") == 0  # no forged row starting a line
-    assert all(l.startswith(("#", "-", "|", "<", "\\", " ")) or l == "" or "forged" not in l for l in md.splitlines())
+    assert (
+        len(table_rows) == 1 and md.count("\n| forged") == 0
+    )  # no forged row starting a line
+    assert all(
+        l.startswith(("#", "-", "|", "<", "\\", " ")) or l == "" or "forged" not in l
+        for l in md.splitlines()
+    )
 
 
 def test_comparison_markdown_neutralises_hostile_text():
     from sslab.compare import compare, render_comparison_markdown
 
     a = run(findings=[Finding("a", "host", HOSTILE, "high", "")])
-    md = render_comparison_markdown(compare(a, run(label="hardened", findings=[Finding("a", "host", HOSTILE, "high", "")])))
+    md = render_comparison_markdown(
+        compare(
+            a,
+            run(label="hardened", findings=[Finding("a", "host", HOSTILE, "high", "")]),
+        )
+    )
     assert "<script>" not in md and "[click](" not in md and "\n| forged" not in md

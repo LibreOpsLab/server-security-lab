@@ -48,30 +48,49 @@ def test_attack_that_cannot_run_goes_to_not_run_and_others_continue():
 def test_ssh_weak_creds_parses_hydra_hit():
     out = "[22][ssh] host: 10.10.0.5   login: admin   password: password\n1 of 1 target successfully completed"
     fs = by_id("ssh-weak-creds").parse(out)
-    assert [f.id for f in fs] == ["attack:ssh-weak-creds:admin"] and fs[0].severity == "high"
+    assert [f.id for f in fs] == ["attack:ssh-weak-creds:admin"] and fs[
+        0
+    ].severity == "high"
 
 
 def test_ssh_weak_creds_no_hit_is_no_finding():
-    assert by_id("ssh-weak-creds").parse("0 of 1 target completed, 0 valid password found") == []
+    assert (
+        by_id("ssh-weak-creds").parse("0 of 1 target completed, 0 valid password found")
+        == []
+    )
 
 
 def test_web_basics_reports_missing_headers_and_banner():
     out = "HTTP/1.1 200 OK\r\nServer: nginx/1.18.0\r\nContent-Type: text/html\r\n"
     ids = {f.id for f in by_id("web-basics").parse(out)}
-    assert "attack:web-basics:no-hsts" in ids and "attack:web-basics:server-banner" in ids
+    assert (
+        "attack:web-basics:no-hsts" in ids and "attack:web-basics:server-banner" in ids
+    )
     hardened = "HTTP/1.1 200 OK\r\nServer: nginx\r\nStrict-Transport-Security: max-age=1\r\nX-Frame-Options: DENY\r\nContent-Security-Policy: default-src 'self'\r\nX-Content-Type-Options: nosniff\r\n"
     assert by_id("web-basics").parse(hardened) == []
 
 
 def test_mail_basics_open_relay_and_vrfy():
-    fs = by_id("mail-basics").parse("smtp-open-relay: Server is an open relay (16/16 tests)\nsmtp-commands: VRFY, EXPN")
-    assert {f.id for f in fs} == {"attack:mail-basics:open-relay", "attack:mail-basics:vrfy"}
-    assert by_id("mail-basics").parse("Server doesn't seem to be an open relay, all tests failed") == []
+    fs = by_id("mail-basics").parse(
+        "smtp-open-relay: Server is an open relay (16/16 tests)\nsmtp-commands: VRFY, EXPN"
+    )
+    assert {f.id for f in fs} == {
+        "attack:mail-basics:open-relay",
+        "attack:mail-basics:vrfy",
+    }
+    assert (
+        by_id("mail-basics").parse(
+            "Server doesn't seem to be an open relay, all tests failed"
+        )
+        == []
+    )
 
 
 def test_anon_directory_lists_disk_shares():
     out = "\tSharename       Type      Comment\n\t---------       ----      -------\n\tpublic          Disk      Public files\n\tIPC$            IPC       IPC Service"
-    assert [f.id for f in by_id("anon-directory").parse(out)] == ["attack:anon-directory:public"]
+    assert [f.id for f in by_id("anon-directory").parse(out)] == [
+        "attack:anon-directory:public"
+    ]
 
 
 def test_unparseable_output_goes_to_not_run_not_a_crash():
