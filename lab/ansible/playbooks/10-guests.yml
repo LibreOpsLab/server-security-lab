@@ -1,0 +1,58 @@
+---
+# Create the Proxmox guests from the inventory. Runs on pve01; guest.sh does the work and is idempotent.
+- name: Create the lab guests on Proxmox
+  hosts: proxmox
+  gather_facts: false
+  vars:
+    helper_dir: /root/lab
+    cloud_image: /var/lib/vz/template/iso/noble-server-cloudimg-amd64.img
+  tasks:
+    - name: Make sure the helper directory exists
+      ansible.builtin.file:
+        path: "{{ helper_dir }}"
+        state: directory
+        mode: "0755"
+
+    - name: Copy the guest creation script
+      ansible.builtin.copy:
+        src: "{{ playbook_dir }}/../../proxmox/guest.sh"
+        dest: "{{ helper_dir }}/guest.sh"
+        mode: "0755"
+
+    - name: Refresh the template list
+      ansible.builtin.command: pveam update
+      changed_when: false
+
+    - name: Find the Debian 12 template name
+      ansible.builtin.shell: set -o pipefail; pveam available --section system | awk '/debian-12-standard/ {print $2}' | sort | tail -1
+      args:
+        executable: /bin/bash
+      register: debian_template
+      changed_when: false
+
+    - name: Download the Debian 12 template if it is not there yet
+      ansible.builtin.shell: |
+        set -o pipefail
+        pveam list local | grep -q debian-12-standard || pveam download local {{ debian_template.stdout }}
+      args:
+        executable: /bin/bash
+      register: template_download
+      changed_when: "'downloading' in template_download.stdout"
+
+    - name: Create each LXC and VM (existing guests are kept)
+      ansible.builtin.command:
+        argv: >-
+          {{ [helper_dir ~ '/guest.sh', item.value.kind, item.value.vmid | string, item.key, item.value.ip,
+              item.value.ram_mb | string, item.value.cores | string, item.value.disk_gb | string]
+              + (['--privileged'] if item.key == 'samba-dc01' and samba_dc_privileged else []) }}
+      environment:
+        CLOUD_IMAGE: "{{ cloud_image }}"
+        GATEWAY: "{{ lab_gateway }}"
+        DNS1: "{{ lab_dns[0] }}"
+        DNS2: "{{ lab_dns[1] }}"
+        DOMAIN: "{{ lab_domain }}"
+      loop: "{{ lab_hosts | dict2items | selectattr('value.kind', 'in', ['lxc', 'vm']) | list }}"
+      loop_control:
+        label: "{{ item.key }}"
+      register: guest_result
+      changed_when: "'created' in guest_result.stdout"
