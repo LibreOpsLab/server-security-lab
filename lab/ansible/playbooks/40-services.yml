@@ -1,0 +1,6 @@
+---
+# Core services, one play per guest. Run after `make baseline`, `make trust` and `make identity`.
+- name: File server and SFTP
+  hosts: files
+  roles:
+    - files_server

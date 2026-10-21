@@ -1,0 +1,11 @@
+---
+- name: Restart Samba file services
+  ansible.builtin.service:
+    name: "{{ item }}"
+    state: restarted
+  loop: [smbd, winbind]
+
+- name: Restart sshd on the file server
+  ansible.builtin.service:
+    name: ssh
+    state: restarted

@@ -1,0 +1,6 @@
+# Managed by Ansible (role: files_server). Staff get SFTP only, locked to their own directory.
+Match Group staff
+    ChrootDirectory {{ files_server_sftp_root }}/%u
+    ForceCommand internal-sftp
+    AllowTcpForwarding no
+    X11Forwarding no

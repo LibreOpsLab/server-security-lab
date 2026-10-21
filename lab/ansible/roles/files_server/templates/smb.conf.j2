@@ -1,0 +1,46 @@
+# Managed by Ansible (role: files_server). A domain member file server for {{ lab_realm }}.
+[global]
+    workgroup = {{ lab_netbios }}
+    realm = {{ lab_realm }}
+    security = ads
+    kerberos method = secrets and keytab
+    server string = Lab file server
+
+    # Domain users and groups appear as plain names (alice, staff) and get stable ids from their RID.
+    winbind use default domain = yes
+    winbind enum users = yes
+    winbind enum groups = yes
+    idmap config * : backend = tdb
+    idmap config * : range = 3000-7999
+    idmap config {{ lab_netbios }} : backend = rid
+    idmap config {{ lab_netbios }} : range = 10000-999999
+    template shell = /bin/bash
+    template homedir = /home/%U
+
+    vfs objects = acl_xattr
+    map acl inherit = yes
+    store dos attributes = yes
+
+    # Unknown users are mapped to the guest account. The public "notices" share needs this, and it is the
+    # kind of setting many how-tos copy without asking what else it allows.
+    map to guest = Bad User
+
+[staff]
+    comment = Staff documents
+    path = {{ files_server_share_root }}/staff
+    valid users = @staff
+    read only = no
+
+[finance]
+    comment = Finance records
+    path = {{ files_server_share_root }}/finance
+    valid users = @finance
+    read only = no
+
+[notices]
+    comment = Public notices
+    path = {{ files_server_share_root }}/notices
+    # Deliberate weak default: anyone on the LAN can list and read this share without logging in.
+    # Many how-tos create a "public" share exactly like this. The attack set finds it (anon-directory).
+    guest ok = yes
+    read only = yes

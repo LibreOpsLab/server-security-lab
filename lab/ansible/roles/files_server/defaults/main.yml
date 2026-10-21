@@ -1,0 +1,4 @@
+---
+files_server_share_root: /srv/shares
+files_server_sftp_root: /srv/sftp
+files_server_users_csv: "{{ playbook_dir }}/../../data/users.csv"

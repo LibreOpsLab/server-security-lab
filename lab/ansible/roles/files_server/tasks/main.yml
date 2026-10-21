@@ -1,0 +1,108 @@
+---
+# Domain-joined file server: Samba shares plus chrooted SFTP, both authenticating against Samba AD.
+- name: Answer the Kerberos realm question
+  ansible.builtin.debconf:
+    name: krb5-config
+    question: krb5-config/default_realm
+    value: "{{ lab_realm }}"
+    vtype: string
+
+- name: Install the file server packages
+  ansible.builtin.apt:
+    name: [samba, smbclient, winbind, libnss-winbind, libpam-winbind, krb5-user, acl, attr, openssh-server]
+    state: present
+    update_cache: true
+  environment:
+    DEBIAN_FRONTEND: noninteractive
+
+- name: Write smb.conf
+  ansible.builtin.template:
+    src: smb.conf.j2
+    dest: /etc/samba/smb.conf
+    mode: "0644"
+    validate: testparm -s %s
+  notify: Restart Samba file services
+
+- name: Let the system look up domain users and groups through winbind
+  ansible.builtin.lineinfile:
+    path: /etc/nsswitch.conf
+    regexp: "^{{ item }}:"
+    line: "{{ item }}: files systemd winbind"
+  loop: [passwd, group]
+
+- name: Check whether the machine is already joined
+  ansible.builtin.command: net ads testjoin
+  register: files_server_joined
+  changed_when: false
+  failed_when: false
+
+# The Administrator password is fed to kinit on stdin, so it is never on a command line.
+- name: Join the domain
+  ansible.builtin.shell: set -o pipefail; echo "$ADMIN_PW" | kinit Administrator@{{ lab_realm }} && net ads join -k
+  args:
+    executable: /bin/bash
+  environment:
+    ADMIN_PW: "{{ lookup('ansible.builtin.file', lab_secrets_dir ~ '/samba_admin_password') }}"
+  no_log: true
+  changed_when: true
+  when: files_server_joined.rc != 0
+  notify: Restart Samba file services
+
+- name: Start and enable the file services
+  ansible.builtin.service:
+    name: "{{ item }}"
+    state: started
+    enabled: true
+  loop: [winbind, smbd]
+
+- name: Create the share directories
+  ansible.builtin.file:
+    path: "{{ files_server_share_root }}/{{ item.name }}"
+    state: directory
+    owner: root
+    group: "{{ item.group }}"
+    mode: "{{ item.mode }}"
+  loop:
+    - {name: staff, group: staff, mode: "2770"}
+    - {name: finance, group: finance, mode: "2770"}
+    - {name: notices, group: root, mode: "0755"}
+
+- name: Put a notice on the public share
+  ansible.builtin.copy:
+    dest: "{{ files_server_share_root }}/notices/welcome.txt"
+    content: "Welcome to the lab network. Opening hours and contact details are posted here.\n"
+    mode: "0644"
+
+- name: Work out which users are staff (from the lab user list)
+  ansible.builtin.set_fact:
+    files_server_sftp_users: >-
+      {{ lookup('ansible.builtin.file', files_server_users_csv).splitlines()[1:]
+         | reject('match', '^\s*(#|$)')
+         | map('split', ',')
+         | selectattr('2', 'search', 'staff')
+         | map(attribute=0) | list }}
+
+- name: Create each staff member's SFTP directory (the chroot must be owned by root)
+  ansible.builtin.file:
+    path: "{{ files_server_sftp_root }}/{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  loop: "{{ files_server_sftp_users }}"
+
+- name: Create the writable upload folder inside each chroot
+  ansible.builtin.file:
+    path: "{{ files_server_sftp_root }}/{{ item }}/upload"
+    state: directory
+    owner: "{{ item }}"
+    mode: "0700"
+  loop: "{{ files_server_sftp_users }}"
+
+- name: Turn on chrooted SFTP for the staff group
+  ansible.builtin.template:
+    src: 20-sftp.conf.j2
+    dest: /etc/ssh/sshd_config.d/20-sftp.conf
+    mode: "0644"
+    validate: sshd -t -f %s
+  notify: Restart sshd on the file server
