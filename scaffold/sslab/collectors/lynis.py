@@ -24,5 +24,8 @@ def parse_lynis_report(text: str) -> list[Finding]:
 def parse_lynis_index(text: str) -> int | None:
     for line in text.splitlines():
         if line.startswith("hardening_index="):
-            return int(line.split("=", 1)[1])
+            try:
+                return int(line.split("=", 1)[1])
+            except ValueError:  # an interrupted audit can leave this empty; the findings are still real
+                return None
     return None

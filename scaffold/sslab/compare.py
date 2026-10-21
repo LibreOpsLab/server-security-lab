@@ -41,6 +41,11 @@ def _not_run_after(after: Run, finding_id: str) -> bool:
 def compare(before: Run, after: Run) -> Comparison:
     if before.host != after.host or before.tool != after.tool:
         raise ValueError(f"different hosts or tools: {before.tool}@{before.host} vs {after.tool}@{after.host}")
+    if (before.student, before.fork) != (after.student, after.fork):
+        raise ValueError(
+            f"different students: {before.student} ({before.fork}) vs {after.student} ({after.fork}). "
+            "Compare only your own before and after runs"
+        )
     if not before.findings:
         raise ValueError("the before run has no findings: nothing to compare. Check the tool ran in week 12")
     a = {f.id: f for f in after.findings}

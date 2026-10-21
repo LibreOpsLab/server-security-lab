@@ -75,3 +75,17 @@ def test_html_and_write(tmp_path: Path):
     assert "prefers-color-scheme: dark" in render_comparison_html(c)
     md, html = write_comparison(c, tmp_path)
     assert md.exists() and html.exists() and "compare" in md.name and "docker01" in md.name
+
+
+def test_different_students_rejected_so_a_copied_after_run_is_not_credited():
+    other = R("hardened", [F("a")])
+    other.student = "sam"
+    with pytest.raises(ValueError, match="different students"):
+        compare(R("default", [F("a")]), other)
+
+
+def test_different_forks_rejected():
+    other = R("hardened", [F("a")])
+    other.fork = "sam/ssl"
+    with pytest.raises(ValueError, match="different students"):
+        compare(R("default", [F("a")]), other)

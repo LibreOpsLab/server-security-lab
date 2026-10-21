@@ -82,3 +82,9 @@ def test_unknown_tool_is_an_error():
 def test_garbled_tool_output_lands_in_not_run():
     run = collect("nmap", runner=lambda cmd: "not xml", **collect_args())
     assert run.not_run == ["nmap"] and run.findings == []
+
+
+def test_malformed_index_does_not_discard_the_findings():
+    text = "warning[]=AUTH-1|weak password policy|-|\nhardening_index=\n"
+    run = collect("lynis", runner=lambda cmd: text, **collect_args())
+    assert [f.id for f in run.findings] == ["lynis:AUTH-1"] and run.not_run == [] and run.metrics == {}
