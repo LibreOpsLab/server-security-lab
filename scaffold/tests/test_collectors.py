@@ -77,3 +77,8 @@ def test_unknown_tool_is_an_error():
     except ValueError:
         return
     raise AssertionError("expected ValueError")
+
+
+def test_garbled_tool_output_lands_in_not_run():
+    run = collect("nmap", runner=lambda cmd: "not xml", **collect_args())
+    assert run.not_run == ["nmap"] and run.findings == []

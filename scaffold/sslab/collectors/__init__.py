@@ -42,16 +42,17 @@ def collect(
     run = Run(label, tool, target, student, fork, ", ".join(str(n) for n in nets), now())
     try:
         out = runner(COMMANDS[tool](ip))
-    except Exception:  # missing tool, non-zero exit, timeout: record, never count as closed
+        if tool == "lynis":
+            findings, index = parse_lynis_report(out), parse_lynis_index(out)
+            if index is not None:
+                run.metrics["hardening_index"] = str(index)
+        elif tool == "nmap":
+            findings = parse_nmap_xml(out)
+        else:
+            findings = parse_windows_audit(out)
+    except Exception:  # missing tool, non-zero exit, or output we cannot read: record, never count as closed
         run.not_run.append(tool)
+        run.metrics.clear()
         return run
-    if tool == "lynis":
-        run.findings = parse_lynis_report(out)
-        index = parse_lynis_index(out)
-        if index is not None:
-            run.metrics["hardening_index"] = str(index)
-    elif tool == "nmap":
-        run.findings = parse_nmap_xml(out)
-    else:
-        run.findings = parse_windows_audit(out)
+    run.findings = findings
     return run
