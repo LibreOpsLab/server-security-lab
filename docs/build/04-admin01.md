@@ -18,6 +18,10 @@ real small business would run its administration.
 3. Install git and clone this repo (or your own private copy, see
    [05-the-repo-inventory-and-secrets.md](05-the-repo-inventory-and-secrets.md)).
 4. Install Ansible: `sudo apt install ansible` (or `pipx install ansible-core`).
+5. Confirm `sudo` works without a password prompt for your user (`sudo -n true`), since several playbooks
+   use `become: true` locally on this machine (for example the certificate-issuing plays). If it asks for a
+   password, either set up passwordless sudo for yourself, or add `--ask-become-pass` (`-K`) to every
+   `ansible-playbook` command below.
 5. Generate the SSH key pair the automation expects — the name matters, it is read from
    `ansible_ssh_private_key_file` in the inventory:
 

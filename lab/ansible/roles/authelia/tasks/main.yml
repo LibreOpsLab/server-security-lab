@@ -18,6 +18,17 @@
   ansible.builtin.apt:
     deb: "/root/authelia_{{ authelia_version }}.deb"
 
+# The .deb is expected to create the authelia user, group and these directories; the tasks below are a
+# safety net (idempotent either way), since the SQLite database and notifier file need them.
+- name: Make sure the Authelia directories exist with the right owner
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: authelia
+    group: authelia
+    mode: "0750"
+  loop: [/etc/authelia, /var/lib/authelia]
+
 - name: Write the configuration, checking it with Authelia first
   ansible.builtin.template:
     src: configuration.yml.j2

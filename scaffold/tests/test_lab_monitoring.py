@@ -88,3 +88,14 @@ def test_listeners_bind_to_the_guests_own_address_not_every_interface():
 def test_the_open_telemetry_endpoints_are_recorded_as_deliberate_weak_defaults():
     loki = (MON / "templates/loki.yml.j2").read_text()
     assert "auth_enabled: false" in loki and "deliberate" in loki.lower()
+
+
+def test_grafana_ini_task_restarts_grafana_when_it_changes():
+    tasks = (MON / "tasks/main.yml").read_text()
+    import yaml
+
+    for t in yaml.safe_load(tasks):
+        if t.get("ansible.builtin.template", {}).get("dest") == "/etc/grafana/grafana-lab.ini":
+            assert "notify" in t, "a later change to grafana-lab.ini would never restart Grafana"
+            return
+    raise AssertionError("task not found")

@@ -81,3 +81,10 @@ def test_impact_commands_in_week_readmes_set_pythonpath():
     for wk in ("12-baseline-attack", "17-reattack-compare"):
         text = (REPO / "weeks" / wk / "README.md").read_text()
         assert "PYTHONPATH=scaffold python3 -m sslab impact" in text or "PYTHONPATH=scaffold python -m sslab impact" in text
+
+
+def test_trust_or_identity_guide_notes_local_sudo_needs_handling():
+    # 25-trust.yml and 30-identity.yml's localhost play both use become: true locally (admin01), which
+    # needs either passwordless sudo or -K; a learner hitting "sudo: a password is required" needs a pointer.
+    covered = any("-K" in text(g) or "passwordless sudo" in text(g).lower() for g in ("04-admin01", "05-the-repo-inventory-and-secrets", "07-identity"))
+    assert covered

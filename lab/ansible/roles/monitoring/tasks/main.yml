@@ -76,6 +76,7 @@
     group: grafana
     mode: "0640"
   no_log: true
+  notify: Restart Grafana
 
 - name: Start Grafana with the lab settings merged over the defaults
   ansible.builtin.lineinfile:

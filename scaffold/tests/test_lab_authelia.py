@@ -76,3 +76,14 @@ def test_package_is_installed_from_a_pinned_release_and_config_is_validated():
 
 def test_services_playbook_builds_the_authelia_guest():
     assert "authelia" in (LAB / "ansible/playbooks/40-services.yml").read_text()
+
+
+def test_authelia_data_directories_are_created_with_the_right_owner_before_the_config_is_written():
+    tasks = (ROLE / "tasks/main.yml").read_text()
+    assert "/var/lib/authelia" in tasks and "owner: authelia" in tasks
+    assert tasks.index("/var/lib/authelia") < tasks.index("Write the configuration")
+
+
+def test_configuration_comment_matches_its_own_ownership():
+    conf = (ROLE / "templates/configuration.yml.j2").read_text()
+    assert "root-readable" not in conf

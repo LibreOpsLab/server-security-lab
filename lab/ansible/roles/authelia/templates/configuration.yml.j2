@@ -1,6 +1,7 @@
 ---
 # Managed by Ansible (role: authelia). Single sign-on for the lab apps, with Samba AD as the user directory.
-# Secrets come from the gitignored secrets folder on admin01 and end up only in this root-readable file.
+# Secrets come from the gitignored secrets folder on admin01 and end up only in this file, which is
+# readable by the authelia user only (mode 0600).
 theme: auto
 
 server:
