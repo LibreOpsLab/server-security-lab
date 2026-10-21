@@ -1,0 +1,2 @@
+# Follow `source` directives so shellcheck can read the shared helper files.
+external-sources=true

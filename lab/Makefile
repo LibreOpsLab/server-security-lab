@@ -1,6 +1,6 @@
 # The front door for building and checking the lab. Run from the lab/ folder on admin01.
 # Layers are added in build-guide order; `make help` lists what exists.
-.PHONY: help lint guests baseline trust identity services apps monitoring backup
+.PHONY: help lint guests baseline trust identity services apps monitoring backup verify
 help:
 	@grep -E '^[a-z-]+:.*##' $(MAKEFILE_LIST) | sed 's/:.*##/\t/'
 
@@ -27,6 +27,9 @@ monitoring: ## Build Prometheus, Grafana, Loki and ship every guest's logs
 
 backup: ## Build the backup server and the nightly job
 	cd ansible && ansible-playbook playbooks/70-backup.yml
+
+verify: ## Smoke-test every service (PASS, FAIL or SKIP per check)
+	./verify/verify.sh
 
 lint: ## Static checks: yamllint, shellcheck, Ansible syntax
 	cd .. && yamllint -c lab/.yamllint lab

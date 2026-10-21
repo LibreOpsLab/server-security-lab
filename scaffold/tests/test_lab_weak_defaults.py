@@ -26,7 +26,8 @@ TEXT_SUFFIXES = {".yml", ".yaml", ".j2", ".conf", ".cnf", ".sh", ".cfg", ".ini",
 
 
 def lab_files():
-    return [p for p in LAB.rglob("*") if p.is_file() and p.suffix in TEXT_SUFFIXES and "secrets" not in p.parts]
+    # lab/verify checks that the weak defaults are PRESENT, so it must mention the hardening settings it looks for.
+    return [p for p in LAB.rglob("*") if p.is_file() and p.suffix in TEXT_SUFFIXES and "secrets" not in p.parts and "verify" not in p.parts]
 
 
 def code_lines(path):
