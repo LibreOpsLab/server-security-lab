@@ -28,3 +28,9 @@ def test_same_second_does_not_overwrite(tmp_path: Path):
 def test_filename_carries_host_and_label(tmp_path: Path):
     name = save_run(make_run(), tmp_path).name
     assert name.startswith("default-lynis-docker01-") and name.endswith(".json")
+
+
+def test_metrics_roundtrip_and_default(tmp_path: Path):
+    assert make_run().metrics == {}
+    run = make_run(metrics={"hardening_index": "62"})
+    assert load_run(save_run(run, tmp_path)).metrics == {"hardening_index": "62"}

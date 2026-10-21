@@ -1,0 +1,5 @@
+Id,Name,Severity,Status
+# PLACEHOLDER fixture: columns follow the HardeningKitty-style list; replace with real output (plan Task 9).
+WIN-1001,SMBv1 enabled,High,Failed
+WIN-1002,Account lockout threshold,Medium,Failed
+WIN-1003,Windows Firewall domain profile on,Low,Passed

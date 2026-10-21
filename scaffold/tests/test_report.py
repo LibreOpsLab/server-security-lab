@@ -55,3 +55,9 @@ def test_write_reports_pairs_with_json_name(tmp_path: Path):
     md, html = write_reports(run(), tmp_path)
     assert md.suffix == ".md" and html.suffix == ".html" and md.stem == html.stem
     assert md.read_text().startswith("# ")
+
+
+def test_metrics_shown_in_both_formats():
+    r = run(metrics={"hardening_index": "62"})
+    assert "hardening_index" in render_markdown(r) and "62" in render_markdown(r)
+    assert "hardening_index" in render_html(r)

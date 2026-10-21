@@ -47,6 +47,7 @@ def _meta(run: Run) -> list[tuple[str, str]]:
 def render_markdown(run: Run) -> str:
     out = [f"# {run.tool} report: {run.host} ({run.label})", ""]
     out += [f"- **{k}:** {v}" for k, v in _meta(run)]
+    out += [f"- **{k}:** {v}" for k, v in run.metrics.items()]
     out.append("")
     if not run.findings:
         out += [NO_FINDINGS, ""]
@@ -64,7 +65,7 @@ def render_markdown(run: Run) -> str:
 
 def render_html(run: Run) -> str:
     body = [f"<h1>{esc(run.tool)} report: {esc(run.host)} ({esc(run.label)})</h1>"]
-    body.append('<p class="meta">' + " · ".join(f"{esc(k)}: {esc(v)}" for k, v in _meta(run)) + "</p>")
+    body.append('<p class="meta">' + " · ".join(f"{esc(k)}: {esc(v)}" for k, v in _meta(run) + list(run.metrics.items())) + "</p>")
     if not run.findings:
         body.append(f"<p>{esc(NO_FINDINGS)}</p>")
     for layer in LAYERS:

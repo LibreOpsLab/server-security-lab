@@ -1,0 +1,7 @@
+# PLACEHOLDER fixture, hand-written in the Lynis report.dat format. Replace with real output (plan Task 9).
+report_version=1.0
+hardening_index=62
+warning[]=SSH-7412|SSH root login permitted|PermitRootLogin yes|-|
+suggestion[]=SSH-7440|Consider hardening SSH configuration|AllowTcpForwarding (set YES to NO)|-|
+suggestion[]=AUTH-9286|Configure minimum password age|/etc/login.defs|-|
+suggestion[]=NETW-3200|Disable unused protocols|dccp|-|

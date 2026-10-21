@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<!-- PLACEHOLDER fixture, hand-written in nmap -oX format. Replace with real output (plan Task 9). -->
+<nmaprun><host><address addr="10.10.0.5" addrtype="ipv4"/><ports>
+<port protocol="tcp" portid="22"><state state="open"/><service name="ssh" product="OpenSSH" version="8.2p1"/></port>
+<port protocol="tcp" portid="21"><state state="open"/><service name="ftp" product="vsftpd" version="3.0.3"/></port>
+<port protocol="tcp" portid="80"><state state="open"/><service name="http" product="nginx" version="1.18.0"/></port>
+<port protocol="tcp" portid="443"><state state="closed"/><service name="https"/></port>
+</ports></host></nmaprun>
