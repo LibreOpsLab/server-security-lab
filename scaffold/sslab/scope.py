@@ -22,7 +22,10 @@ def load_scope(path: Path) -> list[ipaddress.IPv4Network]:
     for line in lines:
         line = line.split("#", 1)[0].strip()
         if line:
-            nets.append(ipaddress.ip_network(line, strict=False))
+            try:  # strict: "10.10.0.5/24" must not silently become the whole /24
+                nets.append(ipaddress.ip_network(line, strict=True))
+            except ValueError as e:
+                raise ScopeError(f"bad scope line {line!r}: {e}") from e
     if not nets:
         raise ScopeError(f"write your scope first: {path} has no lab ranges")
     return nets
