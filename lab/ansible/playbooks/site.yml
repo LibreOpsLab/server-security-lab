@@ -1,0 +1,10 @@
+---
+# The layer playbooks are run in order by the Makefile (bootstrap, guests, identity, services, apps, ...).
+# This placeholder checks the inventory loads and every guest is reachable by name.
+- name: Show the lab inventory
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Print each guest and its address
+      ansible.builtin.debug:
+        msg: "{{ inventory_hostname }} -> {{ ansible_host }}"

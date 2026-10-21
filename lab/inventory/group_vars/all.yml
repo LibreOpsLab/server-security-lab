@@ -1,0 +1,36 @@
+---
+# Single source of truth for the lab. Docs, scripts, templates and tests all read these values.
+lab_domain: lab.internal
+lab_realm: LAB.INTERNAL
+lab_netbios: LAB
+lab_subnet: 10.10.10.0/24
+lab_gateway: 10.10.10.1
+lab_dns: [10.10.10.21, 10.10.10.1]
+proxmox_host_ip: 10.10.10.5
+dhcp_pool: {start: 10.10.10.100, end: 10.10.10.199}
+
+# Samba AD in an unprivileged LXC is unreliable (ACLs, xattrs, idmap), so the DC is privileged.
+# The lab network is isolated, which is the stated trade-off (docs/design/lab-build-design.md).
+samba_dc_privileged: true
+
+# Estimates in MB, to be replaced by measured figures after the first real build.
+# vmware: 32 GB workstation minus about 4 GB for the Windows host. proxmox: the 16 GB Proxmox VM minus about 1.5 GB for Proxmox itself.
+ram_budget_mb: {vmware: 28672, proxmox: 14336}
+
+ansible_user: root
+ansible_ssh_private_key_file: ~/.ssh/lab_admin
+ansible_host: "{{ lab_hosts[inventory_hostname].ip }}"
+
+lab_hosts:
+  pfsense01: {kind: vmware, ip: 10.10.10.1, ram_mb: 1536, cores: 2, disk_gb: 16, os: pfsense, role: firewall}
+  pve01: {kind: vmware, ip: 10.10.10.5, ram_mb: 16384, cores: 8, disk_gb: 250, os: proxmox, role: hypervisor}
+  admin01: {kind: vmware, ip: 10.10.10.10, ram_mb: 3072, cores: 2, disk_gb: 40, os: ubuntu-24.04, role: admin}
+  win-client01: {kind: vmware, ip: 10.10.10.11, ram_mb: 4096, cores: 2, disk_gb: 60, os: windows-11, role: client, optional: true}
+  samba-dc01: {kind: lxc, vmid: 121, ip: 10.10.10.21, ram_mb: 1024, cores: 1, disk_gb: 8, os: debian-12, role: samba_dc}
+  auth01: {kind: lxc, vmid: 122, ip: 10.10.10.22, ram_mb: 512, cores: 1, disk_gb: 4, os: debian-12, role: auth}
+  radius01: {kind: lxc, vmid: 123, ip: 10.10.10.23, ram_mb: 512, cores: 1, disk_gb: 4, os: debian-12, role: radius}
+  mon01: {kind: lxc, vmid: 124, ip: 10.10.10.24, ram_mb: 2048, cores: 2, disk_gb: 20, os: debian-12, role: monitoring}
+  mail01: {kind: lxc, vmid: 125, ip: 10.10.10.25, ram_mb: 1024, cores: 1, disk_gb: 8, os: debian-12, role: mail}
+  files01: {kind: lxc, vmid: 126, ip: 10.10.10.26, ram_mb: 512, cores: 1, disk_gb: 20, os: debian-12, role: files}
+  pbs01: {kind: lxc, vmid: 127, ip: 10.10.10.27, ram_mb: 1024, cores: 1, disk_gb: 40, os: debian-12, role: backup}
+  docker01: {kind: vm, vmid: 130, ip: 10.10.10.30, ram_mb: 5120, cores: 2, disk_gb: 40, os: ubuntu-24.04, role: docker}
