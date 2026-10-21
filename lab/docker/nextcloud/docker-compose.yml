@@ -44,7 +44,9 @@ services:
       - nextcloud_data:/var/www/html
       # Single sign-on settings (rendered by Ansible) and the host's CA bundle, which includes the lab CA.
       - ./oidc.config.php:/var/www/html/config/oidc.config.php:ro
-      - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/lab-ca-bundle.crt:ro
+      # Replaces the container's own CA bundle with the host's (which trusts the lab CA after
+      # `make trust`), so oidc_login's own HTTP client, not only NextCloud's, trusts it.
+      - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro
     networks:
       - nextcloud-internal
       - lab-proxy

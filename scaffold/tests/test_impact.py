@@ -36,3 +36,12 @@ def test_hostile_finding_text_is_escaped():
     before = R("default", [F("a", title="<script>alert(1)</script> | x")])
     md = impact_table(compare(before, R("hardened", [])))
     assert "<script>" not in md
+
+
+def test_impact_table_heading_escapes_untrusted_host_and_tool_names():
+    before = R("default", [F("a")])
+    after = R("hardened", [F("a")])
+    before.tool = after.tool = "<script>alert(1)</script>"
+    before.host = after.host = "<img src=x onerror=alert(1)>"
+    md = impact_table(compare(before, after))
+    assert "<script>" not in md and "<img" not in md

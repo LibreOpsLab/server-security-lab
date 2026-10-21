@@ -67,7 +67,7 @@ def test_nextcloud_oidc_settings_use_authelia_and_a_variable_secret():
     php = (ROLE / "templates/oidc.config.php.j2").read_text()
     assert "oidc_login_provider_url" in php and "authelia_portal_host" in php  # the sign-in portal is the provider
     assert "authelia_oidc_nextcloud_secret" in php and "oidc_login_client_id' => 'nextcloud'" in php
-    assert "default_certificates_bundle_path" in php and "lab-ca-bundle.crt" in php
+    assert "default_certificates_bundle_path" in php and "ca-certificates.crt" in php
 
 
 def test_role_renders_env_files_from_secrets_privately():
@@ -112,3 +112,12 @@ def test_vaultwarden_alive_healthcheck_bypasses_sso_like_the_rest_of_the_api():
     # /alive is Vaultwarden's own liveness endpoint; it was missing from the unauthenticated router's
     # path list, so it went through the SSO router and returned a redirect instead of a health status.
     assert "PathPrefix(`/api`,`/identity`,`/notifications`,`/events`,`/alive`)" in compose("vaultwarden")
+
+
+def test_nextcloud_mounts_the_lab_ca_over_the_containers_own_system_bundle():
+    # oidc_login (Jumbojett) makes its own HTTP calls to the OIDC provider using the container's default
+    # system CA bundle, not NextCloud's own 'default_certificates_bundle_path' setting (that only affects
+    # NextCloud's own HTTP client). The host bundle (with the lab CA trusted via make trust) must replace
+    # the container's own bundle at its real path for OIDC discovery to pass TLS verification.
+    nc = compose("nextcloud")
+    assert "/etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro" in nc

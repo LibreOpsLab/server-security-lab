@@ -271,3 +271,16 @@ def test_impact_cli_rejects_different_students(env):
     data["student"] = "sam"
     other.write_text(json.dumps(data))
     assert main(["impact", "--before", str(before), "--after", str(other), "--out", str(env / "reports")], runner=lynis) == 2
+
+
+def test_impact_cli_never_overwrites_an_existing_file(env):
+    main(argv(env, "audit", "--label", "default", "--target", "10.10.0.5", "--tools", "lynis"), runner=lynis)
+    main(argv(env, "audit", "--label", "hardened", "--target", "10.10.0.5", "--tools", "lynis"), runner=lynis_hardened)
+    before = next((env / "reports").glob("default-lynis-*.json"))
+    after = next((env / "reports").glob("hardened-lynis-*.json"))
+    main(["impact", "--before", str(before), "--after", str(after), "--out", str(env / "reports")])
+    first = next((env / "reports").glob("impact-*.md"))
+    first.write_text(first.read_text() + "MY ANSWER HERE")
+    main(["impact", "--before", str(before), "--after", str(after), "--out", str(env / "reports")])
+    assert "MY ANSWER HERE" in first.read_text()  # the student's filled-in copy must not be clobbered
+    assert len(list((env / "reports").glob("impact-*.md"))) == 2  # the new run gets its own file instead

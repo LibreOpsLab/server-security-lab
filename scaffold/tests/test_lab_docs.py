@@ -75,3 +75,9 @@ def test_week_map_references_every_guide():
 
 def test_admin01_guide_generates_the_key_name_automation_expects():
     assert "lab_admin" in text("04-admin01")
+
+
+def test_impact_commands_in_week_readmes_set_pythonpath():
+    for wk in ("12-baseline-attack", "17-reattack-compare"):
+        text = (REPO / "weeks" / wk / "README.md").read_text()
+        assert "PYTHONPATH=scaffold python3 -m sslab impact" in text or "PYTHONPATH=scaffold python -m sslab impact" in text

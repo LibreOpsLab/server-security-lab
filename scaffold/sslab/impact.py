@@ -9,7 +9,7 @@ from .report import esc, html_page, md
 
 def impact_table(c: Comparison) -> str:
     out = [
-        f"# Business impact: {c.before.tool} on {c.before.host}", "",
+        f"# Business impact: {md(c.before.tool)} on {md(c.before.host)}", "",
         "Fill in the two right-hand columns yourself, in plain business language: money, customers, trust, "
         "downtime, legal duties. No technical terms.", "",
         "| State | Finding | What could happen | What it means for the business |",

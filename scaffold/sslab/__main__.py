@@ -92,6 +92,11 @@ def main(argv: list[str] | None = None, runner: Runner | None = None) -> int:
                 args.out.mkdir(parents=True, exist_ok=True)
                 stem = f"impact-{c.before.host}-{args.after.stem}"
                 md, html = args.out / f"{stem}.md", args.out / f"{stem}.html"
+                # Never overwrite: the student fills this file in by hand, so a clash gets -2, -3, ...
+                n = 2
+                while md.exists() or html.exists():
+                    md, html = args.out / f"{stem}-{n}.md", args.out / f"{stem}-{n}.html"
+                    n += 1
                 md.write_text(impact_table(c), encoding="utf-8")
                 html.write_text(impact_table_html(c), encoding="utf-8")
             print(f"wrote {md} and {html}")
