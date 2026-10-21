@@ -7,10 +7,11 @@ A hands-on build repo for teaching **server and infrastructure security**, desig
 usable for self-study. Learners take a private copy of it, build a small business platform week by week, then do what
 real engineers do: **attack it, harden it, attack it again, and explain the difference.**
 
-> **Status: early.** The tooling is tested against hand-written sample output. It has not yet been
-> validated against a full lab build, so parsers may need adjusting for real tool output. See
-> [docs/instructor-weak-defaults.md](docs/instructor-weak-defaults.md) for what is verified and what is not.
-> Help validating it is the most useful contribution right now (see [CONTRIBUTING.md](CONTRIBUTING.md)).
+> **Status: early, unverified.** The whole lab build (docs, scripts, automation) is written and tested
+> statically; none of it has been run end to end on a real workstation yet. See
+> [docs/build/STATUS.md](docs/build/STATUS.md) for what is verified and what is not, and
+> [docs/instructor-weak-defaults.md](docs/instructor-weak-defaults.md) for the security tooling's status.
+> Help validating any of it is the most useful contribution right now (see [CONTRIBUTING.md](CONTRIBUTING.md)).
 
 ## Why this exists
 
@@ -45,6 +46,14 @@ maintenance and support burden it adds.
 
 Everything is open source and lightweight: Lynis, nmap, hydra, curl and smbclient for the tooling;
 Python 3.11+ standard library only; no database, no services to run.
+
+## Build the whole lab
+
+This repo is two things: the full infrastructure build (docs, Ansible, scripts — start at
+[docs/build/00-welcome.md](docs/build/00-welcome.md)) and the security tooling below that measures it. Build
+the lab first; the security loop needs a working platform to test.
+
+See also: [design](docs/design/lab-build-design.md) and [how it works](docs/how-it-works.md).
 
 ## Quick start
 
