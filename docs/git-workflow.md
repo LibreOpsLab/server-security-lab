@@ -2,6 +2,10 @@
 
 Infrastructure is code, so it is managed like code.
 
+New to Git, GitHub or VS Code? Start with [DevOps 101: set up your development environment](devops-101.md)
+for Windows app installation, Git configuration, cloning into a user-profile `dev` folder and basic
+commands. This page covers the lab's private-copy and weekly workflow.
+
 1. **Make a private copy** of the upstream repo, clone it on `admin01`, and add `upstream` as a second
    remote. `scripts/create-private-copy.sh` does all of it. GitHub forks of public repos are always public,
    so a copy that keeps the history is used instead. By hand:

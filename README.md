@@ -47,6 +47,22 @@ maintenance and support burden it adds.
 Everything is open source and lightweight: Lynis, nmap, hydra, curl and smbclient for the tooling;
 Python 3.11+ standard library only; no database, no services to run.
 
+## Getting Started
+
+New to Git, GitHub, VS Code or Python? Start with **[DevOps 101: set up your development
+environment](docs/devops-101.md)**. You can read and follow the guide right here in your browser before
+installing anything. It walks you through:
+
+1. Installing Git, VS Code and Python with `winget`.
+2. Setting your Git identity and cloning your instructor-provided private repository into `%USERPROFILE%\dev`.
+3. Navigating code and documentation in VS Code, previewing Markdown, and using the Source Control view to
+   commit, pull and push.
+4. Connecting VS Code to GitHub and syncing your branch.
+
+After setup, read [Git workflow for the lab](docs/git-workflow.md) to learn the weekly branches, pull
+requests and upstream updates. Then start building with the [welcome guide](docs/build/00-welcome.md).
+Students should use their private course repository for lab work, not push it to the public upstream repo.
+
 ## Build the whole lab
 
 This repo is two things: the full infrastructure build (docs, Ansible, scripts — start at
@@ -110,6 +126,7 @@ not a security control. Please read [SECURITY.md](SECURITY.md).
 
 ## Documentation
 
+- [DevOps 101: set up your development environment](docs/devops-101.md): install Git, VS Code and Python on Windows, clone your course repository and learn the basic Git commands
 - [How it works](docs/how-it-works.md): architecture and the reasons behind the design
 - [Attack set](docs/attack-set.md) · [Git workflow](docs/git-workflow.md)
 - [Instructor notes: weak defaults and lab validation](docs/instructor-weak-defaults.md)
