@@ -127,6 +127,25 @@ git status
 Keep student work in the designated learner-owned folders such as `build/` and `portfolio/`, and follow the
 week guide. Do not add `.env` files, passwords, private keys or generated secrets to Git.
 
+### Trust folders and code
+
+When VS Code opens a folder for the first time, it may ask whether you trust the authors. This is a security
+decision, not just a setup question.
+
+- If you do not know where the folder came from, choose **No, I don't trust the authors** or leave it in
+  **Restricted Mode**. You can still browse files, but VS Code limits features that can run code, including
+  terminals, tasks, debugging, some extensions and AI agents.
+- Trust the course folder only after checking that you cloned the repository URL provided by your instructor
+  and that the folder is the expected `server-security-lab` repository. Trusting it lets VS Code and its
+  extensions run project code and tasks. It does not prove that every script or command is safe.
+- Before running a task or script, read the relevant week instructions and inspect commands you do not
+  recognize. Ask your instructor if you are unsure.
+
+Do not trust random folders or downloaded projects just to make a warning go away. You can review or change
+folder trust later from the **Manage** link in the Restricted Mode banner, or by selecting the Restricted
+Mode indicator in the VS Code status bar. See the [VS Code Workspace Trust guide](https://code.visualstudio.com/docs/editing/workspaces/workspace-trust)
+for details.
+
 ### Navigate code and read documentation
 
 - **Explorer** (file icon, or `Ctrl+Shift+E`) shows the repository folders. Expand a folder and select a
@@ -157,6 +176,32 @@ reviewing pull requests.
 If Git or VS Code reports that you do not have permission, confirm that you cloned your private course
 repository and that the signed-in GitHub account has been granted access. Do not sign in with someone
 else's account or put a password/token into a source file.
+
+### Set up GitHub Copilot in VS Code
+
+Copilot can offer inline code suggestions and answer questions about code in the editor. Access may be
+provided by your school, or by an eligible GitHub Copilot plan. Use your own GitHub account and check your
+school's rules before enabling it; signing in does not guarantee that your account has access.
+
+1. Make sure the expected course folder is open and trusted. AI features may be unavailable in Restricted
+   Mode.
+2. Select the Copilot icon in the VS Code status bar and choose **Use AI Features**, then sign in with the
+   GitHub account that has Copilot access. Follow the browser prompts. If Copilot is not available in your
+   VS Code installation, open **Extensions** (`Ctrl+Shift+X`), find **GitHub Copilot** published by GitHub,
+   install it, and follow its sign-in prompt. Do not install similarly named extensions from unknown
+   publishers.
+3. Open a code file and start typing to see possible inline suggestions. Review a suggestion before
+   accepting it. To ask a question, open Copilot Chat from the Copilot icon or Command Palette, or select a
+   small section of code and ask what it does.
+4. Review every proposed edit in the editor or Source Control diff. Copilot can produce incorrect,
+   insecure, or irrelevant code. Run the tests or checks required by the week guide and ask your instructor
+   when you cannot explain a suggestion.
+
+Do not send passwords, tokens, private keys, `.env` contents, personal information or real student/customer
+data to Copilot. Follow your institution's AI-use and data-handling rules. Treat text in files, terminal
+output and AI responses as untrusted: verify commands before running them, especially commands that change
+systems or contact network targets. See the [VS Code Copilot setup guide](https://code.visualstudio.com/docs/setup/copilot)
+for current account and setup details.
 
 ## 5. Save and sync a change
 
