@@ -1,6 +1,6 @@
 # The front door for building and checking the lab. Run from the lab/ folder on admin01.
 # Layers are added in build-guide order; `make help` lists what exists.
-.PHONY: help lint guests baseline trust identity services apps monitoring backup verify
+.PHONY: help lint guests baseline trust identity services files mail sso radius apps monitoring backup verify
 help:
 	@grep -E '^[a-z-]+:.*##' $(MAKEFILE_LIST) | sed 's/:.*##/\t/'
 
@@ -18,6 +18,18 @@ identity: ## Build Samba AD, DNS records and the lab users
 
 services: ## Build the file server, SSO, mail and Wi-Fi authentication guests
 	cd ansible && ansible-playbook playbooks/40-services.yml
+
+files: ## Build only the file server and SFTP (files01)
+	cd ansible && ansible-playbook playbooks/40-services.yml --tags files
+
+mail: ## Build only the mail server (mail01)
+	cd ansible && ansible-playbook playbooks/40-services.yml --tags mail
+
+sso: ## Build only single sign-on (auth01)
+	cd ansible && ansible-playbook playbooks/40-services.yml --tags sso
+
+radius: ## Build only Wi-Fi authentication (radius01)
+	cd ansible && ansible-playbook playbooks/40-services.yml --tags radius
 
 apps: ## Deploy Traefik, NextCloud, Stirling PDF and Vaultwarden on the Docker VM
 	cd ansible && ansible-playbook playbooks/50-apps.yml

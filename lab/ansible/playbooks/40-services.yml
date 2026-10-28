@@ -1,9 +1,11 @@
 ---
-# Core services, one play per guest. Run after `make baseline`, `make trust` and `make identity`.
+# Core services, one play per guest, each tagged so the guides can build one at a time (see the Makefile).
+# Plain `make services` builds all four. Run after `make baseline`, `make trust` and `make identity`.
 - name: Issue the server certificates from the lab CA
   hosts: localhost
   connection: local
   gather_facts: false
+  tags: [always]
   tasks:
     - name: Issue each certificate (kept if it exists)
       ansible.builtin.command:
@@ -20,20 +22,24 @@
 
 - name: File server and SFTP
   hosts: files
+  tags: [files]
   roles:
     - files_server
 
 - name: Mail server
   hosts: mail
+  tags: [mail]
   roles:
     - mail
 
 - name: Single sign-on
   hosts: auth
+  tags: [sso]
   roles:
     - authelia
 
 - name: Wi-Fi authentication
   hosts: radius
+  tags: [radius]
   roles:
     - radius

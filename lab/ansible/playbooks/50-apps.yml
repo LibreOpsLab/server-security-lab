@@ -1,5 +1,5 @@
 ---
-# The applications on the Docker VM. Run after `make services` (the sign-in portal and certificates must exist).
+# The applications on the Docker VM. Run after `make sso` (the sign-in portal and certificates must exist).
 - name: Docker VM and the web applications
   hosts: docker
   roles:

@@ -5,7 +5,15 @@ Windows workstation, cloning your course repository into a `dev` folder in your 
 and sharing your work.
 
 For the lab's weekly branch, pull-request and upstream-sync workflow, continue with
-[Git workflow for the lab](git-workflow.md).
+[Git workflow for the lab](git-workflow.md). When you are set up, read the
+[welcome guide](build/00-welcome.md) and start the build with
+[guide 01](build/01-prepare-the-workstation.md).
+
+> **What you should have at the end of this guide, and what to save as evidence:** Git, VS Code and Python
+> installed; your private repo cloned into `$HOME\dev`; and one test commit pushed on a branch. Save the
+> output of `git --version`, `python --version`, `git remote -v` and `git log --oneline -3` in
+> `portfolio/evidence/00-devops-101/`, with a short `evidence.md` (copy
+> [`portfolio/templates/evidence-log.md`](../portfolio/templates/evidence-log.md)).
 
 ## 1. Install the tools with winget
 

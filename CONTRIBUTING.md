@@ -55,3 +55,17 @@ Bugs and unclear guides: open an issue using the templates. Security concerns ab
 see [SECURITY.md](SECURITY.md); please do not open a public issue for those.
 
 By contributing you agree your contribution is licensed under the [MIT licence](LICENSE).
+
+### Formatting docs (manual, optional)
+
+Markdown and JSON can be tidied with Prettier. This is a manual convenience only: it is not run by CI or any
+hook, and nothing fails if you skip it. Needs Node.js.
+
+```bash
+npm install          # once
+npm run format       # rewrite files in place
+npm run format:check # list files that would change, change nothing
+```
+
+Prettier keeps your line wrapping (`proseWrap: preserve`). Check `git diff` before committing, because it
+can also rewrite table spacing in files you did not mean to touch.

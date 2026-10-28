@@ -24,8 +24,6 @@ in place. Still **unverified** on a real lab until the first build (`docs/build/
 | Monitoring and logs           | Loki and Alloy's metrics port accept anyone on the LAN with no login                                   | `monitoring`, `log_shipper`              | `enum-services`         | Week 15   |
 | Windows 11 (if built)         | No account lockout, default audit policy, firewall profiles as installed                               | (built by hand; no Ansible role)         | Windows audit           | Week 15   |
 | Updates                       | No automatic security updates configured on any guest                                                  | `baseline` (deliberately omitted)        | Lynis                   | Week 15   |
-| Windows 11 / Server | No account lockout, default audit policy, firewall profiles as installed                                                                                       | Windows audit                   | Week 15                            |
-| Updates             | No automatic security updates configured                                                                                                                       | Lynis                           | Week 15                            |
 
 The first attack run should produce findings in all four layers (network, host, service, identity). If a
 layer is empty after the spike, add the smallest missing real default rather than a contrived hole.

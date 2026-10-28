@@ -1,0 +1,6 @@
+.git
+node_modules
+lab/secrets
+scaffold/.pytest_cache
+scaffold/tests/fixtures
+.github

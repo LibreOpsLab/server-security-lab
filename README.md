@@ -63,6 +63,12 @@ After setup, read [Git workflow for the lab](docs/git-workflow.md) to learn the 
 requests and upstream updates. Then start building with the [welcome guide](docs/build/00-welcome.md).
 Students should use their private course repository for lab work, not push it to the public upstream repo.
 
+The course is planned as **20 weeks**: weeks 1 to 11 build the lab, weeks 12 to 20 attack, harden, re-attack
+and explain it. See the [week map](docs/build/WEEK-MAP.md). After every guide, students save proof and
+write a short explanation in `portfolio/evidence/`; the rules are in the
+[welcome guide](docs/build/00-welcome.md#evidence-what-to-capture-and-how). Unfamiliar word? Check the
+[glossary](docs/glossary.md).
+
 ## Build the whole lab
 
 This repo is two things: the full infrastructure build (docs, Ansible, scripts — start at
@@ -71,7 +77,10 @@ the lab first; the security loop needs a working platform to test.
 
 See also: [design](docs/design/lab-build-design.md) and [how it works](docs/how-it-works.md).
 
-## Quick start
+## Quick start (self-study)
+
+In a class your lecturer gives you a private repository to clone (see DevOps 101); the script below is for
+studying on your own.
 
 ```bash
 # 1. Make your own PRIVATE copy (needs git and the GitHub CLI, logged in with `gh auth login`)
@@ -127,6 +136,9 @@ not a security control. Please read [SECURITY.md](SECURITY.md).
 ## Documentation
 
 - [DevOps 101: set up your development environment](docs/devops-101.md): install Git, VS Code and Python on Windows, clone your course repository and learn the basic Git commands
+- [Week map](docs/build/WEEK-MAP.md): the 20-week plan, what to prioritise when behind, lecturer checkpoints
+- [Glossary](docs/glossary.md): plain-language meanings for the words the guides use
+- [Build status and course readiness](docs/build/STATUS.md): what is verified, and what is risky
 - [How it works](docs/how-it-works.md): architecture and the reasons behind the design
 - [Attack set](docs/attack-set.md) · [Git workflow](docs/git-workflow.md)
 - [Instructor notes: weak defaults and lab validation](docs/instructor-weak-defaults.md)

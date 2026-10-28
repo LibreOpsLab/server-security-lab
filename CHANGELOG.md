@@ -13,3 +13,4 @@ All notable changes. Learners: read this before merging `upstream/main` into you
   Authelia SSO, FreeRADIUS, mail, file/SFTP, the Docker apps, monitoring, backup, and optional Windows 11
   debloat and domain join. Unverified on a real workstation; see `docs/build/STATUS.md`.
 - `sslab impact`: a blank business-impact table for the manager conversation (`docs/instructor/manager-conversation.md`).
+- Course readiness review: build guides rewritten for beginners (call-outs, time estimates, evidence tables, "explain it" questions), a 20-week map, glossary, evidence log template, threat-model and risk-register templates, per-service `make sso|mail|files|radius` targets, `admin01` split into two parts so pfSense can be configured, and several guide fixes. See `docs/build/STATUS.md`.
