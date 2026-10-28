@@ -45,8 +45,20 @@ that can use the same processor features and prevent nested virtualisation from 
 
    Continue only when the result says `READY`. In the report, Virtualization-based security should be `Off`,
    and `Hypervisor running under Windows` should be `False`. If it says `NOT READY`, do not continue to the
-   Proxmox setup; capture the yellow lines and ask your lecturer for help. A school policy or a firmware
-   lock can prevent these settings from changing.
+   Proxmox setup. If a policy is listed, capture the report and ask your lecturer; policy-controlled settings
+   must be changed by the school's administrator.
+
+   If Windows still reports Virtualization-based security as enabled or running, and no policy is listed,
+   the machine may have a firmware-backed VBS lock. Have the BitLocker recovery key available, remain at the
+   computer during restart, then run:
+
+   ```powershell
+   .\scripts\Set-NestedVirtualisation.ps1 -Mode Disable -UnlockFirmware
+   ```
+
+   Confirm the additional warning. Restart and accept the firmware change at the pre-Windows prompt. If no
+   prompt appears, or the check still reports `NOT READY`, stop and ask your lecturer; do not keep repeating
+   the firmware-unlock step.
 
 5. Confirm hardware virtualisation is enabled in the firmware (Task Manager > Performance > CPU >
    "Virtualization: Enabled"). This is separate from the Windows settings changed by the script.
@@ -57,6 +69,8 @@ that can use the same processor features and prevent nested virtualisation from 
 
 To restore the Windows settings saved before preparation, run
 `.\scripts\Set-NestedVirtualisation.ps1 -Mode Restore` from an elevated PowerShell window, then restart.
+Restore returns the saved Windows settings; it does not reinstate a firmware lock removed by the optional
+unlock step.
 
 ## Check it worked
 
@@ -67,7 +81,8 @@ To restore the Windows settings saved before preparation, run
 ## If it goes wrong
 
 - The script reports `NOT READY`: follow the report's yellow lines and ask your lecturer if a policy or
-  firmware lock is preventing the change. Do not rely on only turning off Memory Integrity in Windows
+  firmware lock is preventing the change. If it reports VBS as enabled/running with no policy listed, follow
+  the optional firmware-unlock step above. Do not rely on only turning off Memory Integrity in Windows
   Security; other Windows hypervisor features may still be active.
 - Proxmox later refuses to start a nested guest, or is extremely slow: confirm this guide's script check
   still reports `READY`, hardware virtualisation is enabled in firmware, and nested virtualisation is

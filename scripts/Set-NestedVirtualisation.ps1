@@ -16,6 +16,8 @@
       Check    Read-only. Reports the current state and whether nested virtualisation is ready. This is the
                "is it still off?" check for the start of each class. Exit code 0 = ready, 2 = not ready.
       Disable  Saves the current state, switches the features off, and asks you to restart.
+               -UnlockFirmware additionally schedules Microsoft's SecConfig.efi for a one-time boot to
+               remove a firmware-backed VBS lock.
       Restore  Puts back what Disable changed, using the saved state. Restart afterwards.
 
     The saved state is a small JSON file (default C:\ProgramData\LabHostPrep\state.json). It is written once,
@@ -30,6 +32,10 @@
 .PARAMETER Force
     Skip the confirmation prompt in Disable and Restore modes.
 
+.PARAMETER UnlockFirmware
+    With -Mode Disable, schedule Microsoft's SecConfig.efi for a one-time boot to remove a firmware-backed
+    VBS/Credential Guard lock. Requires UEFI, physical access at restart, and may trigger BitLocker recovery.
+
 .EXAMPLE
     .\Set-NestedVirtualisation.ps1
     Reports the current state. Changes nothing.
@@ -41,6 +47,11 @@
 .EXAMPLE
     .\Set-NestedVirtualisation.ps1 -Mode Disable
     Prepares the workstation. Restart, then run the script again with no parameters to verify.
+
+.EXAMPLE
+    .\Set-NestedVirtualisation.ps1 -Mode Disable -UnlockFirmware
+    Also schedules a one-time firmware unlock. Have the BitLocker recovery key available and confirm the
+    prompt shown before Windows starts.
 
 .NOTES
     Run from an elevated PowerShell (Run as administrator). Works on Windows PowerShell 5.1 and PowerShell 7.
@@ -57,10 +68,15 @@ param(
 
     [string]$StatePath = (Join-Path $env:ProgramData 'LabHostPrep\state.json'),
 
-    [switch]$Force
+    [switch]$Force,
+
+    [switch]$UnlockFirmware
 )
 
 $ErrorActionPreference = 'Stop'
+if ($UnlockFirmware -and $Mode -ne 'Disable') {
+    throw '-UnlockFirmware can only be used with -Mode Disable.'
+}
 
 # --- What the script manages ------------------------------------------------------------------------
 
@@ -81,6 +97,7 @@ $BootValues = @('hypervisorlaunchtype', 'vsmlaunchtype')
 $RegistryValues = @(
     @{ Path = 'HKLM:\SYSTEM\CurrentControlSet\Control\DeviceGuard'; Name = 'EnableVirtualizationBasedSecurity' },
     @{ Path = 'HKLM:\SYSTEM\CurrentControlSet\Control\DeviceGuard'; Name = 'RequirePlatformSecurityFeatures' },
+    @{ Path = 'HKLM:\SYSTEM\CurrentControlSet\Control\DeviceGuard'; Name = 'HypervisorEnforcedCodeIntegrity' },
     @{ Path = 'HKLM:\SYSTEM\CurrentControlSet\Control\DeviceGuard\Scenarios\HypervisorEnforcedCodeIntegrity'; Name = 'Enabled' },
     @{ Path = 'HKLM:\SYSTEM\CurrentControlSet\Control\Lsa'; Name = 'LsaCfgFlags' }
 )
@@ -88,6 +105,8 @@ $RegistryValues = @(
 # Policy locations that override the values above. Read-only: reported, never changed.
 $PolicyValues = @(
     @{ Path = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\DeviceGuard'; Name = 'EnableVirtualizationBasedSecurity' },
+    @{ Path = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\DeviceGuard'; Name = 'RequirePlatformSecurityFeatures' },
+    @{ Path = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\DeviceGuard'; Name = 'HypervisorEnforcedCodeIntegrity' },
     @{ Path = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\DeviceGuard'; Name = 'LsaCfgFlags' }
 )
 
@@ -120,6 +139,70 @@ function Set-BootValue([string]$Name, [string]$Value) {
         # Deleting a value that is already absent is fine; anything else is a real failure.
         if ($null -ne $Value) { throw "bcdedit could not set $Name to $Value (exit code $LASTEXITCODE)." }
     }
+}
+
+function Invoke-BcdEdit([string[]]$Arguments) {
+    & bcdedit.exe @Arguments | Out-Null
+    if ($LASTEXITCODE -ne 0) {
+        throw "bcdedit $($Arguments -join ' ') failed (exit code $LASTEXITCODE)."
+    }
+}
+
+function Schedule-FirmwareUnlock {
+    $secConfig = Join-Path $env:windir 'System32\SecConfig.efi'
+    if (-not (Test-Path $secConfig -PathType Leaf)) {
+        throw "Microsoft's firmware unlock tool was not found at $secConfig."
+    }
+
+    $usedLetters = @(Get-PSDrive -PSProvider FileSystem | ForEach-Object { $_.Name })
+    $letter = @('Z', 'Y', 'X', 'W', 'V', 'U', 'T', 'S') |
+        Where-Object { $_ -notin $usedLetters -and -not (Test-Path "${_}:\") } |
+        Select-Object -First 1
+    if (-not $letter) { throw 'No unused drive letter is available to mount the EFI System Partition.' }
+
+    $drive = "${letter}:"
+    $mounted = $false
+    $entryCreated = $false
+    $entryGuid = "{$([guid]::NewGuid().ToString())}"
+
+    try {
+        & mountvol.exe $drive /s | Out-Null
+        if ($LASTEXITCODE -ne 0) {
+            throw 'Could not mount the EFI System Partition. Firmware unlock requires a UEFI system.'
+        }
+        $mounted = $true
+
+        $bootDirectory = Join-Path $drive 'EFI\Microsoft\Boot'
+        if (-not (Test-Path $bootDirectory -PathType Container)) {
+            New-Item -ItemType Directory -Path $bootDirectory -Force | Out-Null
+        }
+        Copy-Item -LiteralPath $secConfig -Destination (Join-Path $bootDirectory 'SecConfig.efi') -Force
+
+        Invoke-BcdEdit @('/create', $entryGuid, '/d', 'LabHostPrep VBS firmware unlock', '/application', 'osloader')
+        $entryCreated = $true
+        Invoke-BcdEdit @('/set', $entryGuid, 'device', "partition=$drive")
+        Invoke-BcdEdit @('/set', $entryGuid, 'path', '\EFI\Microsoft\Boot\SecConfig.efi')
+        Invoke-BcdEdit @('/set', $entryGuid, 'loadoptions', 'DISABLE-LSA-ISO,DISABLE-VBS')
+        Invoke-BcdEdit @('/set', '{bootmgr}', 'bootsequence', $entryGuid)
+    }
+    catch {
+        if ($entryCreated) {
+            try { Invoke-BcdEdit @('/delete', $entryGuid, '/cleanup') }
+            catch { Write-Warning "Could not remove the incomplete firmware-unlock boot entry $entryGuid." }
+        }
+        throw
+    }
+    finally {
+        if ($mounted) {
+            & mountvol.exe $drive /d | Out-Null
+            if ($LASTEXITCODE -ne 0) {
+                Write-Warning "Could not unmount the EFI System Partition at $drive."
+            }
+        }
+    }
+
+    Write-Host 'Firmware unlock is scheduled for the next boot.' -ForegroundColor Yellow
+    Write-Host 'At the pre-Windows prompt, physically confirm the change. If no prompt appears, do not assume the firmware lock was removed.' -ForegroundColor Yellow
 }
 
 function Get-RegValue($Item) {
@@ -241,10 +324,30 @@ WSL 2 and Docker Desktop will stop working until you run this script with -Mode 
 Do this on a lab workstation only.
 '@
         if (-not (Confirm-Action $msg)) { Write-Host 'Cancelled. Nothing was changed.'; exit 1 }
+        if ($UnlockFirmware -and -not (Confirm-Action @'
+This also schedules Microsoft's SecConfig.efi for a one-time boot to clear a firmware-backed VBS lock.
+Have the BitLocker recovery key available. You must be present to confirm the change before Windows starts.
+This firmware change is not reversed by -Mode Restore.
+'@)) {
+            Write-Host 'Cancelled. Nothing was changed.'; exit 1
+        }
 
         # Save the original state once. A second run must not overwrite it with already-changed settings.
         if (Test-Path $StatePath) {
             Write-Host "Original settings already saved at $StatePath (kept)."
+            $savedState = Get-Content -Path $StatePath -Raw | ConvertFrom-Json
+            $snapshotUpdated = $false
+            foreach ($r in $RegistryValues) {
+                $key = "$($r.Path)|$($r.Name)"
+                if ($savedState.Registry.PSObject.Properties.Name -notcontains $key) {
+                    $savedState.Registry | Add-Member -MemberType NoteProperty -Name $key -Value (Get-RegValue $r)
+                    $snapshotUpdated = $true
+                }
+            }
+            if ($snapshotUpdated) {
+                $savedState | ConvertTo-Json -Depth 5 | Set-Content -Path $StatePath -Encoding UTF8
+                Write-Host 'Saved state updated with newly managed registry settings.'
+            }
         }
         elseif ($PSCmdlet.ShouldProcess($StatePath, 'Save original settings')) {
             New-Item -ItemType Directory -Path (Split-Path $StatePath) -Force | Out-Null
@@ -288,6 +391,11 @@ Do this on a lab workstation only.
             }
         }
 
+        if ($UnlockFirmware -and $PSCmdlet.ShouldProcess('UEFI boot sequence', 'Schedule one-time VBS firmware unlock')) {
+            try { Schedule-FirmwareUnlock }
+            catch { $problems += "Could not schedule firmware unlock: $($_.Exception.Message)" }
+        }
+
         if ($problems) {
             Write-Section 'Problems'
             $problems | ForEach-Object { Write-Host "  $_" -ForegroundColor Red }
@@ -297,6 +405,9 @@ Do this on a lab workstation only.
 
         Write-Host ''
         Write-Host 'Done. RESTART the computer now, then run this script again with no parameters to verify.' -ForegroundColor Green
+        if ($UnlockFirmware) {
+            Write-Host 'At the pre-Windows prompt, physically confirm the firmware unlock before Windows starts.' -ForegroundColor Yellow
+        }
         Write-Host "To undo: .\Set-NestedVirtualisation.ps1 -Mode Restore"
         exit 0
     }
