@@ -17,6 +17,8 @@ You do not need to know Linux, networking or Ansible yet. You do need:
 
 - The [DevOps 101](../devops-101.md) setup finished: Git, VS Code and Python installed on the Windows
   workstation, and your private course repository cloned.
+- (Studying on your own? Read [How to prepare for the lab](../instructor/prepare-the-lab.md#studying-on-your-own)
+  first: it lists what to download and where from.)
 - A lab workstation (reference spec: about 10 cores, 32 GB RAM, 512 GB or more of fast storage, two network
   adapters) with VMware Workstation installed, and the ISO files your lecturer lists: pfSense, Proxmox VE
   and Ubuntu Desktop 24.04.

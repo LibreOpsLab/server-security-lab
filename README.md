@@ -136,6 +136,7 @@ not a security control. Please read [SECURITY.md](SECURITY.md).
 ## Documentation
 
 - [DevOps 101: set up your development environment](docs/devops-101.md): install Git, VS Code and Python on Windows, clone your course repository and learn the basic Git commands
+- [How to prepare for the lab](docs/instructor/prepare-the-lab.md): for lecturers (ISOs, software, workstation checks) and for self-paced students
 - [Week map](docs/build/WEEK-MAP.md): the 20-week plan, what to prioritise when behind, lecturer checkpoints
 - [Glossary](docs/glossary.md): plain-language meanings for the words the guides use
 - [Build status and course readiness](docs/build/STATUS.md): what is verified, and what is risky

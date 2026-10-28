@@ -11,6 +11,8 @@ two catch-up weeks so that one stuck student does not lose the second half of th
 > apps (10) because the apps need the sign-in portal. Monitoring (15) comes after the apps because Grafana is
 > served through the Docker VM's reverse proxy.
 
+Lecturers: see [How to prepare for the lab](../instructor/prepare-the-lab.md) before week 1.
+
 ## The plan
 
 | Week | Do | You finish with | Evidence folder(s) |
