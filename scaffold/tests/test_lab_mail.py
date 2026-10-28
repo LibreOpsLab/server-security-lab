@@ -22,15 +22,17 @@ def test_relay_is_allowed_for_the_local_subnet():
 def test_tls_uses_the_lab_ca_issued_files():
     main = code(ROLE / "templates/main.cf.j2")
     assert "/etc/postfix/tls/fullchain.pem" in main and "/etc/postfix/tls/key.pem" in main
-    dovecot = code(ROLE / "templates/99-lab.conf.j2")
+    dovecot = code(ROLE / "templates/dovecot.conf.j2")
     assert "/etc/dovecot/tls/fullchain.pem" in dovecot and "ssl = required" in dovecot
 
 
 def test_ldap_bind_password_is_a_variable_not_a_literal():
-    for name in ("ldap-virtual-mailbox.cf.j2", "dovecot-ldap.conf.ext.j2"):
-        text = code(ROLE / "templates" / name)
-        assert "mail_ldap_bind_password" in text or "mail_ldap_bind_pw" in text, name
-        assert not re.search(r"(bind_pw|dnpass)\s*=\s*[A-Za-z0-9]{8,}\s*$", text, re.M), name
+    # Postfix looks users up with the svc-mail account; Dovecot 2.4 checks passwords by binding as the user,
+    # so it needs no stored password at all.
+    text = code(ROLE / "templates" / "ldap-virtual-mailbox.cf.j2")
+    assert "mail_ldap_bind_password" in text or "mail_ldap_bind_pw" in text
+    assert not re.search(r"bind_pw\s*=\s*[A-Za-z0-9]{8,}\s*$", text, re.M)
+    assert "ldap_auth_dn_password" not in code(ROLE / "templates" / "dovecot.conf.j2")
 
 
 def test_mail_is_delivered_to_dovecot_over_lmtp_and_sasl_uses_dovecot():
@@ -101,8 +103,8 @@ def test_postfix_config_task_hides_the_ldap_bind_password_from_diff_output():
 def test_dovecot_userdb_allows_lookups_without_a_separate_passdb_round_trip():
     # A static userdb with an LDAP auth_bind passdb cannot answer "does this user exist?" on its own;
     # without allow_all_users, Dovecot tempfails every LMTP delivery.
-    conf = (ROLE / "templates/99-lab.conf.j2").read_text()
-    assert "allow_all_users=yes" in conf
+    conf = (ROLE / "templates/dovecot.conf.j2").read_text()
+    assert "allow_all_users = yes" in conf and "dovecot_config_version = 2.4" in conf
 
 
 def test_opendkim_and_opendmarc_socket_overrides_match_the_conf_files():

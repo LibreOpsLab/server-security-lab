@@ -1,8 +1,8 @@
 ---
 # Check https://github.com/authelia/authelia/releases for the current release, and put the .deb's checksum
 # from the release page in authelia_deb_sha256 (the role refuses to download an unchecked package).
-authelia_version: "4.39.4"
-authelia_deb_sha256: ""
+authelia_version: "4.39.28"
+authelia_deb_sha256: "3fe908dce94f392a38f4cb00a15755c9070a557000eeb16505a83b7449f029a4"
 authelia_portal_host: "auth.lab.internal"
 authelia_default_redirect: "https://cloud.lab.internal"
 authelia_nextcloud_redirect: "https://cloud.lab.internal/apps/oidc_login/oidc"

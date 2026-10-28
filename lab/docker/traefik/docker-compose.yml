@@ -2,7 +2,7 @@
 # Certificates come from the lab CA; there is no ACME/Let's Encrypt because the lab has no public DNS.
 services:
   traefik:
-    image: traefik:v3.1
+    image: traefik:v3.7
     container_name: traefik
     restart: unless-stopped
     security_opt:

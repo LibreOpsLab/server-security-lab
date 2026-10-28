@@ -4,7 +4,7 @@
 # they still need a valid Bitwarden login. Apps use their own master password; SSO covers the web vault only.
 services:
   vaultwarden:
-    image: vaultwarden/server:1.32.7
+    image: vaultwarden/server:1.37.4
     container_name: vaultwarden
     restart: unless-stopped
     environment:

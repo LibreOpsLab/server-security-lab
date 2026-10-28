@@ -1,0 +1,60 @@
+# Managed by Ansible (role: mail). Dovecot 2.4 syntax (Debian 13). IMAP over TLS and LMTP delivery,
+# authenticated against Samba AD. This file replaces the packaged /etc/dovecot/dovecot.conf entirely, so it is
+# self-contained; check it with `doveconf -n` (the role does this before restarting).
+dovecot_config_version = 2.4.0
+dovecot_storage_version = 2.4.0
+
+protocols = imap lmtp
+ssl = required
+ssl_server_cert_file = /etc/dovecot/tls/fullchain.pem
+ssl_server_key_file = /etc/dovecot/tls/key.pem
+ssl_min_protocol = TLSv1.2
+auth_mechanisms = plain login
+auth_username_format = %{user | username}
+
+mail_driver = maildir
+mail_home = {{ mail_vmail_dir }}/%{user}
+mail_path = {{ mail_vmail_dir }}/%{user}
+mail_uid = vmail
+mail_gid = vmail
+
+namespace inbox {
+  inbox = yes
+  separator = /
+}
+
+# Dovecot checks a password by binding to Samba AD as the user. The lab CA must be trusted for LDAPS.
+ldap_uris = {{ lab_ldap_uri }}
+ssl_client_ca_file = /usr/local/share/ca-certificates/lab-root-ca.crt
+
+passdb ldap {
+  bind = yes
+  bind_userdn = %{user}@{{ lab_domain }}
+}
+
+userdb static {
+  fields {
+    uid = vmail
+    gid = vmail
+    home = {{ mail_vmail_dir }}/%{user}
+  }
+  # A static userdb cannot answer "does this user exist?" on its own, and the LDAP bind cannot do
+  # password-less lookups either. Without this, every LMTP delivery tempfails. Postfix already validates the
+  # recipient over LDAP before handing mail to Dovecot (main.cf.j2).
+  allow_all_users = yes
+}
+
+service lmtp {
+  unix_listener /var/spool/postfix/private/dovecot-lmtp {
+    mode = 0600
+    user = postfix
+    group = postfix
+  }
+}
+service auth {
+  unix_listener /var/spool/postfix/private/auth {
+    mode = 0660
+    user = postfix
+    group = postfix
+  }
+}

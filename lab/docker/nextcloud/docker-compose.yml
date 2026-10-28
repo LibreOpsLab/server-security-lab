@@ -2,7 +2,7 @@
 # The database lives on a named volume on the VM's own disk (databases never go on network file shares).
 services:
   db:
-    image: mariadb:11.4
+    image: mariadb:11.8
     container_name: nextcloud-db
     restart: unless-stopped
     command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
@@ -23,7 +23,7 @@ services:
       - nextcloud-internal
 
   app:
-    image: nextcloud:29-apache
+    image: nextcloud:33-apache
     container_name: nextcloud-app
     restart: unless-stopped
     depends_on:
@@ -58,7 +58,7 @@ services:
       - traefik.http.services.nextcloud.loadbalancer.server.port=80
 
   cron:
-    image: nextcloud:29-apache
+    image: nextcloud:33-apache
     container_name: nextcloud-cron
     restart: unless-stopped
     entrypoint: /cron.sh

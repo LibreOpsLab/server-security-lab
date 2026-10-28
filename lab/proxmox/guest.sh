@@ -4,8 +4,8 @@
 #
 # Usage: guest.sh lxc|vm VMID NAME IP RAM_MB CORES DISK_GB [--privileged]
 #
-# lxc: a Debian 12 container from the Proxmox template store (nesting on; unprivileged unless asked).
-# vm : an Ubuntu 24.04 cloud-image VM configured with cloud-init (static IP and your SSH key).
+# lxc: a Debian 13 container from the Proxmox template store (nesting on; unprivileged unless asked).
+# vm : an Ubuntu 26.04 cloud-image VM configured with cloud-init (static IP and your SSH key).
 # If the guest already exists the script prints "kept NAME" and changes nothing.
 #
 # Environment (all optional): STORAGE (local-lvm), BRIDGE (vmbr0), GATEWAY (10.10.10.1), DNS1 (10.10.10.21),
@@ -27,12 +27,12 @@ for v in "$ram" "$cores" "$disk"; do [[ $v =~ ^[0-9]+$ ]] || { echo "RAM, cores 
 storage=${STORAGE:-local-lvm} bridge=${BRIDGE:-vmbr0} gateway=${GATEWAY:-10.10.10.1}
 dns1=${DNS1:-10.10.10.21} dns2=${DNS2:-10.10.10.1} domain=${DOMAIN:-lab.internal}
 ssh_key=${SSH_KEY:-/root/.ssh/lab_admin.pub}
-image=${CLOUD_IMAGE:-/var/lib/vz/template/iso/noble-server-cloudimg-amd64.img}
+image=${CLOUD_IMAGE:-/var/lib/vz/template/iso/resolute-server-cloudimg-amd64.img}
 
 if [ "$kind" = lxc ]; then
   if pct status "$vmid" >/dev/null 2>&1; then echo "kept $name"; exit 0; fi
-  template=$(pveam list local | awk '/debian-12-standard/ {print $1}' | sort | tail -1)
-  [ -n "$template" ] || { echo "no Debian 12 template: run 'pveam update && pveam download local <template>'" >&2; exit 1; }
+  template=$(pveam list local | awk '/debian-13-standard/ {print $1}' | sort | tail -1)
+  [ -n "$template" ] || { echo "no Debian 13 template: run 'pveam update && pveam download local <template>'" >&2; exit 1; }
   unpriv=1
   [ "$privileged" = 1 ] && unpriv=0
   pct create "$vmid" "$template" --hostname "$name" --memory "$ram" --cores "$cores" --rootfs "$storage:$disk" \
@@ -42,7 +42,7 @@ else
   if qm status "$vmid" >/dev/null 2>&1; then echo "kept $name"; exit 0; fi
   if [ ! -f "$image" ]; then
     mkdir -p "$(dirname "$image")"
-    wget -q -O "$image" https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img
+    wget -q -O "$image" https://cloud-images.ubuntu.com/resolute/current/resolute-server-cloudimg-amd64.img
   fi
   qm create "$vmid" --name "$name" --memory "$ram" --cores "$cores" --net0 "virtio,bridge=$bridge" \
     --scsihw virtio-scsi-pci --agent enabled=1 --ostype l26 --onboot 1

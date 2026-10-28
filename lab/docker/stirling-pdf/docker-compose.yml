@@ -2,7 +2,7 @@
 # in front of it (forward auth). Adapted from lab-small-business (which used Authentik).
 services:
   stirling-pdf:
-    image: stirlingtools/stirling-pdf:0.46.2
+    image: stirlingtools/stirling-pdf:3.2.2
     container_name: stirling-pdf
     restart: unless-stopped
     environment:

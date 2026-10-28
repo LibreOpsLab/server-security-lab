@@ -61,14 +61,18 @@
   changed_when: true
   notify: Restart Postfix
 
-- name: Write the Dovecot configuration
+- name: Keep the packaged Dovecot configuration for reference
+  ansible.builtin.command:
+    cmd: cp -n /etc/dovecot/dovecot.conf /etc/dovecot/dovecot.conf.packaged
+    creates: /etc/dovecot/dovecot.conf.packaged
+  changed_when: false
+
+- name: Write the Dovecot configuration (Dovecot 2.4 syntax)
   ansible.builtin.template:
-    src: "{{ item.src }}"
-    dest: "{{ item.dest }}"
-    mode: "{{ item.mode }}"
-  loop:
-    - {src: 99-lab.conf.j2, dest: /etc/dovecot/conf.d/99-lab.conf, mode: "0644"}
-    - {src: dovecot-ldap.conf.ext.j2, dest: /etc/dovecot/dovecot-ldap.conf.ext, mode: "0600"}
+    src: dovecot.conf.j2
+    dest: /etc/dovecot/dovecot.conf
+    mode: "0644"
+    validate: doveconf -n -c %s
   notify: Restart Dovecot
 
 - name: Create the DKIM signing key
