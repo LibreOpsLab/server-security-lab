@@ -154,7 +154,7 @@ function Show-State {
     foreach ($f in $FeatureNames) {
         $s = Get-FeatureState $f
         if ($null -eq $s) { Write-Host ('  {0,-36} not present on this Windows build' -f $f); continue }
-        $bad = $s -in 'Enabled', 'EnablePending'
+        $bad = $s -in 'Enabled', 'EnablePending', 'DisablePending'
         if ($bad) { $ready = $false }
         Write-Host ('  {0,-36} {1}' -f $f, $s) -ForegroundColor $(if ($bad) { 'Yellow' } else { 'Green' })
     }
@@ -162,11 +162,9 @@ function Show-State {
     Write-Section 'Boot settings (bcdedit)'
     foreach ($b in $BootValues) {
         $v = Get-BootValue $b
-        Write-Host ('  {0,-36} {1}' -f $b, $(if ($v) { $v } else { '(not set)' }))
-    }
-    if ((Get-BootValue 'hypervisorlaunchtype') -notin 'off', 'Off') {
-        # Unset or Auto both let Windows start its hypervisor when a hypervisor feature is on.
-        Write-Host '  hypervisorlaunchtype is not "off".' -ForegroundColor Yellow
+        $bad = $v -notin 'off', 'Off'
+        if ($bad) { $ready = $false }
+        Write-Host ('  {0,-36} {1}' -f $b, $(if ($v) { $v } else { '(not set)' })) -ForegroundColor $(if ($bad) { 'Yellow' } else { 'Green' })
     }
 
     Write-Section 'Registry settings'
@@ -197,12 +195,13 @@ function Show-State {
     if ($dg) {
         $vbs = switch ([int]$dg.VirtualizationBasedSecurityStatus) { 0 { 'Off' } 1 { 'Enabled, not running' } 2 { 'Running' } default { 'Unknown' } }
         $svc = @($dg.SecurityServicesRunning) | ForEach-Object { switch ([int]$_) { 1 { 'Credential Guard' } 2 { 'Memory Integrity (HVCI)' } 3 { 'System Guard' } 4 { 'SMM Firmware Protection' } default { "Service $_" } } }
-        Write-Host ('  {0,-36} {1}' -f 'Virtualization-based security', $vbs) -ForegroundColor $(if ($vbs -eq 'Running') { 'Yellow' } else { 'Green' })
-        Write-Host ('  {0,-36} {1}' -f 'Security services running', $(if ($svc) { $svc -join ', ' } else { 'none' }))
-        if ([int]$dg.VirtualizationBasedSecurityStatus -eq 2) { $ready = $false }
+        Write-Host ('  {0,-36} {1}' -f 'Virtualization-based security', $vbs) -ForegroundColor $(if ([int]$dg.VirtualizationBasedSecurityStatus -eq 0) { 'Green' } else { 'Yellow' })
+        Write-Host ('  {0,-36} {1}' -f 'Security services running', $(if ($svc) { $svc -join ', ' } else { 'none' })) -ForegroundColor $(if ($svc) { 'Yellow' } else { 'Green' })
+        if ([int]$dg.VirtualizationBasedSecurityStatus -ne 0 -or $svc) { $ready = $false }
     }
     else {
         Write-Host '  Device Guard status could not be read.' -ForegroundColor Yellow
+        $ready = $false
     }
 
     Write-Section 'Result'
