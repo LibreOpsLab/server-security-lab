@@ -44,11 +44,14 @@ def test_ram_within_budget():
 
 def test_proxmox_guests_have_unique_vmids():
     ids = [h["vmid"] for h in HOSTS.values() if h["kind"] in ("lxc", "vm")]
-    assert len(ids) == len(set(ids)) == 8
+    assert len(ids) == len(set(ids)) == 6
 
 
-def test_samba_dc_is_privileged_and_flagged():
-    assert VARS["samba_dc_privileged"] is True
+def test_domain_controller_and_backup_server_are_vmware_vms_on_debian_13():
+    for name in ("samba-dc01", "pbs01"):
+        assert HOSTS[name]["kind"] == "vmware" and HOSTS[name]["os"] == "debian-13", name
+        assert "vmid" not in HOSTS[name], name  # not a Proxmox guest
+    assert "samba_dc_privileged" not in VARS
 
 
 def test_only_windows_is_optional():
@@ -65,7 +68,7 @@ def test_hosts_yml_groups_cover_every_proxmox_guest_without_ips():
             walk(child)
 
     walk(inv["all"])
-    guests = {n for n, h in HOSTS.items() if h["kind"] in ("lxc", "vm")}
+    guests = {n for n, h in HOSTS.items() if h["kind"] in ("lxc", "vm")} | {"samba-dc01", "pbs01"}
     assert guests <= names and "pve01" in names
     assert "10.10.10." not in (LAB / "inventory" / "hosts.yml").read_text()  # addresses live in one place
 

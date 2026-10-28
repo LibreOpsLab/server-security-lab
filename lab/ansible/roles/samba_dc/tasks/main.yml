@@ -48,7 +48,7 @@
     removes: /etc/samba/smb.conf
   when: not samba_dc_db.stat.exists
 
-# The password is on the command line for the length of this one command, inside an isolated container.
+# The password is on the command line for the length of this one command, on an isolated lab network.
 # no_log keeps it out of Ansible's output; the trade-off is noted in docs/build/07-identity.md.
 - name: Provision the domain
   ansible.builtin.command:
@@ -96,6 +96,17 @@
     enabled: true
     masked: false
 
+# A domain controller asks its own DNS: Samba's internal DNS answers lab.internal and forwards everything else
+# to the firewall (the forwarder above). Until now the machine used whatever the installer configured.
+- name: Make the domain controller use its own DNS
+  ansible.builtin.copy:
+    dest: /etc/resolv.conf
+    mode: "0644"
+    content: |
+      # Managed by Ansible (role: samba_dc)
+      search {{ lab_domain }}
+      nameserver {{ lab_hosts['samba-dc01'].ip }}
+
 # A relaxed domain password policy is the lab's default state (week 15 tightens it). It also has to be
 # relaxed for the lab's documented initial passwords to be accepted at all.
 - name: Set the relaxed lab password policy
@@ -114,6 +125,12 @@
 
 - name: Add DNS records for the lab guests and their friendly names
   ansible.builtin.include_tasks: dns.yml
+
+- name: Make sure the helper directory exists
+  ansible.builtin.file:
+    path: "{{ samba_dc_helper_dir }}"
+    state: directory
+    mode: "0755"
 
 - name: Copy the user list and loader
   ansible.builtin.copy:

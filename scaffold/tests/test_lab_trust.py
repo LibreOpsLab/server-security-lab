@@ -17,4 +17,4 @@ def test_trust_role_never_copies_a_private_key():
 
 def test_trust_playbook_covers_every_guest_and_the_admin_machine():
     play = (LAB / "ansible/playbooks/25-trust.yml").read_text()
-    assert "pki_trust" in play and "lxc:vm:admin" in play
+    assert "pki_trust" in play and "lxc:vm:vmware_guests:admin" in play

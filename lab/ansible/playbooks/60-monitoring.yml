@@ -7,6 +7,6 @@
     - log_shipper
 
 - name: Ship logs from every other guest
-  hosts: lxc:vm:!monitoring
+  hosts: lxc:vm:vmware_guests:!monitoring
   roles:
     - log_shipper

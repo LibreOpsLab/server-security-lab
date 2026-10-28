@@ -23,6 +23,12 @@
     state: present
   when: lab_hosts[inventory_hostname].kind == 'vm'
 
+- name: Install the VMware guest tools on VMware virtual machines
+  ansible.builtin.apt:
+    name: open-vm-tools
+    state: present
+  when: lab_hosts[inventory_hostname].kind == 'vmware'
+
 - name: Set the time zone
   ansible.builtin.command: timedatectl set-timezone {{ baseline_timezone }}
   changed_when: false

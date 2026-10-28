@@ -12,29 +12,30 @@ one as a dry run of guide 01 and keep the notes: they become your local fixes.
 Students are not expected to find, choose or download installers. The lecturer provides all of this in one
 shared place (for example a network share or a USB drive, copied to `D:\iso` on each workstation).
 
-| Item                         | Used in         | Provided as                                        | Notes                                                                                                                                                    |
-| ---------------------------- | --------------- | -------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **pfSense CE** installer     | Guide 02        | ISO (or the compressed `.iso.gz`; unpack it first) | Download from Netgate. A free account may be needed. Choose the amd64 ISO installer.                                                                     |
-| **Proxmox VE** installer     | Guide 03        | ISO                                                | From proxmox.com/downloads. Use the current stable release and note its version.                                                                         |
-| **Ubuntu Desktop 24.04 LTS** | Guide 04        | ISO                                                | From ubuntu.com/download. LTS 24.04 is what the guides and automation assume.                                                                            |
-| **Windows 11** (optional)    | Guide 17        | ISO or evaluation media                            | Only if your course builds the Windows client. Check your institution's licensing, or use Microsoft's evaluation media. Do not use unofficial downloads. |
-| **Kali Linux** (optional)    | Week 12 stretch | VM image or ISO                                    | Only for the "attack each other" stretch.                                                                                                                |
-| **VMware Workstation**       | Guides 01 to 18 | Installer                                          | See [software on the workstation](#software-on-the-workstation).                                                                                         |
+| Item                           | Used in          | Provided as                                        | Notes                                                                                                                                                    |
+| ------------------------------ | ---------------- | -------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **pfSense CE** installer       | Guide 02         | ISO (or the compressed `.iso.gz`; unpack it first) | Download from Netgate. A free account may be needed. Choose the amd64 ISO installer.                                                                     |
+| **Proxmox VE 9** installer     | Guide 03         | ISO                                                | From proxmox.com/downloads. PVE 9 is built on Debian 13; use the current 9.x release and note its version.                                               |
+| **Debian 13 "trixie" netinst** | Guides 07 and 16 | ISO                                                | From debian.org. Used to hand-build the domain controller and the backup server as VMware VMs. Use the amd64 netinst image.                              |
+| **Ubuntu Desktop 26.04 LTS**   | Guide 04         | ISO                                                | From ubuntu.com/download. 26.04 LTS is the current LTS and what the guides and automation assume.                                                        |
+| **Windows 11** (optional)      | Guide 17         | ISO or evaluation media                            | Only if your course builds the Windows client. Check your institution's licensing, or use Microsoft's evaluation media. Do not use unofficial downloads. |
+| **Kali Linux** (optional)      | Week 12 stretch  | VM image or ISO                                    | Only for the "attack each other" stretch.                                                                                                                |
+| **VMware Workstation**         | Guides 01 to 18  | Installer                                          | See [software on the workstation](#software-on-the-workstation).                                                                                         |
 
-You do **not** need to provide: Debian container templates, the Ubuntu cloud image used by the Docker VM, or
-Proxmox Backup Server. Proxmox downloads those itself (`pveam`, a cloud image download) through pfSense, as
-part of `make guests` and `make backup`. This is why `pve01` needs working internet access.
+You do **not** need to provide: Debian container templates or the Ubuntu cloud image used by the Docker VM.
+Proxmox downloads those itself (`pveam`, a cloud image download) through pfSense, as part of `make guests`.
+Proxmox Backup Server is installed from Proxmox's own repository onto the Debian 13 VM by `make backup`. This is why `pve01` needs working internet access.
 
 ## Workstation requirements
 
-| Requirement | Reference spec                                                      | Why                                                                               |
-| ----------- | ------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
-| CPU         | About 10 cores with hardware virtualisation (Intel VT-x or AMD-V)   | Proxmox gets 8 vCPUs                                                              |
-| RAM         | 32 GB                                                               | The design budgets about 28.5 GB for the VMs, and the Windows host needs the rest |
-| Storage     | 512 GB or more of fast storage (NVMe) with at least **350 GB free** | Proxmox's disk is 250 GB, then `admin01`, pfSense, optional Windows and snapshots |
-| Network     | Two network adapters: one lab, one internet                         | Used by pfSense and the NAT network                                               |
-| OS          | Windows 11 with administrator rights for the setup steps            | Guide 01 changes security settings                                                |
-| Firmware    | Virtualisation enabled                                              | Guide 01 checks this                                                              |
+| Requirement | Reference spec                                                      | Why                                                                                                                 |
+| ----------- | ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| CPU         | About 10 cores with hardware virtualisation (Intel VT-x or AMD-V)   | Proxmox gets 8 vCPUs                                                                                                |
+| RAM         | 32 GB                                                               | The design budgets about 28.5 GB for the VMs, and the Windows host needs the rest                                   |
+| Storage     | 512 GB or more of fast storage (NVMe) with at least **350 GB free** | Proxmox 160 GB, backup server 80 GB, then `admin01`, the domain controller, pfSense, optional Windows and snapshots |
+| Network     | Two network adapters: one lab, one internet                         | Used by pfSense and the NAT network                                                                                 |
+| OS          | Windows 11 with administrator rights for the setup steps            | Guide 01 changes security settings                                                                                  |
+| Firmware    | Virtualisation enabled                                              | Guide 01 checks this                                                                                                |
 
 > **Check this before term.** RAM and disk are estimates until measured on a real build (see
 > [STATUS.md](../build/STATUS.md)). Do a full build on one workstation of each model and record the real
@@ -85,7 +86,7 @@ Download each ISO from the vendor's own site, copy the **published checksum** fr
 compare it. A mismatch means a corrupted or tampered download.
 
 ```powershell
-Get-FileHash D:\iso\ubuntu-24.04-desktop-amd64.iso -Algorithm SHA256
+Get-FileHash D:\iso\ubuntu-26.04-desktop-amd64.iso -Algorithm SHA256
 ```
 
 Put a `CHECKSUMS.txt` beside the ISOs listing each file, its source URL, the date downloaded, and its SHA-256.
@@ -120,7 +121,7 @@ but time and disk space.
    assume the full lab, so you will have to adapt memory sizes in `lab/inventory/group_vars/all.yml`.
 2. **Get the software** in the lists above, from the vendors' own websites:
    VMware Workstation (check its current licence for personal use), pfSense CE, Proxmox VE and Ubuntu
-   Desktop 24.04 LTS. Windows 11 and Kali are optional.
+   Desktop 26.04 LTS. Windows 11 and Kali are optional.
 3. **Verify the checksums** exactly as above.
 4. **Use your own private repo.** You do not have a lecturer's repository, so follow the self-study quick
    start in the [README](../../README.md) to make your own private copy.

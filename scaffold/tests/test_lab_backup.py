@@ -140,7 +140,7 @@ def test_fallback_is_documented_next_to_the_scripts():
 
 def test_pbs_role_installs_from_the_signed_proxmox_repo_and_creates_the_datastore_and_user():
     tasks = (LAB / "ansible/roles/pbs/tasks/main.yml").read_text()
-    assert "signed-by" in tasks and "pbs-no-subscription" in tasks and "proxmox-backup-server" in tasks
+    assert "Signed-By" in tasks and "pbs-no-subscription" in tasks and "proxmox-backup-server" in tasks and "trixie" in tasks
     assert "datastore create lab" in tasks and "backup@pbs" in tasks and "pbs_admin_password" in tasks
     assert "no_log: true" in tasks
 

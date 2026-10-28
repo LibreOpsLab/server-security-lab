@@ -2,8 +2,9 @@
 
 ## What you will build
 
-Every LXC container and the Docker VM, created on Proxmox from the inventory, and given the functional
-baseline (time, SSH, a metrics exporter).
+Every Proxmox guest (five LXC containers and the Docker VM), created from the inventory, and given the
+functional baseline (time, SSH, a metrics exporter). The domain controller and backup server are _not_
+created here: they are Debian 13 VMs you build in VMware in guides 07 and 16.
 
 **Time and difficulty:** 1 to 2 hours, most of it waiting for downloads. Easy to run; this is your first
 taste of automation, so the learning is in reading what it does.
@@ -34,6 +35,7 @@ This guide is the first time you see that pattern.
 
    ```bash
    cd lab
+   make preflight STAGE=guests   # every line must say PASS first
    make guests
    ```
 
@@ -50,13 +52,16 @@ This guide is the first time you see that pattern.
    make baseline
    ```
 
+   (This gives the baseline to the Proxmox guests and `admin01`. The domain controller and backup server get
+   it in guides 07 and 16, with `make baseline LIMIT=samba-dc01` and `LIMIT=pbs01`.)
+
    > **What's going on:** The baseline is the minimum every machine in the lab needs to work: a clock that
    > follows the domain controller, SSH, and an agent that reports metrics. It is deliberately **not
    > hardened**. Password login stays on and no extra locks are added; the security weeks measure that
    > later. Do not tidy it up now.
 
    > **Beginner tip:** Every guest is told to take its time from `samba-dc01`, which does not exist until
-   > guide 07. Until then `chronyc sources` on a guest will show that source as unreachable. That is
+   > guide 07 (you build it as a VMware VM). Until then `chronyc sources` on a guest will show that source as unreachable. That is
    > expected, not an error. Do not "fix" it; guide 08 checks it once the domain controller is up.
 
    > **Careful:** `admin01` configures itself, so `make baseline` runs some steps with `sudo` on your own
@@ -65,15 +70,17 @@ This guide is the first time you see that pattern.
 
 ## Check it worked
 
-- `ssh root@10.10.10.5 pct list` and `qm list` show all eight guests (seven containers, one VM).
+- `ssh root@10.10.10.5 pct list` and `qm list` show all six guests (five containers, one VM).
 - Each guest answers a ping from `admin01` at its address in the inventory:
-  `ping -c 1 10.10.10.21` and so on.
+  `ping -c 1 10.10.10.22` and so on (not `.21` or `.27`: those are the VMs you build later).
 - `make baseline` ended with no failed hosts in the recap.
 
-> **Stop and check:** Do not start guide 07 until all eight guests answer a ping. The next guide builds the
-> domain controller and assumes the machines are there.
+> **Stop and check:** Do not start guide 07 until all six guests answer a ping. Later guides assume they
+> are there.
 
 ## Evidence to capture
+
+> **Beginner tip:** `make evidence GUIDE=06` (from `lab/`) runs the read-only commands for you and saves them, stamped with your name, the date and the machine, in `auto-evidence.txt` in your evidence folder. Read it before you commit. It does not replace your screenshots, your notes or your own explanation.
 
 Save in `portfolio/evidence/06-create-the-guests/`:
 
@@ -84,7 +91,7 @@ Save in `portfolio/evidence/06-create-the-guests/`:
 | `make-baseline.txt` | Output of `make baseline` ending with the recap                              |
 | `pct-qm-list.txt`   | Output of `pct list` and `qm list` run on `pve01`                            |
 | `pings.txt`         | A ping to each guest from `admin01`                                          |
-| `proxmox-tree.png`  | The Proxmox web page with all eight guests running                           |
+| `proxmox-tree.png`  | The Proxmox web page with all six guests running                             |
 | `evidence.md`       | Your filled-in evidence log                                                  |
 
 ## Explain it in your own words
@@ -95,11 +102,28 @@ Save in `portfolio/evidence/06-create-the-guests/`:
 
 ## If it goes wrong
 
+**Run this first:** `make preflight STAGE=guests` (before) and `make evidence GUIDE=06` (after).
+
 - A guest fails to create because the template is missing: run
-  `ssh root@10.10.10.5 'pveam update && pveam download local <template-name>'` with the Debian 12 template
+  `ssh root@10.10.10.5 'pveam update && pveam download local <template-name>'` with the Debian 13 template
   name shown in the error, then re-run `make guests`.
 - The Docker VM's cloud image download fails: check `pve01` has internet through pfSense's NAT.
 - `make baseline` says `UNREACHABLE` for a host: the guest is not running or the SSH key did not install.
   Start it in Proxmox, or check `ssh -i ~/.ssh/lab_admin root@<its address>` by hand.
 - A Proxmox storage name error: the guides assume storage called `local` and `local-lvm`; if your Proxmox
   has different names, tell your lecturer.
+- A guest is created but will not start: on `pve01`, `pct start 122` or `qm start 130` prints the reason. The
+  most common cause is nested virtualisation not being switched on (guide 03).
+- A guest has no network: `pct exec 122 -- ip -br a` (containers) shows its address. It must be on `vmbr0`
+  with `10.10.10.x`. Check pfSense is running.
+
+### Where to look
+
+| What                    | Command (on `pve01`, as root)                                                                |
+| ----------------------- | -------------------------------------------------------------------------------------------- |
+| All guests              | `pct list` and `qm list`                                                                     |
+| One container's config  | `pct config 122`                                                                             |
+| A container's own shell | `pct enter 122`                                                                              |
+| Why a guest won't start | `pct start 122` or `qm start 130` (reads the error)                                          |
+| Proxmox task history    | **Datacenter > Node > Task History** in the web page                                         |
+| Ansible's detail        | Re-run with `-vv` (for example `cd ansible && ansible-playbook playbooks/10-guests.yml -vv`) |

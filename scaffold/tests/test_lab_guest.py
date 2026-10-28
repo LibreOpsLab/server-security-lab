@@ -102,4 +102,5 @@ def test_bad_arguments_rejected_before_any_proxmox_call(pve, args):
 
 def test_guest_playbook_calls_the_script_for_every_proxmox_guest():
     text = (REPO / "lab" / "ansible" / "playbooks" / "10-guests.yml").read_text()
-    assert "guest.sh" in text and "lab_hosts" in text and "--privileged" in text and "samba_dc_privileged" in text
+    assert "guest.sh" in text and "lab_hosts" in text and "debian-13-standard" in text
+    assert "samba_dc_privileged" not in text  # the domain controller is a VMware VM, not a container

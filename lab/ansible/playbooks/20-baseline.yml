@@ -3,7 +3,7 @@
 # verify's NTP check runs on whichever machine you invoke it from, which is normally admin01).
 # Debian LXC templates ship without Python, so bootstrap it first.
 - name: Bootstrap Python on the guests
-  hosts: lxc:vm:admin
+  hosts: lxc:vm:vmware_guests:admin
   gather_facts: false
   tasks:
     - name: Install Python if it is missing
@@ -11,6 +11,6 @@
       changed_when: false
 
 - name: Apply the baseline
-  hosts: lxc:vm:admin
+  hosts: lxc:vm:vmware_guests:admin
   roles:
     - baseline

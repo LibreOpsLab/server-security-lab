@@ -36,13 +36,13 @@ lab_certificates:
   - {cn: docker01.lab.internal, san: "DNS:docker01.lab.internal,DNS:*.lab.internal"}
 dhcp_pool: {start: 10.10.10.100, end: 10.10.10.199}
 
-# Samba AD in an unprivileged LXC is unreliable (ACLs, xattrs, idmap), so the DC is privileged.
-# The lab network is isolated, which is the stated trade-off (docs/design/lab-build-design.md).
-samba_dc_privileged: true
+# The domain controller and the backup server are native VMware VMs running Debian 13, outside Proxmox, as they
+# would be in a real environment: identity and backups should not depend on the hypervisor they serve.
+# Students install the OS by hand and a script finishes the preparation over SSH (docs/build/04-admin01.md).
 
 # Estimates in MB, to be replaced by measured figures after the first real build.
-# vmware: 32 GB workstation minus about 4 GB for the Windows host. proxmox: the 16 GB Proxmox VM minus about 1.5 GB for Proxmox itself.
-ram_budget_mb: {vmware: 28672, proxmox: 14336}
+# vmware: 32 GB workstation minus about 4 GB for the Windows host. proxmox: the 12 GB Proxmox VM minus about 1.5 GB for Proxmox itself.
+ram_budget_mb: {vmware: 28672, proxmox: 10752}
 
 # Friendly names that point at a guest (CNAMEs in Samba DNS; Traefik routes the web ones on docker01).
 lab_aliases: {cloud: docker01, pdf: docker01, vault: docker01, auth: docker01, grafana: docker01, mail: mail01, files: files01}
@@ -58,14 +58,14 @@ ansible_host: "{{ lab_hosts.get(inventory_hostname, {}).get('ip', '127.0.0.1') }
 
 lab_hosts:
   pfsense01: {kind: vmware, ip: 10.10.10.1, ram_mb: 1536, cores: 2, disk_gb: 16, os: pfsense, role: firewall}
-  pve01: {kind: vmware, ip: 10.10.10.5, ram_mb: 16384, cores: 8, disk_gb: 250, os: proxmox, role: hypervisor}
-  admin01: {kind: vmware, ip: 10.10.10.10, ram_mb: 3072, cores: 2, disk_gb: 40, os: ubuntu-24.04, role: admin}
+  pve01: {kind: vmware, ip: 10.10.10.5, ram_mb: 12288, cores: 8, disk_gb: 160, os: proxmox, role: hypervisor}
+  admin01: {kind: vmware, ip: 10.10.10.10, ram_mb: 3072, cores: 2, disk_gb: 40, os: ubuntu-26.04, role: admin}
   win-client01: {kind: vmware, ip: 10.10.10.11, ram_mb: 4096, cores: 2, disk_gb: 60, os: windows-11, role: client, optional: true}
-  samba-dc01: {kind: lxc, vmid: 121, ip: 10.10.10.21, ram_mb: 1024, cores: 1, disk_gb: 8, os: debian-12, role: samba_dc}
-  auth01: {kind: lxc, vmid: 122, ip: 10.10.10.22, ram_mb: 512, cores: 1, disk_gb: 4, os: debian-12, role: auth}
-  radius01: {kind: lxc, vmid: 123, ip: 10.10.10.23, ram_mb: 512, cores: 1, disk_gb: 4, os: debian-12, role: radius}
-  mon01: {kind: lxc, vmid: 124, ip: 10.10.10.24, ram_mb: 2048, cores: 2, disk_gb: 20, os: debian-12, role: monitoring}
-  mail01: {kind: lxc, vmid: 125, ip: 10.10.10.25, ram_mb: 1024, cores: 1, disk_gb: 8, os: debian-12, role: mail}
-  files01: {kind: lxc, vmid: 126, ip: 10.10.10.26, ram_mb: 512, cores: 1, disk_gb: 20, os: debian-12, role: files}
-  pbs01: {kind: lxc, vmid: 127, ip: 10.10.10.27, ram_mb: 1024, cores: 1, disk_gb: 40, os: debian-12, role: backup}
-  docker01: {kind: vm, vmid: 130, ip: 10.10.10.30, ram_mb: 5120, cores: 2, disk_gb: 40, os: ubuntu-24.04, role: docker}
+  samba-dc01: {kind: vmware, ip: 10.10.10.21, ram_mb: 1536, cores: 2, disk_gb: 20, os: debian-13, role: samba_dc}
+  auth01: {kind: lxc, vmid: 122, ip: 10.10.10.22, ram_mb: 512, cores: 1, disk_gb: 4, os: debian-13, role: auth}
+  radius01: {kind: lxc, vmid: 123, ip: 10.10.10.23, ram_mb: 512, cores: 1, disk_gb: 4, os: debian-13, role: radius}
+  mon01: {kind: lxc, vmid: 124, ip: 10.10.10.24, ram_mb: 2048, cores: 2, disk_gb: 20, os: debian-13, role: monitoring}
+  mail01: {kind: lxc, vmid: 125, ip: 10.10.10.25, ram_mb: 1024, cores: 1, disk_gb: 8, os: debian-13, role: mail}
+  files01: {kind: lxc, vmid: 126, ip: 10.10.10.26, ram_mb: 512, cores: 1, disk_gb: 20, os: debian-13, role: files}
+  pbs01: {kind: vmware, ip: 10.10.10.27, ram_mb: 2048, cores: 2, disk_gb: 80, os: debian-13, role: backup}
+  docker01: {kind: vm, vmid: 130, ip: 10.10.10.30, ram_mb: 5120, cores: 2, disk_gb: 40, os: ubuntu-26.04, role: docker}

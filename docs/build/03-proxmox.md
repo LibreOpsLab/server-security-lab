@@ -24,10 +24,10 @@ Running it nested means the whole estate fits on one shared workstation.
 
 ## Steps
 
-1. Create a new VM in VMware: 8 vCPU, 16 GB RAM, 250 GB disk, **one** network adapter on `LAN-LAB`.
-   Attach the Proxmox VE ISO. Do not power it on yet.
+1. Create a new VM in VMware: 8 vCPU, 12 GB RAM, 160 GB disk, **one** network adapter on `LAN-LAB`.
+   Attach the **Proxmox VE 9** ISO (it is built on Debian 13). Do not power it on yet.
 
-   > **Beginner tip:** Choose "Thin provision" or "Allocate disk space as needed" for the 250 GB disk, so it
+   > **Beginner tip:** Choose "Thin provision" or "Allocate disk space as needed" for the 160 GB disk, so it
    > only takes the space it uses. Your 512 GB drive cannot hold several fully-allocated disks.
 
 2. **Enable nested virtualisation** for this VM specifically: VM settings > Processors > tick
@@ -43,7 +43,7 @@ Running it nested means the whole estate fits on one shared workstation.
    Use DNS `10.10.10.1` for now. Set a root password you will remember and an email address (any address
    will do for the lab, such as `root@lab.internal`). Choose the hostname `pve01.lab.internal`.
 
-   > **Careful:** The installer erases the disk it uses. In a VM that is the 250 GB virtual disk, which is
+   > **Careful:** The installer erases the disk it uses. In a VM that is the 160 GB virtual disk, which is
    > what you want. Never run a Proxmox install on a real machine you care about.
 
 4. When the installer finishes it reboots and shows the address to use. From `admin01`, open
@@ -90,7 +90,16 @@ Save in `portfolio/evidence/03-proxmox/`:
 - Guests inside Proxmox are extremely slow: nested virtualisation is not actually enabled for the VMware
   VM. Recheck VM settings (step 2) and that Memory Integrity is off on the host (guide 01).
 - No network: confirm `pve01`'s NIC is attached to `LAN-LAB`, not NAT, and that `pfsense01` is running.
-- The installer cannot find a disk: the 250 GB disk was not attached. Check the VM's hardware list.
+- The installer cannot find a disk: the 160 GB disk was not attached. Check the VM's hardware list.
 - The web page does not load: use `https://` (not `http://`) and port `8006`. Check `ping 10.10.10.5` first.
 - Take a snapshot of `pve01` called `working-proxmox` once everything above passes, so a later mistake costs
   minutes, not hours.
+
+### Where to look
+
+| What                         | Command or place                                                             |
+| ---------------------------- | ---------------------------------------------------------------------------- |
+| Is virtualisation available? | `egrep -c '(vmx\|svm)' /proc/cpuinfo` inside `pve01` (needs to be 1 or more) |
+| Proxmox services             | `systemctl status pveproxy pvedaemon`                                        |
+| Network address              | `ip -br a` and `cat /etc/network/interfaces`                                 |
+| Web page log                 | `journalctl -u pveproxy -n 50 --no-pager`                                    |

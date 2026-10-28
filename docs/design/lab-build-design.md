@@ -42,37 +42,39 @@ flowchart LR
   L --- A[admin01<br/>Ubuntu: Ansible, git, attack tools]
   L --- W[win-client01<br/>optional Windows 11]
   L --- X[pve01: Proxmox VE, nested]
+  L --- D[samba-dc01<br/>Debian 13, domain controller]
+  L --- B[pbs01<br/>Debian 13, backup server]
   X --- G[Guests on Proxmox:<br/>LXC services and one Docker VM]
   R[Optional Wi-Fi access point<br/>on the second NIC] --- L
 ```
 
 ### VMware guests
 
-| Guest          | Role                                                                                | RAM           | Notes                                                                          |
-| -------------- | ----------------------------------------------------------------------------------- | ------------- | ------------------------------------------------------------------------------ |
-| `pfsense01`    | Firewall, DHCP, DNS forwarder, NAT, Squid filtering proxy                           | 1.5 GB        | Not Ansible-managed; config template imported, Squid set from documented steps |
-| `pve01`        | Proxmox VE (nested KVM and LXC)                                                     | 16 GB, 8 vCPU | Nested virtualisation on. Guests inside can over-commit                        |
-| `admin01`      | Ubuntu Desktop: Ansible control node, git, attack and audit tools, the `sslab` tool | 3 GB          | Where the learner works                                                        |
-| `win-client01` | **Optional** Windows 11 for the Windows layer of the security work                  | 4 GB          | Debloated by script; domain joined                                             |
+| Guest          | Role                                                                                | RAM            | Notes                                                                                                                |
+| -------------- | ----------------------------------------------------------------------------------- | -------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `pfsense01`    | Firewall, DHCP, DNS forwarder, NAT, Squid filtering proxy                           | 1.5 GB         | Not Ansible-managed; config template imported, Squid set from documented steps                                       |
+| `pve01`        | Proxmox VE 9 (nested KVM and LXC)                                                   | 12 GB, 8 vCPU  | Nested virtualisation on. Guests inside can over-commit                                                              |
+| `admin01`      | Ubuntu Desktop: Ansible control node, git, attack and audit tools, the `sslab` tool | 3 GB           | Where the learner works                                                                                              |
+| `samba-dc01`   | Samba AD domain controller: identity, Kerberos, LDAP, internal DNS, NTP             | 1.5 GB, 2 vCPU | Debian 13, hand-built then finished by script. Outside Proxmox: critical infrastructure                              |
+| `pbs01`        | Proxmox Backup Server 4 for guest backups and restore tests                         | 2 GB, 2 vCPU   | Debian 13, hand-built then finished by script. Outside Proxmox: backups must not live on the hypervisor they protect |
+| `win-client01` | **Optional** Windows 11 for the Windows layer of the security work                  | 4 GB           | Debloated by script; domain joined                                                                                   |
 
-With the Windows host (about 4 GB) the total is about 28.5 GB with Windows 11 running, and less without it. One user, VMware Tools everywhere, and RAM over-commit inside Proxmox keep it from swapping badly. The memory figures are estimates until measured on a real workstation.
+With the Windows host (about 4 GB) the total is about 26.5 GB with Windows 11 running, and less without it. One user, VMware Tools everywhere, and RAM over-commit inside Proxmox keep it from swapping badly. The memory figures are estimates until measured on a real workstation.
 
 ### Proxmox guests
 
 All on `lab.internal` (realm `LAB.INTERNAL`, NetBIOS `LAB`), network `10.10.10.0/24`, gateway `pfsense01` at `10.10.10.1`.
 
-| Guest        | Type            | Role                                                                             | RAM    | Address |
-| ------------ | --------------- | -------------------------------------------------------------------------------- | ------ | ------- |
-| `samba-dc01` | LXC             | Samba AD: identity, Kerberos, LDAP, internal DNS, NTP                            | 1 GB   | .21     |
-| `auth01`     | LXC             | Authelia: SSO for the apps (OIDC where supported, forward auth otherwise)        | 0.5 GB | .22     |
-| `radius01`   | LXC             | FreeRADIUS, WPA-Enterprise (PEAP-MSCHAPv2) against Samba                         | 0.5 GB | .23     |
-| `mon01`      | LXC             | Prometheus, Grafana, Loki, Alertmanager; log collection                          | 2 GB   | .24     |
-| `mail01`     | LXC             | Postfix, Dovecot, OpenDKIM, OpenDMARC, LDAP-backed mailboxes                     | 1 GB   | .25     |
-| `files01`    | LXC             | Domain member file server: OpenSSH SFTP (chrooted accounts) and Samba SMB shares | 0.5 GB | .26     |
-| `pbs01`      | LXC             | Proxmox Backup Server for guest backups and restore tests                        | 1 GB   | .27     |
-| `docker01`   | VM (cloud-init) | Docker, Traefik, NextCloud, Stirling PDF, Vaultwarden                            | 5 GB   | .30     |
+| Guest      | Type            | Role                                                                             | RAM    | Address |
+| ---------- | --------------- | -------------------------------------------------------------------------------- | ------ | ------- |
+| `auth01`   | LXC             | Authelia: SSO for the apps (OIDC where supported, forward auth otherwise)        | 0.5 GB | .22     |
+| `radius01` | LXC             | FreeRADIUS, WPA-Enterprise (PEAP-MSCHAPv2) against Samba                         | 0.5 GB | .23     |
+| `mon01`    | LXC             | Prometheus, Grafana, Loki, Alertmanager; log collection                          | 2 GB   | .24     |
+| `mail01`   | LXC             | Postfix, Dovecot, OpenDKIM, OpenDMARC, LDAP-backed mailboxes                     | 1 GB   | .25     |
+| `files01`  | LXC             | Domain member file server: OpenSSH SFTP (chrooted accounts) and Samba SMB shares | 0.5 GB | .26     |
+| `docker01` | VM (cloud-init) | Docker, Traefik, NextCloud, Stirling PDF, Vaultwarden                            | 5 GB   | .30     |
 
-Total about 11.5 GB of the 14 GB inside Proxmox, before over-commit.
+Total about 9.5 GB of the 10.5 GB available inside Proxmox, before over-commit.
 
 Addresses: pfSense `.1`, Proxmox host `.5`, `admin01` `.10`, `win-client01` `.11`, DHCP pool `.100` to `.199`.
 
@@ -83,7 +85,7 @@ Addresses: pfSense `.1`, Proxmox host `.5`, `admin01` `.10`, `win-client01` `.11
 - **Certificates.** An internal two-tier CA (adapted from `lab-small-business`) issues certificates; `admin01` and `win-client01` trust it.
 - **Wireless.** `radius01` authenticates PEAP-MSCHAPv2 users against Samba. Two ways to exercise it: a real access point on the second NIC (hardware the lab already has), or `eapol_test` from `admin01`, which performs the same EAP exchange and is the default.
 - **Observability.** Every guest runs a metrics exporter and ships logs; `mon01` shows dashboards, alert rules and a Loki log view. This is also what the learner checks during the attack, to see whether anything noticed.
-- **Backup.** `pbs01` backs up the guests; a scripted restore test proves it.
+- **Backup.** `pbs01` (a separate VM) backs up the Proxmox guests; the domain controller, which Proxmox cannot see, is backed up with `samba-tool` by `lab/backup-dc.sh`. A scripted restore test proves the Proxmox side.
 - **Web and proxy.** Squid on pfSense is the filtering forward proxy; Traefik is the reverse proxy.
 
 ## Where the configuration comes from (honest)
@@ -150,7 +152,8 @@ Numbered, in the order a learner works, in a friendly second-person voice, each 
 ## Decisions the build must honour
 
 - **Authelia:** a native package in the `auth01` LXC. Users and groups come straight from Samba over LDAP. Second factor is TOTP, required for the admin group. Storage is SQLite with in-memory sessions (lab scale; no Redis or Postgres). NextCloud authenticates by OIDC against Authelia; Stirling PDF and the Vaultwarden web vault sit behind Authelia forward auth in Traefik.
-- **Samba AD DC:** a **privileged** LXC (`samba_dc_privileged: true` in `group_vars`), because ACL, xattr and idmap support is dependable there. The lab network is isolated, which is the stated trade-off. The fallback if it still fails in the first real build is a small VM, documented but not coded.
+- **Samba AD DC:** a native **Debian 13 VM in VMware**, outside Proxmox. It is the most critical machine, so it must not depend on the hypervisor it might need to rebuild; a normal VM also gives Samba a real kernel and filesystem (ACLs, xattrs, time) with no container workarounds. The student installs the OS by hand and `lab/bootstrap/prep-guest.sh` finishes the preparation over SSH.
+- **`pbs01`:** a native Debian 13 VM running Proxmox Backup Server 4, for the same reason: backups must not live on the machine they protect.
 - **`radius01`:** an unprivileged LXC that joins the domain as a member with `net ads join` and runs `winbindd`, so FreeRADIUS can use `ntlm_auth` for PEAP-MSCHAPv2.
 - **Squid on pfSense:** an explicit forward proxy on port 3128 for the LAN, no SSL interception, from the pfSense CE package. The `config.xml` template covers interfaces, DHCP (DNS handed out as `.21` first, `.1` second), the DNS forwarder to `samba-dc01` for `lab.internal`, and NAT. Servers use static addresses set inside the guests, not DHCP.
 - **`make verify`:** each check prints PASS, FAIL or SKIP. A missing optional component (Windows 11, the access point) is SKIP and does not fail the run; any FAIL exits non-zero.
@@ -194,7 +197,7 @@ The author cannot run Proxmox, pfSense or Windows in the build environment. So:
 
 - Everything is validated statically here: YAML and Ansible syntax and lint, `docker compose config`, template rendering, shell lint, and Python tests for the tooling.
 - Every component is labelled **unverified** in a status table until a person has built it on a real lab workstation and ticked it off against `docs/build/18-verify.md`. The first full build is the validation; expect fixes.
-- Known risks, to settle in that first build: Samba AD in an unprivileged LXC, Proxmox Backup Server in an LXC (not an officially supported layout; fallback is `vzdump` to local storage), PEAP-MSCHAPv2 through winbind, and the memory figures.
+- Known risks, to settle in that first build: Dovecot 2.4 (the configuration format changed from 2.3), NextCloud 33 with the `oidc_login` app, Stirling PDF 3.x environment settings, importing a pfSense configuration into current pfSense CE, PEAP-MSCHAPv2 through winbind, and the memory figures.
 
 ## Testing here versus on the lab
 
@@ -210,7 +213,7 @@ Validation done in the build environment: Ansible syntax and lint, YAML lint, `d
 ## Decisions made (designer's calls, open to change)
 
 1. Domain `lab.internal` and `10.10.10.0/24`, to match `lab-small-business` so its configuration lifts cleanly.
-2. Debian 12 LXC templates for service containers; Ubuntu 24.04 cloud image for the Docker VM and `admin01`.
+2. Current software throughout: Debian 13 for LXC containers and the two hand-built VMs, Proxmox VE 9 and Backup Server 4, and the Ubuntu 26.04 LTS cloud image for the Docker VM and desktop image for `admin01`.
 3. `eapol_test` is the default way to demonstrate WPA-Enterprise; a hardware access point is an optional extra.
 4. Vaultwarden is behind forward auth for its web vault only; its apps use their own master password.
 5. Greenbone (a heavy vulnerability scanner) is not in the default build; nmap, Lynis and the attack set cover the course.

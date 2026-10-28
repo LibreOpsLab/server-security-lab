@@ -1,23 +1,28 @@
 ---
-# Proxmox Backup Server in an LXC container. Not an officially supported layout: if it misbehaves, use the
-# local-storage fallback described in lab/proxmox/README.md.
-- name: Fetch the Proxmox repository signing key
+# Proxmox Backup Server 4 on a Debian 13 VM (a supported layout: PBS is installed on top of Debian). It runs
+# outside Proxmox on purpose, so a backup does not live on the hypervisor it protects.
+- name: Fetch the Proxmox archive signing key for Debian 13
   ansible.builtin.get_url:
-    url: https://enterprise.proxmox.com/debian/proxmox-release-bookworm.gpg
-    dest: /etc/apt/keyrings/proxmox-release-bookworm.gpg
+    url: https://enterprise.proxmox.com/debian/proxmox-archive-keyring-trixie.gpg
+    dest: /usr/share/keyrings/proxmox-archive-keyring.gpg
     mode: "0644"
 
 - name: Add the Proxmox Backup Server (no-subscription) repository, restricted to that key
-  ansible.builtin.apt_repository:
-    repo: "deb [signed-by=/etc/apt/keyrings/proxmox-release-bookworm.gpg] http://download.proxmox.com/debian/pbs bookworm pbs-no-subscription"
-    filename: pbs
-    state: present
-    update_cache: true
+  ansible.builtin.copy:
+    dest: /etc/apt/sources.list.d/proxmox.sources
+    mode: "0644"
+    content: |
+      Types: deb
+      URIs: http://download.proxmox.com/debian/pbs
+      Suites: trixie
+      Components: pbs-no-subscription
+      Signed-By: /usr/share/keyrings/proxmox-archive-keyring.gpg
 
 - name: Install Proxmox Backup Server
   ansible.builtin.apt:
     name: proxmox-backup-server
     state: present
+    update_cache: true
   environment:
     DEBIAN_FRONTEND: noninteractive
 

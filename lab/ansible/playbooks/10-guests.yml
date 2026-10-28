@@ -5,7 +5,7 @@
   gather_facts: false
   vars:
     helper_dir: /root/lab
-    cloud_image: /var/lib/vz/template/iso/noble-server-cloudimg-amd64.img
+    cloud_image: /var/lib/vz/template/iso/resolute-server-cloudimg-amd64.img
   tasks:
     - name: Make sure the helper directory exists
       ansible.builtin.file:
@@ -23,17 +23,17 @@
       ansible.builtin.command: pveam update
       changed_when: false
 
-    - name: Find the Debian 12 template name
-      ansible.builtin.shell: set -o pipefail; pveam available --section system | awk '/debian-12-standard/ {print $2}' | sort | tail -1
+    - name: Find the Debian 13 template name
+      ansible.builtin.shell: set -o pipefail; pveam available --section system | awk '/debian-13-standard/ {print $2}' | sort | tail -1
       args:
         executable: /bin/bash
       register: debian_template
       changed_when: false
 
-    - name: Download the Debian 12 template if it is not there yet
+    - name: Download the Debian 13 template if it is not there yet
       ansible.builtin.shell: |
         set -o pipefail
-        pveam list local | grep -q debian-12-standard || pveam download local {{ debian_template.stdout }}
+        pveam list local | grep -q debian-13-standard || pveam download local {{ debian_template.stdout }}
       args:
         executable: /bin/bash
       register: template_download
@@ -41,10 +41,15 @@
 
     - name: Create each LXC and VM (existing guests are kept)
       ansible.builtin.command:
-        argv: >-
-          {{ [helper_dir ~ '/guest.sh', item.value.kind, item.value.vmid | string, item.key, item.value.ip,
-              item.value.ram_mb | string, item.value.cores | string, item.value.disk_gb | string]
-              + (['--privileged'] if item.key == 'samba-dc01' and samba_dc_privileged else []) }}
+        argv:
+          - "{{ helper_dir }}/guest.sh"
+          - "{{ item.value.kind }}"
+          - "{{ item.value.vmid | string }}"
+          - "{{ item.key }}"
+          - "{{ item.value.ip }}"
+          - "{{ item.value.ram_mb | string }}"
+          - "{{ item.value.cores | string }}"
+          - "{{ item.value.disk_gb | string }}"
       environment:
         CLOUD_IMAGE: "{{ cloud_image }}"
         GATEWAY: "{{ lab_gateway }}"
