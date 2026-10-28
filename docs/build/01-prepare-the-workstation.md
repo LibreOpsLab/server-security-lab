@@ -13,19 +13,25 @@ that specifically block nested virtualisation.
 
 ## Steps
 
-0. Disable Virtualisation Security to allow Nest Virtulisation to function. Run this script in PowerShell:
+1. Allow exection of PowerShell scripts:
+
+  ```powershell
+  Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser -Force
+  ```
+
+2. Disable Virtualisation Security to allow Nest Virtulisation to function. Run this script in PowerShell:
 
    ```terminal
    .\scripts\Set-NestedVirtualisation.ps1
    ```
 
-1. Confirm hardware virtualisation is on in the firmware (Task Manager > Performance > CPU >
+3. Confirm hardware virtualisation is on in the firmware (Task Manager > Performance > CPU >
    "Virtualization: Enabled").
-2. Turn off **Memory Integrity** (Windows Security > Device security > Core isolation). It conflicts with
+4. Turn off **Memory Integrity** (Windows Security > Device security > Core isolation). It conflicts with
    nested virtualisation. Reboot.
-3. In VMware Workstation, create a **LAN Segment** named `LAN-LAB`. This is the private network every lab
+5. In VMware Workstation, create a **LAN Segment** named `LAN-LAB`. This is the private network every lab
    guest attaches to.
-4. Note which of your workstation's two NICs is for the internet and which is for the lab; you will choose
+6. Note which of your workstation's two NICs is for the internet and which is for the lab; you will choose
    the internet one for VMware's NAT network in the next guide.
 
 ## Check it worked
