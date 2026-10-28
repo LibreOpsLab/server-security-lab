@@ -127,3 +127,13 @@ Save in `portfolio/evidence/02-pfsense/`:
   restore a snapshot. Take a snapshot of `pfsense01` now (`working-pfsense`) so you can always return here.
 
 See `lab/pfsense/README.md` for more detail on the template.
+
+### Where to look
+
+| What                     | Command or place                                                                          |
+| ------------------------ | ----------------------------------------------------------------------------------------- |
+| pfSense logs             | **Status > System Logs** in the web page                                                  |
+| Interfaces and addresses | Console menu option 1, or **Interfaces** in the web page                                  |
+| Connectivity             | **Diagnostics > Ping**, and from `admin01`: `ping -c 3 10.10.10.1`                        |
+| The imported file        | `head ~/config.xml` on `admin01` (the interface names and `10.10.10.1` should be visible) |
+| Reset to a known state   | Restore the `working-pfsense` VMware snapshot                                             |

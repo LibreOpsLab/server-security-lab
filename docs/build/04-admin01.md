@@ -26,14 +26,14 @@ real small business would run its administration.
 ### Part A: build the machine (before pfSense)
 
 1. Create a new VM: 2 vCPU, 3 GB RAM, 40 GB disk, one adapter on `LAN-LAB`, one on VMware NAT (so you can
-   fetch packages and this repo). Attach the Ubuntu Desktop 24.04 ISO.
+   fetch packages and this repo). Attach the Ubuntu Desktop 26.04 LTS ISO.
 
    > **Beginner tip:** In VMware, choose **Custom** when creating the VM, so you can set two network
    > adapters. If you finish with only one, add the other under **VM > Settings > Add > Network Adapter**.
    > Which adapter is which matters later; note down "adapter 1 = `LAN-LAB`, adapter 2 = NAT" in your
    > evidence.
 
-2. Install Ubuntu Desktop 24.04. Create your user account with a password you will remember, and write the
+2. Install Ubuntu Desktop 26.04 LTS. Create your user account with a password you will remember, and write the
    username in your evidence. Skip the optional extras.
 3. **Make the lab network address permanent ("static").** Servers need fixed addresses so other machines can
    always find them. In Ubuntu: **Settings > Network**, click the cog beside the _lab_ adapter, **IPv4**
@@ -119,6 +119,9 @@ Come back here when `pve01` is installed and answering at `10.10.10.5` (guide 03
 
     ' >> ~/.ssh/config
     chmod 600 ~/.ssh/config
+
+    ```
+
     ```
 
 11. Copy the public key to `pve01` (`guest.sh` installs it on every guest it creates; `pve01` itself needs it
@@ -138,6 +141,8 @@ Come back here when `pve01` is installed and answering at `10.10.10.5` (guide 03
 - `ping -c 3 10.10.10.1` reaches pfSense (after guide 02) and `ping -c 3 example.com` reaches the internet.
 
 ## Evidence to capture
+
+> **Beginner tip:** `make evidence GUIDE=04` (from `lab/`) runs the read-only commands for you and saves them, stamped with your name, the date and the machine, in `auto-evidence.txt` in your evidence folder. Read it before you commit. It does not replace your screenshots, your notes or your own explanation.
 
 Save in `portfolio/evidence/04-admin01/`:
 
@@ -166,3 +171,13 @@ Save in `portfolio/evidence/04-admin01/`:
   lecturer gave you, and that your GitHub account has been granted access.
 - `sudo: a password is required`: see step 8. Put `ANSIBLE_BECOME_ASK_PASS=true` in front of the `make`
   command, or ask your lecturer.
+
+### Where to look
+
+| What                    | Command or place                                                 |
+| ----------------------- | ---------------------------------------------------------------- |
+| Addresses and routes    | `ip -br a` and `ip route`                                        |
+| Who has which gateway   | `ip route` must show **one** default route (via the NAT adapter) |
+| SSH debugging           | `ssh -v root@10.10.10.5 pveversion` (more `v`s, more detail)     |
+| Ansible can reach hosts | `cd lab/ansible && ansible all -m ping` (once guests exist)      |
+| Your SSH key files      | `ls -l ~/.ssh` (the private key `lab_admin` must be mode 600)    |

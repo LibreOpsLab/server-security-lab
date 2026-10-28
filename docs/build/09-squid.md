@@ -41,6 +41,8 @@ pfSense and watch both requests appear.
 
 ## Evidence to capture
 
+> **Beginner tip:** `make evidence GUIDE=09` (from `lab/`) runs the read-only commands for you and saves them, stamped with your name, the date and the machine, in `auto-evidence.txt` in your evidence folder. Read it before you commit. It does not replace your screenshots, your notes or your own explanation.
+
 Save in `portfolio/evidence/09-squid/`:
 
 | File                 | What it shows                                                        |
@@ -66,3 +68,12 @@ Save in `portfolio/evidence/09-squid/`:
 - The `curl` command hangs or times out: Squid is not listening on the LAN interface. Check **Services >
   Squid Proxy Server > General** and that the package is enabled and running (**Status > Services**).
 - The blocked domain is not blocked: save and **Apply** on the ACLs page, and use a name exactly as typed.
+
+### Where to look
+
+| What                 | Command or place                                           |
+| -------------------- | ---------------------------------------------------------- |
+| Live requests        | **Services > Squid Proxy Server > Real Time**              |
+| Squid status         | **Status > Services** in pfSense                           |
+| Squid's own log      | **Status > System Logs > Packages** (Squid)                |
+| From the client side | `curl -v -x http://10.10.10.1:3128 -I https://example.com` |

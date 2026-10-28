@@ -20,8 +20,8 @@ You do not need to know Linux, networking or Ansible yet. You do need:
 - (Studying on your own? Read [How to prepare for the lab](../instructor/prepare-the-lab.md#studying-on-your-own)
   first: it lists what to download and where from.)
 - A lab workstation (reference spec: about 10 cores, 32 GB RAM, 512 GB or more of fast storage, two network
-  adapters) with VMware Workstation installed, and the ISO files your lecturer lists: pfSense, Proxmox VE
-  and Ubuntu Desktop 24.04.
+  adapters) with VMware Workstation installed, and the ISO files your lecturer lists: pfSense, Proxmox VE 9,
+  Debian 13 (netinst) and Ubuntu Desktop 26.04 LTS.
 - A USB drive or other place outside the PC for backing up your secrets (guide 05).
 - Patience. You will get stuck. That is normal, and the evidence rules below make sure being stuck still
   earns credit.
@@ -164,6 +164,8 @@ being found out costs far more than being behind.
 - **Snapshot before anything risky.** In VMware: right-click the VM > Snapshot > Take Snapshot. Name it for
   what is about to happen, for example `before-make-identity`. A snapshot takes seconds; a rebuild takes an
   afternoon. Delete old ones when you are done with them, because they use up disk space.
+- **Troubleshoot by method, not by guessing.** The [troubleshooting guide](../troubleshooting.md) gives the order
+  to check things in. `make preflight` checks a step before you run it, and `make evidence` collects proof after.
 - **Read the error, then copy it.** The error message almost always says what is wrong. Save the exact text
   in your evidence before you change anything.
 - **The 20-minute rule.** If you have been stuck for 20 minutes on the same problem, stop and ask a

@@ -58,6 +58,8 @@ behind one reverse proxy is how most small teams actually deploy this kind of th
 
 ## Evidence to capture
 
+> **Beginner tip:** `make evidence GUIDE=10` (from `lab/`) runs the read-only commands for you and saves them, stamped with your name, the date and the machine, in `auto-evidence.txt` in your evidence folder. Read it before you commit. It does not replace your screenshots, your notes or your own explanation.
+
 Save in `portfolio/evidence/10-docker-vm-and-apps/`:
 
 | File               | What it shows                                                 |
@@ -78,6 +80,8 @@ Save in `portfolio/evidence/10-docker-vm-and-apps/`:
 
 ## If it goes wrong
 
+**Run this first:** `make preflight STAGE=apps`. It checks what this guide depends on and says what to fix.
+
 - A container will not start: `ssh -i ~/.ssh/lab_admin ubuntu@10.10.10.30`, then
   `cd /opt/lab/<stack> && docker compose logs`. Read the last 20 lines; the cause is nearly always there.
 - Certificate errors in the browser: your machine does not trust the lab root CA yet; import
@@ -86,3 +90,13 @@ Save in `portfolio/evidence/10-docker-vm-and-apps/`:
 - `make apps` fails early with an SSH error: the Docker VM runs as the `ubuntu` user and its cloud image
   disables root key login by design. Check `ssh -i ~/.ssh/lab_admin ubuntu@10.10.10.30` works by hand.
 - Out of memory or very slow: `docker01` has 5 GB. Close other apps in `admin01`, or ask your lecturer.
+
+### Where to look
+
+| What                  | Command or place                                                 |
+| --------------------- | ---------------------------------------------------------------- |
+| Containers            | `ssh ubuntu@10.10.10.30 docker ps -a`                            |
+| One app's log         | `cd /opt/lab/<stack> && docker compose logs --tail 50`           |
+| Traefik's view        | `docker logs traefik --tail 50` (it names the routers it loaded) |
+| Disk space            | `ssh ubuntu@10.10.10.30 df -h /`                                 |
+| Is the name resolved? | `getent hosts cloud.lab.internal` on `admin01`                   |

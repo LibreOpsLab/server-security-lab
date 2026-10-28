@@ -85,6 +85,8 @@ private copy with the full history behaves like a fork for day-to-day work (`git
 
 ## Evidence to capture
 
+> **Beginner tip:** `make evidence GUIDE=05` (from `lab/`) runs the read-only commands for you and saves them, stamped with your name, the date and the machine, in `auto-evidence.txt` in your evidence folder. Read it before you commit. It does not replace your screenshots, your notes or your own explanation.
+
 Save in `portfolio/evidence/05-the-repo-inventory-and-secrets/`:
 
 | File                     | What it shows                                                                                         |
@@ -117,3 +119,12 @@ Save in `portfolio/evidence/05-the-repo-inventory-and-secrets/`:
   the executable bit is missing.
 - `openssl verify` says `unable to get local issuer certificate`: the paths are wrong, or the secrets are
   half-generated. Delete `lab/secrets/` and run `gen-secrets.sh` again.
+
+### Where to look
+
+| What                          | Command or place                                                                                                       |
+| ----------------------------- | ---------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
+| What Git sees                 | `git status` and `git remote -v`                                                                                       |
+| What the secrets folder holds | `ls lab/secrets` (names only)                                                                                          |
+| The CA chain                  | `openssl verify -CAfile lab/secrets/ca/root/certs/ca.cert.pem lab/secrets/ca/intermediate/certs/intermediate.cert.pem` |
+| Script errors                 | `bash -x scripts/gen-secrets.sh 2>&1                                                                                   | head -50` (shows commands, not secret values) |

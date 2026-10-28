@@ -65,6 +65,8 @@ directory and be unable to go above it.
 
 ## Evidence to capture
 
+> **Beginner tip:** `make evidence GUIDE=13` (from `lab/`) runs the read-only commands for you and saves them, stamped with your name, the date and the machine, in `auto-evidence.txt` in your evidence folder. Read it before you commit. It does not replace your screenshots, your notes or your own explanation.
+
 Save in `portfolio/evidence/13-file-transfer-and-shares/`:
 
 | File                 | What it shows                                                                      |
@@ -84,6 +86,8 @@ Save in `portfolio/evidence/13-file-transfer-and-shares/`:
 
 ## If it goes wrong
 
+**Run this first:** `make preflight STAGE=services`. It checks what this guide depends on and says what to fix.
+
 - `net ads join` fails: confirm `make identity` completed and time is in sync (guide 08).
 - `smbclient` says `NT_STATUS_...`: the file server is not running Samba yet or the DNS name is wrong. Try
   the address `10.10.10.26` directly.
@@ -91,3 +95,13 @@ Save in `portfolio/evidence/13-file-transfer-and-shares/`:
   is deliberately weak, but passwords are still case-sensitive.
 - **Note:** the `notices` share is deliberately open to anyone on the LAN without logging in. That is this
   guide's contribution to the security loop, not a misconfiguration.
+
+### Where to look
+
+| What                        | Command or place                                           |
+| --------------------------- | ---------------------------------------------------------- |
+| Samba and SSH state         | `ssh root@10.10.10.26 systemctl status smbd ssh`           |
+| Samba log                   | `ssh root@10.10.10.26 journalctl -u smbd -n 50 --no-pager` |
+| Domain membership           | `ssh root@10.10.10.26 net ads testjoin`                    |
+| Share settings Samba loaded | `ssh root@10.10.10.26 testparm -s`                         |
+| SFTP debugging              | `sftp -v alice@files01.lab.internal`                       |

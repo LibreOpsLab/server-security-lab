@@ -61,6 +61,8 @@ full picture, then run each test below on `admin01` and record the result.
 
 ## Evidence to capture
 
+> **Beginner tip:** `make evidence GUIDE=08` (from `lab/`) runs the read-only commands for you and saves them, stamped with your name, the date and the machine, in `auto-evidence.txt` in your evidence folder. Read it before you commit. It does not replace your screenshots, your notes or your own explanation.
+
 Save in `portfolio/evidence/08-dns-dhcp-and-time/`:
 
 | File                                 | What it shows                                                             |
@@ -86,3 +88,13 @@ Save in `portfolio/evidence/08-dns-dhcp-and-time/`:
   config if needed (guide 02).
 - `chronyc sources` shows `samba-dc01` with `?` or no replies: the DC's chrony may not be serving time yet.
   Re-run `make baseline` and wait a minute.
+
+### Where to look
+
+| What                               | Command or place                                                     |
+| ---------------------------------- | -------------------------------------------------------------------- |
+| Who answers a name                 | `dig samba-dc01.lab.internal @10.10.10.1` versus `@10.10.10.21`      |
+| Which DNS server this machine uses | `resolvectl status` (or `cat /etc/resolv.conf`)                      |
+| Forwarding in pfSense              | **Services > DNS Resolver** (the domain override for `lab.internal`) |
+| DHCP leases                        | **Status > DHCP Leases** in pfSense                                  |
+| Clock state                        | `chronyc tracking` and `chronyc sources -v`                          |

@@ -78,3 +78,12 @@ Save in `portfolio/evidence/17-windows-11-optional/`:
   exact error. That report is itself good evidence.
 - The join fails with "domain not found": the VM's DNS must be `10.10.10.21` (the domain controller).
 - The join fails with a time error: Windows' clock must be within a few minutes of the DC's.
+
+### Where to look
+
+| What                  | Command or place                            |
+| --------------------- | ------------------------------------------- |
+| The script's log      | `%ProgramData%\lab\optimize-windows.log`    |
+| Which DNS the PC uses | `ipconfig /all` (DNS must be `10.10.10.21`) |
+| Domain reachability   | `nltest /dsgetdc:lab.internal`              |
+| Clock                 | `w32tm /query /status`                      |

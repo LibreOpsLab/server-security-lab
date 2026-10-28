@@ -66,6 +66,8 @@ to check: did monitoring notice?
 
 ## Evidence to capture
 
+> **Beginner tip:** `make evidence GUIDE=15` (from `lab/`) runs the read-only commands for you and saves them, stamped with your name, the date and the machine, in `auto-evidence.txt` in your evidence folder. Read it before you commit. It does not replace your screenshots, your notes or your own explanation.
+
 Save in `portfolio/evidence/15-monitoring-and-logs/`:
 
 | File                  | What it shows                                               |
@@ -86,6 +88,8 @@ Save in `portfolio/evidence/15-monitoring-and-logs/`:
 
 ## If it goes wrong
 
+**Run this first:** `make preflight STAGE=monitoring`. It checks what this guide depends on and says what to fix.
+
 - A guest is missing from the dashboard: confirm `log_shipper` ran for it (it is applied to every guest
   except `mon01` itself, which gets `monitoring` and `log_shipper` both).
 - Grafana's page does not load: `make apps` must have been run (Traefik serves it), and `mon01` must be up.
@@ -93,3 +97,13 @@ Save in `portfolio/evidence/15-monitoring-and-logs/`:
 - The dashboard shows "No data": give it a few minutes, then check Prometheus's targets page on `mon01`.
 - **Note:** Loki and the Alloy metrics endpoint have no login of their own. That is a deliberate weak
   default for the security loop, documented in `docs/instructor-weak-defaults.md`.
+
+### Where to look
+
+| What                    | Command or place                                                                    |
+| ----------------------- | ----------------------------------------------------------------------------------- |
+| Services on `mon01`     | `ssh root@10.10.10.24 systemctl status prometheus alertmanager loki grafana-server` |
+| Prometheus targets      | Open `http://10.10.10.24:9090/targets` from `admin01`                               |
+| Alerts                  | Open `http://10.10.10.24:9093` (Alertmanager)                                       |
+| Log shipping on a guest | `ssh root@10.10.10.25 systemctl status alloy`                                       |
+| Grafana's log           | `ssh root@10.10.10.24 journalctl -u grafana-server -n 50 --no-pager`                |

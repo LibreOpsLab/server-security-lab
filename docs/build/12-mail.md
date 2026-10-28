@@ -62,6 +62,8 @@ course. Building a working, if imperfect, mail server here gives you something r
 
 ## Evidence to capture
 
+> **Beginner tip:** `make evidence GUIDE=12` (from `lab/`) runs the read-only commands for you and saves them, stamped with your name, the date and the machine, in `auto-evidence.txt` in your evidence folder. Read it before you commit. It does not replace your screenshots, your notes or your own explanation.
+
 Save in `portfolio/evidence/12-mail/`:
 
 | File                | What it shows                                                 |
@@ -81,11 +83,24 @@ Save in `portfolio/evidence/12-mail/`:
 
 ## If it goes wrong
 
+**Run this first:** `make preflight STAGE=services`. It checks what this guide depends on and says what to fix.
+
 - Mail "bounces" immediately: check the recipient's `mail` attribute in Samba AD matches
   `user@lab.internal` exactly (the loader in guide 07 sets this).
 - `swaks` cannot connect: check `ping mail01.lab.internal` and that `make mail` finished without a failed
   task.
-- Nothing in the mailbox: look at the log on `mail01`: `ssh -i ~/.ssh/lab_admin root@10.10.10.25 tail -50
-/var/log/mail.log`. The line after a failed delivery says why.
+- Nothing in the mailbox: read the mail log with `ssh root@10.10.10.25 journalctl -u postfix -u dovecot -n 80 --no-pager`.
+  The line after a failed delivery says why. (Debian 13 keeps logs in the journal, not in `/var/log/mail.log`.)
 - **Note:** `VRFY` and relaying for the lab subnet are left at Postfix's defaults on purpose; that is not a
   bug, it is this guide's contribution to the security loop later in the course.
+
+### Where to look
+
+| What                        | Command or place                                                                                      |
+| --------------------------- | ----------------------------------------------------------------------------------------------------- |
+| Mail service state          | `ssh root@10.10.10.25 systemctl status postfix dovecot opendkim opendmarc`                            |
+| Postfix log                 | `ssh root@10.10.10.25 journalctl -u postfix -n 50 --no-pager`                                         |
+| Dovecot log                 | `ssh root@10.10.10.25 journalctl -u dovecot -n 50 --no-pager`                                         |
+| Dovecot configuration check | `ssh root@10.10.10.25 doveconf -n` (prints errors with line numbers; the lab uses Dovecot 2.4 syntax) |
+| Mail queue                  | `ssh root@10.10.10.25 postqueue -p`                                                                   |
+| Test a login by hand        | `ssh -t root@10.10.10.25 doveadm auth test alice` (asks for the password)                             |

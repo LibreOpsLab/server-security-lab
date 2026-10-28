@@ -48,6 +48,8 @@ The summary line reads `N passed, 0 failed, M skipped`.
 
 ## Evidence to capture
 
+> **Beginner tip:** `make evidence GUIDE=18` (from `lab/`) runs the read-only commands for you and saves them, stamped with your name, the date and the machine, in `auto-evidence.txt` in your evidence folder. Read it before you commit. It does not replace your screenshots, your notes or your own explanation.
+
 Save in `portfolio/evidence/18-verify/`:
 
 | File                   | What it shows                                                 |
@@ -75,6 +77,14 @@ Save in `portfolio/evidence/18-verify/`:
   anything.
 - You are far behind: ask your lecturer which checks matter most for your assessment. A partly working lab
   with honest evidence is better than a faked clean run.
+
+### Where to look
+
+| What                       | Command or place                                      |
+| -------------------------- | ----------------------------------------------------- |
+| One check at a time        | `./verify/verify.sh --only NAME` from `lab/`          |
+| What a check actually runs | `less verify/checks/NN-name.sh` (each is a few lines) |
+| Which guide to re-read     | The failure message names it                          |
 
 You now have a complete, working "business in a box". The security loop (measure, harden, re-measure) starts
 from here.

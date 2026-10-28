@@ -155,3 +155,12 @@ Save these in `portfolio/evidence/01-prepare-the-workstation/`:
   in a PowerShell window you opened yourself. Run step 1 again.
 - No LAN Segment option: your VMware Workstation edition or version may differ. Ask your lecturer; do not
   create a different kind of network and carry on, because later guides depend on a private segment.
+
+### Where to look
+
+| What                             | Command or place                                                   |
+| -------------------------------- | ------------------------------------------------------------------ |
+| Current state                    | `.\scripts\Set-NestedVirtualisation.ps1 -Mode Check`               |
+| Is a hypervisor already running? | `systeminfo`, and read the "Hyper-V Requirements" lines at the end |
+| Windows security features        | Windows Security > Device security > Core isolation                |
+| Saved original settings          | The script prints where it saved them; keep that file              |

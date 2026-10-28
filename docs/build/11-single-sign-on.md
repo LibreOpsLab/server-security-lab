@@ -70,6 +70,8 @@ most (the `admins` group).
 
 ## Evidence to capture
 
+> **Beginner tip:** `make evidence GUIDE=11` (from `lab/`) runs the read-only commands for you and saves them, stamped with your name, the date and the machine, in `auto-evidence.txt` in your evidence folder. Read it before you commit. It does not replace your screenshots, your notes or your own explanation.
+
 Save in `portfolio/evidence/11-single-sign-on/`:
 
 | File                    | What it shows                                                                |
@@ -89,6 +91,8 @@ Save in `portfolio/evidence/11-single-sign-on/`:
 
 ## If it goes wrong
 
+**Run this first:** `make preflight STAGE=services`. It checks what this guide depends on and says what to fix.
+
 - `authelia validate-config` fails during the Ansible run: the error names the exact line; most issues are a
   missing secret file (re-run `scripts/gen-secrets.sh`).
 - The browser warns "Not secure": the browser does not trust the lab CA yet (step 3).
@@ -97,3 +101,12 @@ Save in `portfolio/evidence/11-single-sign-on/`:
 - A sign-in loop or "invalid credentials" for everyone: check time is correct on `auth01` and `samba-dc01`
   (`chronyc sources`, guide 08), then check Authelia can reach the DC: `nc -zv 10.10.10.21 636` from
   `auth01`.
+
+### Where to look
+
+| What                        | Command or place                                                                                |
+| --------------------------- | ----------------------------------------------------------------------------------------------- |
+| Authelia service            | `ssh root@10.10.10.22 systemctl status authelia`                                                |
+| Authelia log                | `ssh root@10.10.10.22 journalctl -u authelia -n 50 --no-pager`                                  |
+| Configuration check         | `ssh root@10.10.10.22 authelia validate-config --config /etc/authelia/configuration.yml`        |
+| Can it reach the directory? | From `admin01`: `ldapsearch -x -H ldaps://samba-dc01.lab.internal -s base -b "" namingContexts` |

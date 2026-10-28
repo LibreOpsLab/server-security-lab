@@ -65,6 +65,8 @@ ends with `SUCCESS` for a user in the `wifi` group, and is rejected for one who 
 
 ## Evidence to capture
 
+> **Beginner tip:** `make evidence GUIDE=14` (from `lab/`) runs the read-only commands for you and saves them, stamped with your name, the date and the machine, in `auto-evidence.txt` in your evidence folder. Read it before you commit. It does not replace your screenshots, your notes or your own explanation.
+
 Save in `portfolio/evidence/14-wifi-radius/`:
 
 | File                | What it shows                                                                      |
@@ -84,6 +86,8 @@ Save in `portfolio/evidence/14-wifi-radius/`:
 
 ## If it goes wrong
 
+**Run this first:** `make preflight STAGE=services`. It checks what this guide depends on and says what to fix.
+
 - "no response from server": check the shared secret matches on both ends, and that port 1812/UDP reaches
   `radius01`.
 - The join to the domain failed: confirm time is in sync (guide 08) and `make identity` completed.
@@ -91,3 +95,12 @@ Save in `portfolio/evidence/14-wifi-radius/`:
   Search with `apt search eapol`, or ask your lecturer. Record which package you used.
 - To test a user outside the `wifi` group, change `identity` and `password` in the conf file (for example
   to `carol`, who is not in the `wifi` group) and run the same command; it should be rejected.
+
+### Where to look
+
+| What                      | Command or place                                                                                                             |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| RADIUS service            | `ssh root@10.10.10.23 systemctl status freeradius winbind`                                                                   |
+| See its decisions live    | `ssh -t root@10.10.10.23 'systemctl stop freeradius && freeradius -X'` (Ctrl+C, then `systemctl start freeradius` when done) |
+| Does it trust the domain? | `ssh root@10.10.10.23 wbinfo -t`                                                                                             |
+| Can winbind check a user? | `ssh -t root@10.10.10.23 ntlm_auth --request-nt-key --username=alice --domain=LAB` (asks for the password)                   |
