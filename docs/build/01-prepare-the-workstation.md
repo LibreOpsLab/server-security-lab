@@ -13,6 +13,12 @@ that specifically block nested virtualisation.
 
 ## Steps
 
+0. Disable Virtualisation Security to allow Nest Virtulisation to function. Run this script in PowerShell:
+
+   ```terminal
+   .\scripts\Set-NestedVirtualisation.ps1
+   ```
+
 1. Confirm hardware virtualisation is on in the firmware (Task Manager > Performance > CPU >
    "Virtualization: Enabled").
 2. Turn off **Memory Integrity** (Windows Security > Device security > Core isolation). It conflicts with
