@@ -3,27 +3,51 @@
   "uid": "lab-overview",
   "schemaVersion": 39,
   "refresh": "30s",
-  "time": {"from": "now-6h", "to": "now"},
+  "time": { "from": "now-6h", "to": "now" },
   "panels": [
     {
-      "id": 1, "type": "stat", "title": "Hosts up", "datasource": "Prometheus",
-      "gridPos": {"h": 6, "w": 6, "x": 0, "y": 0},
-      "targets": [{"expr": "count(up{job=\"nodes\"} == 1)", "refId": "A"}]
+      "id": 1,
+      "type": "stat",
+      "title": "Hosts up",
+      "datasource": "Prometheus",
+      "gridPos": { "h": 6, "w": 6, "x": 0, "y": 0 },
+      "targets": [{ "expr": "count(up{job=\"nodes\"} == 1)", "refId": "A" }]
     },
     {
-      "id": 2, "type": "timeseries", "title": "CPU used", "datasource": "Prometheus",
-      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 6},
-      "targets": [{"expr": "100 - avg by (instance) (rate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100", "legendFormat": "{{instance}}", "refId": "A"}]
+      "id": 2,
+      "type": "timeseries",
+      "title": "CPU used",
+      "datasource": "Prometheus",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 6 },
+      "targets": [
+        {
+          "expr": "100 - avg by (instance) (rate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100",
+          "legendFormat": "{{instance}}",
+          "refId": "A"
+        }
+      ]
     },
     {
-      "id": 3, "type": "timeseries", "title": "Memory used", "datasource": "Prometheus",
-      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 6},
-      "targets": [{"expr": "100 * (1 - node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)", "legendFormat": "{{instance}}", "refId": "A"}]
+      "id": 3,
+      "type": "timeseries",
+      "title": "Memory used",
+      "datasource": "Prometheus",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 6 },
+      "targets": [
+        {
+          "expr": "100 * (1 - node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)",
+          "legendFormat": "{{instance}}",
+          "refId": "A"
+        }
+      ]
     },
     {
-      "id": 4, "type": "logs", "title": "Firewall and SSH logs", "datasource": "Loki",
-      "gridPos": {"h": 10, "w": 24, "x": 0, "y": 14},
-      "targets": [{"expr": "{job=~\"pfsense|journal\"}", "refId": "A"}]
+      "id": 4,
+      "type": "logs",
+      "title": "Firewall and SSH logs",
+      "datasource": "Loki",
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 14 },
+      "targets": [{ "expr": "{job=~\"pfsense|journal\"}", "refId": "A" }]
     }
   ]
 }

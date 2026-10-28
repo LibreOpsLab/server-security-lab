@@ -12,14 +12,14 @@ one as a dry run of guide 01 and keep the notes: they become your local fixes.
 Students are not expected to find, choose or download installers. The lecturer provides all of this in one
 shared place (for example a network share or a USB drive, copied to `D:\iso` on each workstation).
 
-| Item | Used in | Provided as | Notes |
-| --- | --- | --- | --- |
-| **pfSense CE** installer | Guide 02 | ISO (or the compressed `.iso.gz`; unpack it first) | Download from Netgate. A free account may be needed. Choose the amd64 ISO installer. |
-| **Proxmox VE** installer | Guide 03 | ISO | From proxmox.com/downloads. Use the current stable release and note its version. |
-| **Ubuntu Desktop 24.04 LTS** | Guide 04 | ISO | From ubuntu.com/download. LTS 24.04 is what the guides and automation assume. |
-| **Windows 11** (optional) | Guide 17 | ISO or evaluation media | Only if your course builds the Windows client. Check your institution's licensing, or use Microsoft's evaluation media. Do not use unofficial downloads. |
-| **Kali Linux** (optional) | Week 12 stretch | VM image or ISO | Only for the "attack each other" stretch. |
-| **VMware Workstation** | Guides 01 to 18 | Installer | See [software on the workstation](#software-on-the-workstation). |
+| Item                         | Used in         | Provided as                                        | Notes                                                                                                                                                    |
+| ---------------------------- | --------------- | -------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **pfSense CE** installer     | Guide 02        | ISO (or the compressed `.iso.gz`; unpack it first) | Download from Netgate. A free account may be needed. Choose the amd64 ISO installer.                                                                     |
+| **Proxmox VE** installer     | Guide 03        | ISO                                                | From proxmox.com/downloads. Use the current stable release and note its version.                                                                         |
+| **Ubuntu Desktop 24.04 LTS** | Guide 04        | ISO                                                | From ubuntu.com/download. LTS 24.04 is what the guides and automation assume.                                                                            |
+| **Windows 11** (optional)    | Guide 17        | ISO or evaluation media                            | Only if your course builds the Windows client. Check your institution's licensing, or use Microsoft's evaluation media. Do not use unofficial downloads. |
+| **Kali Linux** (optional)    | Week 12 stretch | VM image or ISO                                    | Only for the "attack each other" stretch.                                                                                                                |
+| **VMware Workstation**       | Guides 01 to 18 | Installer                                          | See [software on the workstation](#software-on-the-workstation).                                                                                         |
 
 You do **not** need to provide: Debian container templates, the Ubuntu cloud image used by the Docker VM, or
 Proxmox Backup Server. Proxmox downloads those itself (`pveam`, a cloud image download) through pfSense, as
@@ -27,14 +27,14 @@ part of `make guests` and `make backup`. This is why `pve01` needs working inter
 
 ## Workstation requirements
 
-| Requirement | Reference spec | Why |
-| --- | --- | --- |
-| CPU | About 10 cores with hardware virtualisation (Intel VT-x or AMD-V) | Proxmox gets 8 vCPUs |
-| RAM | 32 GB | The design budgets about 28.5 GB for the VMs, and the Windows host needs the rest |
-| Storage | 512 GB or more of fast storage (NVMe) with at least **350 GB free** | Proxmox's disk is 250 GB, then `admin01`, pfSense, optional Windows and snapshots |
-| Network | Two network adapters: one lab, one internet | Used by pfSense and the NAT network |
-| OS | Windows 11 with administrator rights for the setup steps | Guide 01 changes security settings |
-| Firmware | Virtualisation enabled | Guide 01 checks this |
+| Requirement | Reference spec                                                      | Why                                                                               |
+| ----------- | ------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| CPU         | About 10 cores with hardware virtualisation (Intel VT-x or AMD-V)   | Proxmox gets 8 vCPUs                                                              |
+| RAM         | 32 GB                                                               | The design budgets about 28.5 GB for the VMs, and the Windows host needs the rest |
+| Storage     | 512 GB or more of fast storage (NVMe) with at least **350 GB free** | Proxmox's disk is 250 GB, then `admin01`, pfSense, optional Windows and snapshots |
+| Network     | Two network adapters: one lab, one internet                         | Used by pfSense and the NAT network                                               |
+| OS          | Windows 11 with administrator rights for the setup steps            | Guide 01 changes security settings                                                |
+| Firmware    | Virtualisation enabled                                              | Guide 01 checks this                                                              |
 
 > **Check this before term.** RAM and disk are estimates until measured on a real build (see
 > [STATUS.md](../build/STATUS.md)). Do a full build on one workstation of each model and record the real
@@ -45,13 +45,13 @@ part of `make guests` and `make backup`. This is why `pve01` needs working inter
 Install these before students arrive. Students install Git, VS Code and Python themselves in
 [DevOps 101](../devops-101.md), which is a useful first-week skill, but pre-installing them is fine too.
 
-| Software | Notes |
-| --- | --- |
-| VMware Workstation | Check the current licence terms for your institution before installing. Record the version. Students need to create VMs, LAN Segments and snapshots. |
-| Git, VS Code, Python 3.11+ | Via `winget`, as in DevOps 101 |
-| GitHub CLI (optional) | Handy for private-repo work |
-| A browser and a PDF/Markdown viewer | Anything current |
-| An archive tool | Needed if pfSense comes as `.gz` |
+| Software                            | Notes                                                                                                                                                |
+| ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| VMware Workstation                  | Check the current licence terms for your institution before installing. Record the version. Students need to create VMs, LAN Segments and snapshots. |
+| Git, VS Code, Python 3.11+          | Via `winget`, as in DevOps 101                                                                                                                       |
+| GitHub CLI (optional)               | Handy for private-repo work                                                                                                                          |
+| A browser and a PDF/Markdown viewer | Anything current                                                                                                                                     |
+| An archive tool                     | Needed if pfSense comes as `.gz`                                                                                                                     |
 
 ## Before the first class
 
@@ -98,7 +98,7 @@ Students can then repeat the check, and it makes a good tiny evidence item for g
 
 - Students create their own passwords during installs. Tell them to keep them out of Git
   ([welcome guide](../build/00-welcome.md)).
-- The lab's *starting* user passwords are in `lab/data/users.csv` and are weak on purpose (see
+- The lab's _starting_ user passwords are in `lab/data/users.csv` and are weak on purpose (see
   [weak defaults](../instructor-weak-defaults.md)). That is not a secret and not a mistake.
 - Never share an instructor's own credentials, API tokens or recovery keys in the lab images or the repo.
 

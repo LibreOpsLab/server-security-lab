@@ -51,7 +51,7 @@ to check: did monitoring notice?
    > **Careful:** Only stop a service on a guest you built and only for the exercise. Write down the exact
    > commands you ran, so you can undo them. Do not do this on any machine that is not yours.
 
-   > **Beginner tip:** If no `HostDown` alert appears, you stopped a *service*, not the whole host. Check
+   > **Beginner tip:** If no `HostDown` alert appears, you stopped a _service_, not the whole host. Check
    > the alert rules: some fire only when the host disappears. Look at **Alerting** in Grafana or the
    > Alertmanager page for what is defined, then stop the right thing (or the whole guest from Proxmox's
    > web page) and write down what you learned.
@@ -68,15 +68,15 @@ to check: did monitoring notice?
 
 Save in `portfolio/evidence/15-monitoring-and-logs/`:
 
-| File | What it shows |
-| --- | --- |
-| `reading-notes.md` | Your plain-words reading of the `HostDown` rule |
-| `make-monitoring.txt` | Output of `make monitoring` ending with the recap |
-| `dashboard.png` | Lab overview with every host reporting and the time visible |
-| `alert-firing.png` | The alert firing after you broke something |
-| `loki-logs.png` | Log lines from two different guests in Grafana Explore |
-| `commands-run.txt` | Exactly what you stopped and started, and when |
-| `evidence.md` | Your filled-in evidence log |
+| File                  | What it shows                                               |
+| --------------------- | ----------------------------------------------------------- |
+| `reading-notes.md`    | Your plain-words reading of the `HostDown` rule             |
+| `make-monitoring.txt` | Output of `make monitoring` ending with the recap           |
+| `dashboard.png`       | Lab overview with every host reporting and the time visible |
+| `alert-firing.png`    | The alert firing after you broke something                  |
+| `loki-logs.png`       | Log lines from two different guests in Grafana Explore      |
+| `commands-run.txt`    | Exactly what you stopped and started, and when              |
+| `evidence.md`         | Your filled-in evidence log                                 |
 
 ## Explain it in your own words
 

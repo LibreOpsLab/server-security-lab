@@ -304,18 +304,18 @@ updates without overwriting your work.
 
 ## Quick command reference
 
-| Command | Meaning |
-| --- | --- |
-| `git status` | Show the current branch and changed files |
-| `git diff` | Review unstaged edits |
-| `git add <path>` | Stage changes for the next commit |
-| `git diff --staged` | Review staged changes |
-| `git commit -m "message"` | Save a snapshot in local history |
-| `git pull --ff-only` | Bring remote changes into the current branch |
-| `git push` | Upload committed changes on the current branch |
-| `git switch <branch>` | Change to an existing branch |
-| `git switch -c <branch>` | Create and switch to a new branch |
-| `git log --oneline --decorate -10` | View recent commits |
+| Command                            | Meaning                                        |
+| ---------------------------------- | ---------------------------------------------- |
+| `git status`                       | Show the current branch and changed files      |
+| `git diff`                         | Review unstaged edits                          |
+| `git add <path>`                   | Stage changes for the next commit              |
+| `git diff --staged`                | Review staged changes                          |
+| `git commit -m "message"`          | Save a snapshot in local history               |
+| `git pull --ff-only`               | Bring remote changes into the current branch   |
+| `git push`                         | Upload committed changes on the current branch |
+| `git switch <branch>`              | Change to an existing branch                   |
+| `git switch -c <branch>`           | Create and switch to a new branch              |
+| `git log --oneline --decorate -10` | View recent commits                            |
 
 If you are unsure what a command will do, run `git status` first. Do not use `git reset --hard`, `git clean`
 or force-push commands to try to fix a problem; these can discard work. Ask your instructor for help.

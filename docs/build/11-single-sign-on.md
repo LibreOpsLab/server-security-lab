@@ -53,7 +53,7 @@ most (the `admins` group).
 3. Try it. In a browser on `admin01`, open `https://auth.lab.internal`. If the browser warns about the
    certificate, it does not trust the lab's root CA yet; the browser on `admin01` needs
    `lab/secrets/ca/root/certs/ca.cert.pem` imported (Firefox: **Settings > Privacy & Security >
-   Certificates > View Certificates > Authorities > Import**). Note that `make trust` handled the *system*
+   Certificates > View Certificates > Authorities > Import**). Note that `make trust` handled the _system_
    store, not Firefox's own.
 4. Sign in as an ordinary user (for example `alice`, with the starting password from `lab/data/users.csv`),
    then sign in as an `admins` user (for example `erin`) and register a TOTP device.
@@ -72,14 +72,14 @@ most (the `admins` group).
 
 Save in `portfolio/evidence/11-single-sign-on/`:
 
-| File | What it shows |
-| --- | --- |
-| `reading-notes.md` | Where the LDAP server and the second-factor rule live in the config |
-| `make-sso.txt` | Output of `make sso` ending with the recap |
-| `portal.png` | The sign-in page with the padlock and `auth.lab.internal` in the address bar |
-| `normal-login.png` | An ordinary user signed in, with no second-factor prompt |
-| `admin-totp-prompt.png` | An `admins` user being asked for a code (do not show the QR code or secret) |
-| `evidence.md` | Your filled-in evidence log |
+| File                    | What it shows                                                                |
+| ----------------------- | ---------------------------------------------------------------------------- |
+| `reading-notes.md`      | Where the LDAP server and the second-factor rule live in the config          |
+| `make-sso.txt`          | Output of `make sso` ending with the recap                                   |
+| `portal.png`            | The sign-in page with the padlock and `auth.lab.internal` in the address bar |
+| `normal-login.png`      | An ordinary user signed in, with no second-factor prompt                     |
+| `admin-totp-prompt.png` | An `admins` user being asked for a code (do not show the QR code or secret)  |
+| `evidence.md`           | Your filled-in evidence log                                                  |
 
 ## Explain it in your own words
 

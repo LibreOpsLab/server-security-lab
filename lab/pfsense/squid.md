@@ -1,19 +1,19 @@
 # Squid on pfSense: the filtering forward proxy
 
 Squid is the lab's **forward proxy**: LAN clients send their web traffic through it so you can filter and
-log it. (Traefik on `docker01` is the opposite thing, a *reverse* proxy in front of the apps.)
+log it. (Traefik on `docker01` is the opposite thing, a _reverse_ proxy in front of the apps.)
 
 It is set up by hand from these steps, not imported in `config.xml`, because package settings in the
 configuration file change between pfSense versions.
 
 Settings agreed for the lab:
 
-| Setting | Value |
-| ------- | ----- |
-| Package | `squid` from the pfSense **CE** package manager |
-| Mode | Explicit forward proxy, listening on **port 3128**, LAN interface only |
-| TLS | no SSL interception (no SSL bump): HTTPS passes through as a tunnel, so the lab CA is not involved |
-| Logging | Access log on, so you can see requests in the log week |
+| Setting | Value                                                                                              |
+| ------- | -------------------------------------------------------------------------------------------------- |
+| Package | `squid` from the pfSense **CE** package manager                                                    |
+| Mode    | Explicit forward proxy, listening on **port 3128**, LAN interface only                             |
+| TLS     | no SSL interception (no SSL bump): HTTPS passes through as a tunnel, so the lab CA is not involved |
+| Logging | Access log on, so you can see requests in the log week                                             |
 
 ## Steps
 

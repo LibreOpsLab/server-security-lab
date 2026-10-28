@@ -50,18 +50,18 @@ The summary line reads `N passed, 0 failed, M skipped`.
 
 Save in `portfolio/evidence/18-verify/`:
 
-| File | What it shows |
-| --- | --- |
-| `verify-run-1.txt` | The first full run, including any failures |
-| `fix-log.md` | A table of every failure: message, cause, fix, and the re-run |
-| `verify-run-final.txt` | The final run ending `N passed, 0 failed, M skipped` |
-| `snapshots.png` | Your `lab-verified` snapshots in VMware and Proxmox |
-| `evidence.md` | Your filled-in evidence log |
+| File                   | What it shows                                                 |
+| ---------------------- | ------------------------------------------------------------- |
+| `verify-run-1.txt`     | The first full run, including any failures                    |
+| `fix-log.md`           | A table of every failure: message, cause, fix, and the re-run |
+| `verify-run-final.txt` | The final run ending `N passed, 0 failed, M skipped`          |
+| `snapshots.png`        | Your `lab-verified` snapshots in VMware and Proxmox           |
+| `evidence.md`          | Your filled-in evidence log                                   |
 
 ## Explain it in your own words
 
 1. Choose one check and describe, step by step, what it does to test a service.
-2. The `20-weak-defaults` check passes when things are *weak*. Why does the course want that?
+2. The `20-weak-defaults` check passes when things are _weak_. Why does the course want that?
 3. What was your hardest failure, and how did you find the cause?
 
 ## If it goes wrong

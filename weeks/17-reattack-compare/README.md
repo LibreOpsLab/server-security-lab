@@ -33,13 +33,13 @@ Same tools, same scripts, same hosts as week 12. The only thing that changed is 
 
 ## Evidence to capture
 
-| Where | What it shows |
-| --- | --- |
-| `portfolio/reports/compare-*.md` | The comparison reports, unedited |
-| `portfolio/remediation-record.md` | For each finding still open: remediate or accept, and your reason |
-| `portfolio/manager-briefing-2.md` | The second plain-language briefing note |
-| `portfolio/reflection.md` (finished) | The completed reflection, including one control that cost something |
-| `portfolio/evidence/17-reattack/evidence.md` | Problems you hit and how you fixed them |
+| Where                                        | What it shows                                                       |
+| -------------------------------------------- | ------------------------------------------------------------------- |
+| `portfolio/reports/compare-*.md`             | The comparison reports, unedited                                    |
+| `portfolio/remediation-record.md`            | For each finding still open: remediate or accept, and your reason   |
+| `portfolio/manager-briefing-2.md`            | The second plain-language briefing note                             |
+| `portfolio/reflection.md` (finished)         | The completed reflection, including one control that cost something |
+| `portfolio/evidence/17-reattack/evidence.md` | Problems you hit and how you fixed them                             |
 
 ## Explain it in your own words
 

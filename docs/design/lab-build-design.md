@@ -11,6 +11,7 @@ Why: security only makes sense against a real platform (see the security loop). 
 ## Goals, non-goals, anti-goals
 
 Goals
+
 - Every service the course assesses is present and works: directory, DNS, DHCP, time, web and reverse proxy, filtering proxy, file transfer, mail, file shares, SSO, WPA-Enterprise authentication, monitoring and logging, backup and restore.
 - Built by documents plus automation: after the hardware-level steps, one command per layer.
 - Light enough for one learner on one 32 GB workstation.
@@ -18,11 +19,13 @@ Goals
 - Open source throughout; configuration that is understood, not magic.
 
 Non-goals
+
 - High availability, multi-site, federation, or enterprise scale.
 - Production hardening. The lab is deliberately functional but not secure; hardening is the learner's later job.
 - Supporting every hypervisor. One reference platform, documented well.
 
 Anti-goals (a failure even if it technically works)
+
 - A learner copies commands without knowing what they do. Each build step says what and why, and automation is read before it is run.
 - Secrets in the repo or in terminals. Service secrets are generated and kept out of git.
 - A lab that only the author can rebuild.
@@ -45,12 +48,12 @@ flowchart LR
 
 ### VMware guests
 
-| Guest | Role | RAM | Notes |
-| ----- | ---- | --- | ----- |
-| `pfsense01` | Firewall, DHCP, DNS forwarder, NAT, Squid filtering proxy | 1.5 GB | Not Ansible-managed; config template imported, Squid set from documented steps |
-| `pve01` | Proxmox VE (nested KVM and LXC) | 16 GB, 8 vCPU | Nested virtualisation on. Guests inside can over-commit |
-| `admin01` | Ubuntu Desktop: Ansible control node, git, attack and audit tools, the `sslab` tool | 3 GB | Where the learner works |
-| `win-client01` | **Optional** Windows 11 for the Windows layer of the security work | 4 GB | Debloated by script; domain joined |
+| Guest          | Role                                                                                | RAM           | Notes                                                                          |
+| -------------- | ----------------------------------------------------------------------------------- | ------------- | ------------------------------------------------------------------------------ |
+| `pfsense01`    | Firewall, DHCP, DNS forwarder, NAT, Squid filtering proxy                           | 1.5 GB        | Not Ansible-managed; config template imported, Squid set from documented steps |
+| `pve01`        | Proxmox VE (nested KVM and LXC)                                                     | 16 GB, 8 vCPU | Nested virtualisation on. Guests inside can over-commit                        |
+| `admin01`      | Ubuntu Desktop: Ansible control node, git, attack and audit tools, the `sslab` tool | 3 GB          | Where the learner works                                                        |
+| `win-client01` | **Optional** Windows 11 for the Windows layer of the security work                  | 4 GB          | Debloated by script; domain joined                                             |
 
 With the Windows host (about 4 GB) the total is about 28.5 GB with Windows 11 running, and less without it. One user, VMware Tools everywhere, and RAM over-commit inside Proxmox keep it from swapping badly. The memory figures are estimates until measured on a real workstation.
 
@@ -58,16 +61,16 @@ With the Windows host (about 4 GB) the total is about 28.5 GB with Windows 11 ru
 
 All on `lab.internal` (realm `LAB.INTERNAL`, NetBIOS `LAB`), network `10.10.10.0/24`, gateway `pfsense01` at `10.10.10.1`.
 
-| Guest | Type | Role | RAM | Address |
-| ----- | ---- | ---- | --- | ------- |
-| `samba-dc01` | LXC | Samba AD: identity, Kerberos, LDAP, internal DNS, NTP | 1 GB | .21 |
-| `auth01` | LXC | Authelia: SSO for the apps (OIDC where supported, forward auth otherwise) | 0.5 GB | .22 |
-| `radius01` | LXC | FreeRADIUS, WPA-Enterprise (PEAP-MSCHAPv2) against Samba | 0.5 GB | .23 |
-| `mon01` | LXC | Prometheus, Grafana, Loki, Alertmanager; log collection | 2 GB | .24 |
-| `mail01` | LXC | Postfix, Dovecot, OpenDKIM, OpenDMARC, LDAP-backed mailboxes | 1 GB | .25 |
-| `files01` | LXC | Domain member file server: OpenSSH SFTP (chrooted accounts) and Samba SMB shares | 0.5 GB | .26 |
-| `pbs01` | LXC | Proxmox Backup Server for guest backups and restore tests | 1 GB | .27 |
-| `docker01` | VM (cloud-init) | Docker, Traefik, NextCloud, Stirling PDF, Vaultwarden | 5 GB | .30 |
+| Guest        | Type            | Role                                                                             | RAM    | Address |
+| ------------ | --------------- | -------------------------------------------------------------------------------- | ------ | ------- |
+| `samba-dc01` | LXC             | Samba AD: identity, Kerberos, LDAP, internal DNS, NTP                            | 1 GB   | .21     |
+| `auth01`     | LXC             | Authelia: SSO for the apps (OIDC where supported, forward auth otherwise)        | 0.5 GB | .22     |
+| `radius01`   | LXC             | FreeRADIUS, WPA-Enterprise (PEAP-MSCHAPv2) against Samba                         | 0.5 GB | .23     |
+| `mon01`      | LXC             | Prometheus, Grafana, Loki, Alertmanager; log collection                          | 2 GB   | .24     |
+| `mail01`     | LXC             | Postfix, Dovecot, OpenDKIM, OpenDMARC, LDAP-backed mailboxes                     | 1 GB   | .25     |
+| `files01`    | LXC             | Domain member file server: OpenSSH SFTP (chrooted accounts) and Samba SMB shares | 0.5 GB | .26     |
+| `pbs01`      | LXC             | Proxmox Backup Server for guest backups and restore tests                        | 1 GB   | .27     |
+| `docker01`   | VM (cloud-init) | Docker, Traefik, NextCloud, Stirling PDF, Vaultwarden                            | 5 GB   | .30     |
 
 Total about 11.5 GB of the 14 GB inside Proxmox, before over-commit.
 
@@ -87,15 +90,15 @@ Addresses: pfSense `.1`, Proxmox host `.5`, `admin01` `.10`, `win-client01` `.11
 
 `lab-small-business` is VM-based, uses Authentik for SSO, and has no LXC, Proxmox, RADIUS, SFTP or monitoring. So:
 
-| Layer | Source |
-| ----- | ------ |
-| Samba AD provisioning, users and groups, backup script | **Adapt** `samba/scripts` (rewritten as an Ansible role for an LXC) |
-| Two-tier internal CA, trust distribution | **Adapt** `pki/` and the `pki_trust` role |
-| Mail (Postfix, Dovecot, DKIM, DMARC, SPF notes) | **Adapt** the mail configuration files from `docker/mail`; run natively in an LXC |
-| Traefik, NextCloud, Stirling PDF stacks | **Adapt** `docker/reverse-proxy`, `nextcloud`, `stirling-pdf` |
-| Baseline role (chrony, firewall, SSH, updates) | **Adapt** the `common` role, but **without the hardening**: the lab starts functional, not secure |
-| Authelia (SSO), FreeRADIUS, Vaultwarden | **New** (the source uses Authentik; the lab uses Authelia because it is lighter) |
-| Proxmox guest creation, files01 (SFTP, shares), monitoring, Proxmox Backup, pfSense template, Windows debloat, verify | **New** |
+| Layer                                                                                                                 | Source                                                                                            |
+| --------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| Samba AD provisioning, users and groups, backup script                                                                | **Adapt** `samba/scripts` (rewritten as an Ansible role for an LXC)                               |
+| Two-tier internal CA, trust distribution                                                                              | **Adapt** `pki/` and the `pki_trust` role                                                         |
+| Mail (Postfix, Dovecot, DKIM, DMARC, SPF notes)                                                                       | **Adapt** the mail configuration files from `docker/mail`; run natively in an LXC                 |
+| Traefik, NextCloud, Stirling PDF stacks                                                                               | **Adapt** `docker/reverse-proxy`, `nextcloud`, `stirling-pdf`                                     |
+| Baseline role (chrony, firewall, SSH, updates)                                                                        | **Adapt** the `common` role, but **without the hardening**: the lab starts functional, not secure |
+| Authelia (SSO), FreeRADIUS, Vaultwarden                                                                               | **New** (the source uses Authentik; the lab uses Authelia because it is lighter)                  |
+| Proxmox guest creation, files01 (SFTP, shares), monitoring, Proxmox Backup, pfSense template, Windows debloat, verify | **New**                                                                                           |
 
 New work is the bigger half. Every new component starts as "unverified" in the status table.
 
@@ -156,13 +159,13 @@ Numbered, in the order a learner works, in a friendly second-person voice, each 
 
 The security loop (`docs/attack-set.md`) needs something to find. The build is functional but not secure, and the Ansible roles must **not** harden. Concretely the build must leave:
 
-| Attack | Target | What the build leaves in place |
-| ------ | ------ | ------------------------------ |
-| `enum-services` | all guests | Only services the design needs, but with default banners and open management ports |
+| Attack           | Target                           | What the build leaves in place                                                                                         |
+| ---------------- | -------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `enum-services`  | all guests                       | Only services the design needs, but with default banners and open management ports                                     |
 | `ssh-weak-creds` | `files01`, `docker01`, `admin01` | SSH password login on; AD user accounts created from the CSV with initial passwords drawn from a short documented list |
-| `web-basics` | `docker01` (Traefik, port 80) | Default headers: no HSTS, CSP or frame protection; server banner visible |
-| `mail-basics` | `mail01` | Postfix defaults: `VRFY` on, relay allowed for the local subnet |
-| `anon-directory` | `files01` | A public "notices" share with guest access, as many how-tos create |
+| `web-basics`     | `docker01` (Traefik, port 80)    | Default headers: no HSTS, CSP or frame protection; server banner visible                                               |
+| `mail-basics`    | `mail01`                         | Postfix defaults: `VRFY` on, relay allowed for the local subnet                                                        |
+| `anon-directory` | `files01`                        | A public "notices" share with guest access, as many how-tos create                                                     |
 
 These are recorded in `docs/instructor-weak-defaults.md`, and `lab/verify/` checks they are present, so a learner who hardens early notices before the baseline.
 

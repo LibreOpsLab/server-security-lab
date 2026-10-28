@@ -43,7 +43,7 @@ it to.
    ```
 
    > **What's going on:** The script restores the latest backup into a scratch guest with its network
-   > *unplugged* (so it cannot clash with the real one), times it against your recovery goal (`--rto 600`
+   > _unplugged_ (so it cannot clash with the real one), times it against your recovery goal (`--rto 600`
    > is 600 seconds), then deletes the scratch guest.
 
    > **Beginner tip:** Choose a small guest the first time (`auth01` is `122`). Restoring `docker01` is
@@ -58,13 +58,13 @@ scratch guest). Check with `qm list` and `pct list` on `pve01`.
 
 Save in `portfolio/evidence/16-backup-and-restore/`:
 
-| File | What it shows |
-| --- | --- |
-| `make-backup.txt` | Output of `make backup` ending with the recap |
-| `backup-job.png` | The nightly job in Proxmox (**Datacenter > Backup**) |
-| `restore-test.txt` | The full `restore-test.sh` output ending in `PASS` and the time taken |
-| `after-cleanup.txt` | `pct list` / `qm list` showing no scratch guest remains |
-| `evidence.md` | Your filled-in evidence log, including the restore time in seconds |
+| File                | What it shows                                                         |
+| ------------------- | --------------------------------------------------------------------- |
+| `make-backup.txt`   | Output of `make backup` ending with the recap                         |
+| `backup-job.png`    | The nightly job in Proxmox (**Datacenter > Backup**)                  |
+| `restore-test.txt`  | The full `restore-test.sh` output ending in `PASS` and the time taken |
+| `after-cleanup.txt` | `pct list` / `qm list` showing no scratch guest remains               |
+| `evidence.md`       | Your filled-in evidence log, including the restore time in seconds    |
 
 ## Explain it in your own words
 

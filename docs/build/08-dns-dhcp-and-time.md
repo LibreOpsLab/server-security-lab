@@ -63,12 +63,12 @@ full picture, then run each test below on `admin01` and record the result.
 
 Save in `portfolio/evidence/08-dns-dhcp-and-time/`:
 
-| File | What it shows |
-| --- | --- |
-| `dig-compare.txt` | Both `dig` commands and their (matching) answers |
+| File                                 | What it shows                                                             |
+| ------------------------------------ | ------------------------------------------------------------------------- |
+| `dig-compare.txt`                    | Both `dig` commands and their (matching) answers                          |
 | `dhcp-lease.png` or `dhcp-lease.txt` | A DHCP client's address and DNS servers (or a note on why you skipped it) |
-| `chronyc-sources.txt` | `chronyc sources` from a non-DC guest, showing the DC as source |
-| `evidence.md` | Your filled-in evidence log |
+| `chronyc-sources.txt`                | `chronyc sources` from a non-DC guest, showing the DC as source           |
+| `evidence.md`                        | Your filled-in evidence log                                               |
 
 ## Explain it in your own words
 

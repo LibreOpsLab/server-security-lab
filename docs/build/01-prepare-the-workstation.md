@@ -95,7 +95,7 @@ that can use the same processor features and prevent nested virtualisation from 
    prompt appears, or the check still reports `NOT READY`, stop and ask your lecturer; do not keep repeating
    the firmware-unlock step.
 
-   > **Careful:** The firmware prompt appears *before* Windows loads and asks you to press a key to accept.
+   > **Careful:** The firmware prompt appears _before_ Windows loads and asks you to press a key to accept.
    > If you miss it, nothing changes. Do not repeat it more than once without help.
 
 5. Confirm hardware virtualisation is enabled in the firmware (Task Manager > Performance > CPU >
@@ -106,7 +106,7 @@ that can use the same processor features and prevent nested virtualisation from 
    your lecturer has already set this up, check the segment exists instead of creating a second one.
 
    > **What's going on:** A LAN Segment is a private virtual network cable that only VMs can plug into.
-   > Your Windows PC is *not* on it, which is the point: the lab is isolated. It also means you cannot reach
+   > Your Windows PC is _not_ on it, which is the point: the lab is isolated. It also means you cannot reach
    > lab machines from Windows directly. Later guides use `admin01` as the window into the lab.
 
 7. Note which of your workstation's two NICs is for the internet and which is for the lab; you will choose
@@ -128,13 +128,13 @@ unlock step.
 
 Save these in `portfolio/evidence/01-prepare-the-workstation/`:
 
-| File | What it shows |
-| --- | --- |
-| `check-before.txt` | The script's report before any change |
-| `check-after.txt` | The report after the restart, ending in `READY` |
-| `task-manager-virtualization.png` | Task Manager > Performance > CPU, showing "Virtualization: Enabled" |
-| `lan-lab.png` | The `LAN-LAB` segment in VMware's LAN Segments list (take this when you create it) |
-| `evidence.md` | Your filled-in evidence log |
+| File                              | What it shows                                                                      |
+| --------------------------------- | ---------------------------------------------------------------------------------- |
+| `check-before.txt`                | The script's report before any change                                              |
+| `check-after.txt`                 | The report after the restart, ending in `READY`                                    |
+| `task-manager-virtualization.png` | Task Manager > Performance > CPU, showing "Virtualization: Enabled"                |
+| `lan-lab.png`                     | The `LAN-LAB` segment in VMware's LAN Segments list (take this when you create it) |
+| `evidence.md`                     | Your filled-in evidence log                                                        |
 
 ## Explain it in your own words
 

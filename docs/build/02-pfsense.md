@@ -17,8 +17,8 @@ Every other guest sits behind this one. It is the only guest Ansible does not ma
 configuration is its own XML format, not a set of text files.
 
 > **What's going on:** A firewall sits between your lab network and the internet. It does four jobs here:
-> it *routes* and *NATs* lab traffic out to the internet, it *hands out addresses* (DHCP), it *answers name
-> lookups* (DNS) for lab machines, and later it filters web traffic with a proxy (Squid). If the firewall is
+> it _routes_ and _NATs_ lab traffic out to the internet, it _hands out addresses_ (DHCP), it _answers name
+> lookups_ (DNS) for lab machines, and later it filters web traffic with a proxy (Squid). If the firewall is
 > wrong, nothing else in the lab will behave, which is why it comes early.
 
 ## Steps
@@ -100,15 +100,15 @@ configuration is its own XML format, not a set of text files.
 
 Save in `portfolio/evidence/02-pfsense/`:
 
-| File | What it shows |
-| --- | --- |
-| `vm-settings.png` | The pfSense VM's two adapters and the network each is on |
-| `console-menu.png` | pfSense's console menu with the WAN and LAN addresses |
+| File                | What it shows                                                                                     |
+| ------------------- | ------------------------------------------------------------------------------------------------- |
+| `vm-settings.png`   | The pfSense VM's two adapters and the network each is on                                          |
+| `console-menu.png`  | pfSense's console menu with the WAN and LAN addresses                                             |
 | `render-output.txt` | The `render.py` command you ran and `ls -l ~/config.xml` (do **not** include the file's contents) |
-| `dashboard.png` | pfSense's web dashboard, browser address bar visible, showing the interfaces |
-| `ping-tests.txt` | `ping` to `10.10.10.1` from `admin01`, with the prompt |
-| `pfsense-ping.png` | pfSense's **Diagnostics > Ping** reaching `1.1.1.1` and `example.com` |
-| `evidence.md` | Your filled-in evidence log |
+| `dashboard.png`     | pfSense's web dashboard, browser address bar visible, showing the interfaces                      |
+| `ping-tests.txt`    | `ping` to `10.10.10.1` from `admin01`, with the prompt                                            |
+| `pfsense-ping.png`  | pfSense's **Diagnostics > Ping** reaching `1.1.1.1` and `example.com`                             |
+| `evidence.md`       | Your filled-in evidence log                                                                       |
 
 ## Explain it in your own words
 

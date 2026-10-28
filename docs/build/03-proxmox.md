@@ -72,13 +72,13 @@ Running it nested means the whole estate fits on one shared workstation.
 
 Save in `portfolio/evidence/03-proxmox/`:
 
-| File | What it shows |
-| --- | --- |
-| `vm-processors.png` | VMware Processors page with virtualisation ticked |
-| `pve-web-ui.png` | Proxmox web page, address bar visible, node `pve01` in the tree |
-| `pveversion.txt` | `ssh root@10.10.10.5 pveversion` run from `admin01`, with the prompt |
-| `virtualisation-check.txt` | The `egrep -c ...` or `kvm-ok` result from inside `pve01` |
-| `evidence.md` | Your filled-in evidence log |
+| File                       | What it shows                                                        |
+| -------------------------- | -------------------------------------------------------------------- |
+| `vm-processors.png`        | VMware Processors page with virtualisation ticked                    |
+| `pve-web-ui.png`           | Proxmox web page, address bar visible, node `pve01` in the tree      |
+| `pveversion.txt`           | `ssh root@10.10.10.5 pveversion` run from `admin01`, with the prompt |
+| `virtualisation-check.txt` | The `egrep -c ...` or `kvm-ok` result from inside `pve01`            |
+| `evidence.md`              | Your filled-in evidence log                                          |
 
 ## Explain it in your own words
 

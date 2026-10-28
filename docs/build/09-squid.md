@@ -15,8 +15,8 @@ sits between your LAN clients and the internet, and lets you see and filter what
 > **What's going on:** Without a proxy, a computer talks to a website directly. With a **forward proxy**,
 > the computer asks Squid, and Squid fetches the page on its behalf. That gives the business one place to
 > write down who visited what, and to block categories of sites. A **reverse proxy** is the opposite:
-> visitors reach it first and it passes them on to the right internal server. Remember the pair: *forward
-> protects users going out; reverse fronts servers coming in.*
+> visitors reach it first and it passes them on to the right internal server. Remember the pair: _forward
+> protects users going out; reverse fronts servers coming in._
 
 ## Steps
 
@@ -43,14 +43,14 @@ pfSense and watch both requests appear.
 
 Save in `portfolio/evidence/09-squid/`:
 
-| File | What it shows |
-| --- | --- |
-| `squid-general.png` | The Squid **General** page: enabled, LAN, port 3128, transparent off |
-| `squid-acls.png` | The **ACLs** page showing the allowed subnet and your blacklist |
-| `curl-allowed.txt` | The allowed request returning 200 or a redirect, with the prompt |
-| `curl-blocked.txt` | The blocked request returning 403 |
-| `squid-realtime.png` | The Real Time log with both requests listed |
-| `evidence.md` | Your filled-in evidence log |
+| File                 | What it shows                                                        |
+| -------------------- | -------------------------------------------------------------------- |
+| `squid-general.png`  | The Squid **General** page: enabled, LAN, port 3128, transparent off |
+| `squid-acls.png`     | The **ACLs** page showing the allowed subnet and your blacklist      |
+| `curl-allowed.txt`   | The allowed request returning 200 or a redirect, with the prompt     |
+| `curl-blocked.txt`   | The blocked request returning 403                                    |
+| `squid-realtime.png` | The Real Time log with both requests listed                          |
+| `evidence.md`        | Your filled-in evidence log                                          |
 
 ## Explain it in your own words
 

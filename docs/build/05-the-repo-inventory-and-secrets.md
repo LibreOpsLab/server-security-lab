@@ -31,7 +31,7 @@ private copy with the full history behaves like a fork for day-to-day work (`git
    git remote -v
    ```
 
-   `origin` should be *your* private repository. If you are studying alone or have no private repo, make
+   `origin` should be _your_ private repository. If you are studying alone or have no private repo, make
    one with the script below (this needs `gh` logged in, as in guide 04). Skip this if you already have a
    private repo:
 
@@ -58,7 +58,7 @@ private copy with the full history behaves like a fork for day-to-day work (`git
    ```
 
    > **What's going on:** This creates a random password for each service, plus a two-level certificate
-   > authority (CA): a *root* CA that stays offline, and an *intermediate* CA that signs the certificates
+   > authority (CA): a _root_ CA that stays offline, and an _intermediate_ CA that signs the certificates
    > for your servers. Later, every machine is told to trust the root, so every server certificate it signs
    > will show a padlock, not a warning. It is a miniature version of how the real web's HTTPS works.
 
@@ -77,7 +77,7 @@ private copy with the full history behaves like a fork for day-to-day work (`git
 ## Check it worked
 
 - `lab/secrets/` contains one file per secret, plus a `ca/` directory with `root/` and `intermediate/`.
-  Check with `ls lab/secrets` (look at the *names*; do not print file contents).
+  Check with `ls lab/secrets` (look at the _names_; do not print file contents).
 - `openssl verify -CAfile lab/secrets/ca/root/certs/ca.cert.pem lab/secrets/ca/intermediate/certs/intermediate.cert.pem`
   says `OK`.
 - `git status` does not list anything inside `lab/secrets/`. Git is ignoring it as intended.
@@ -87,24 +87,24 @@ private copy with the full history behaves like a fork for day-to-day work (`git
 
 Save in `portfolio/evidence/05-the-repo-inventory-and-secrets/`:
 
-| File | What it shows |
-| --- | --- |
-| `git-remote.txt` | `git remote -v`, showing your own private repository |
-| `inventory-excerpt.txt` | The first 30 lines of `all.yml` (`head -30 lab/inventory/group_vars/all.yml`); it contains no secrets |
-| `secret-names.txt` | `ls lab/secrets` (file *names* only, no contents) |
-| `openssl-verify.txt` | The `openssl verify` command and its `OK` output |
-| `git-status-ignored.txt` | `git status` showing `lab/secrets/` is not listed |
-| `backup-listing.txt` | `ls -l` of the backup file on the USB drive (not its contents) |
-| `evidence.md` | Your filled-in evidence log |
+| File                     | What it shows                                                                                         |
+| ------------------------ | ----------------------------------------------------------------------------------------------------- |
+| `git-remote.txt`         | `git remote -v`, showing your own private repository                                                  |
+| `inventory-excerpt.txt`  | The first 30 lines of `all.yml` (`head -30 lab/inventory/group_vars/all.yml`); it contains no secrets |
+| `secret-names.txt`       | `ls lab/secrets` (file _names_ only, no contents)                                                     |
+| `openssl-verify.txt`     | The `openssl verify` command and its `OK` output                                                      |
+| `git-status-ignored.txt` | `git status` showing `lab/secrets/` is not listed                                                     |
+| `backup-listing.txt`     | `ls -l` of the backup file on the USB drive (not its contents)                                        |
+| `evidence.md`            | Your filled-in evidence log                                                                           |
 
-> **Careful:** The evidence for this guide is about *secrets*. Double-check each file before committing: no
+> **Careful:** The evidence for this guide is about _secrets_. Double-check each file before committing: no
 > passwords, no `.pem` key contents, no passphrase.
 
 ## Explain it in your own words
 
 1. Why is `lab/secrets/` kept out of Git, and what would go wrong if it were committed?
 2. What does the "single source of truth" mean here? Give one example of a place the inventory is used.
-3. Why do we make a *private copy* rather than a fork?
+3. Why do we make a _private copy_ rather than a fork?
 
 ## If it goes wrong
 

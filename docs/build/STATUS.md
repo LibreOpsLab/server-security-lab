@@ -4,28 +4,28 @@ Status of every component. Everything here is **unverified** until it has been b
 workstation and ticked off against [18-verify.md](../build/18-verify.md). Contributions that verify a
 row are very welcome; see [CONTRIBUTING.md](../../CONTRIBUTING.md).
 
-| Guest | Role | Status |
-| --- | --- | --- |
-| `pfsense01` | firewall | unverified |
-| `pve01` | hypervisor | unverified |
-| `admin01` | admin | unverified |
-| `win-client01` (optional) | client | unverified |
-| `samba-dc01` | samba_dc | unverified |
-| `auth01` | auth | unverified |
-| `radius01` | radius | unverified |
-| `mon01` | monitoring | unverified |
-| `mail01` | mail | unverified |
-| `files01` | files | unverified |
-| `pbs01` | backup | unverified |
-| `docker01` | docker | unverified |
+| Guest                     | Role       | Status     |
+| ------------------------- | ---------- | ---------- |
+| `pfsense01`               | firewall   | unverified |
+| `pve01`                   | hypervisor | unverified |
+| `admin01`                 | admin      | unverified |
+| `win-client01` (optional) | client     | unverified |
+| `samba-dc01`              | samba_dc   | unverified |
+| `auth01`                  | auth       | unverified |
+| `radius01`                | radius     | unverified |
+| `mon01`                   | monitoring | unverified |
+| `mail01`                  | mail       | unverified |
+| `files01`                 | files      | unverified |
+| `pbs01`                   | backup     | unverified |
+| `docker01`                | docker     | unverified |
 
 ## Tooling
 
-| Component | Status |
-| --- | --- |
+| Component                        | Status                                                                         |
+| -------------------------------- | ------------------------------------------------------------------------------ |
 | `sslab` (audit, attack, compare) | tested against hand-written sample output, unverified against real tool output |
-| Lab build roles and scripts | tested statically (lint, syntax, compose config); unverified on a real build |
-| Windows 11 scripts | unverified (no PowerShell interpreter available to the author) |
+| Lab build roles and scripts      | tested statically (lint, syntax, compose config); unverified on a real build   |
+| Windows 11 scripts               | unverified (no PowerShell interpreter available to the author)                 |
 
 ## Course readiness (reviewed 2026-10-28)
 
@@ -35,8 +35,8 @@ as the gate before term starts.
 
 ### What is in place
 
-- Build guides 00 to 18, each with a time estimate, plain-language explanations, a check, an *Evidence to
-  capture* table, questions to answer in the student's own words, and troubleshooting.
+- Build guides 00 to 18, each with a time estimate, plain-language explanations, a check, an _Evidence to
+  capture_ table, questions to answer in the student's own words, and troubleshooting.
 - A [20-week map](WEEK-MAP.md), with two catch-up weeks in the build, a "core versus stretch" list for
   students who fall behind, and lecturer checkpoints.
 - An evidence system (`portfolio/evidence/`, [evidence log template](../../portfolio/templates/evidence-log.md))
@@ -46,16 +46,16 @@ as the gate before term starts.
 
 ### What is still risky (do these before term)
 
-| Risk | Why it matters | What to do |
-| --- | --- | --- |
-| **No full build has ever been done** | Every component is unverified. Expect several fixes in the first run. | A lecturer or technician builds the whole lab from the guides on a lab PC, following them literally, and files fixes. Budget 2 to 3 days. |
-| **Samba AD in a privileged LXC, PBS in an LXC, PEAP via winbind** | These are the author's own stated high-risk items. | Build these first. If any fails, decide the fallback (a small VM) before students arrive. |
-| **Nested virtualisation depends on firmware, VBS and policy** | If it cannot be switched on, Proxmox is unusable. | Test on every model of lab PC. Some may need an administrator's policy change or the firmware step. |
-| **Memory budget is an estimate** (about 28.5 GB of 32) | A tight budget plus Windows 11 may swap and feel broken. | Measure real use after the first build; update `ram_budget_mb` in the inventory. |
-| **Total effort is 35 to 50 hours for beginners** | In-class time alone may not be enough. | Confirm self-study hours with the course plan, or pre-build the hardest guests (`samba-dc01`, `radius01`, `pbs01`) as a lecturer-provided image. |
-| **Windows 11 scripts have never been run** | Windows is optional here, but the Windows audit in the security weeks needs a target. | Run them once on a test VM before term. |
-| **`sslab` parsers tested only against hand-written output** | Real Lynis, nmap and hydra output may break them in week 12. | Complete the validation checklist in [instructor-weak-defaults.md](../instructor-weak-defaults.md). |
-| **Tests on Windows** | The Python tests that run shell scripts fail on a Windows host (about 49 failed, 7 errors on a clean Windows checkout, since they need `bash`, `openssl` and friends). | Run the tests on Linux or in CI. This does not affect students on `admin01`. |
+| Risk                                                              | Why it matters                                                                                                                                                         | What to do                                                                                                                                       |
+| ----------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **No full build has ever been done**                              | Every component is unverified. Expect several fixes in the first run.                                                                                                  | A lecturer or technician builds the whole lab from the guides on a lab PC, following them literally, and files fixes. Budget 2 to 3 days.        |
+| **Samba AD in a privileged LXC, PBS in an LXC, PEAP via winbind** | These are the author's own stated high-risk items.                                                                                                                     | Build these first. If any fails, decide the fallback (a small VM) before students arrive.                                                        |
+| **Nested virtualisation depends on firmware, VBS and policy**     | If it cannot be switched on, Proxmox is unusable.                                                                                                                      | Test on every model of lab PC. Some may need an administrator's policy change or the firmware step.                                              |
+| **Memory budget is an estimate** (about 28.5 GB of 32)            | A tight budget plus Windows 11 may swap and feel broken.                                                                                                               | Measure real use after the first build; update `ram_budget_mb` in the inventory.                                                                 |
+| **Total effort is 35 to 50 hours for beginners**                  | In-class time alone may not be enough.                                                                                                                                 | Confirm self-study hours with the course plan, or pre-build the hardest guests (`samba-dc01`, `radius01`, `pbs01`) as a lecturer-provided image. |
+| **Windows 11 scripts have never been run**                        | Windows is optional here, but the Windows audit in the security weeks needs a target.                                                                                  | Run them once on a test VM before term.                                                                                                          |
+| **`sslab` parsers tested only against hand-written output**       | Real Lynis, nmap and hydra output may break them in week 12.                                                                                                           | Complete the validation checklist in [instructor-weak-defaults.md](../instructor-weak-defaults.md).                                              |
+| **Tests on Windows**                                              | The Python tests that run shell scripts fail on a Windows host (about 49 failed, 7 errors on a clean Windows checkout, since they need `bash`, `openssl` and friends). | Run the tests on Linux or in CI. This does not affect students on `admin01`.                                                                     |
 
 ### Changes made in this review
 

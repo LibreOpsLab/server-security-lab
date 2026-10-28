@@ -41,7 +41,7 @@ Windows target, or skip it and `make verify` will report it as skipped rather th
    .\Join-LabDomain.ps1 -RootCaPath .\ca.cert.pem
    ```
 
-   > **Beginner tip:** `-WhatIf` is a PowerShell habit worth keeping: it prints what a command *would* do
+   > **Beginner tip:** `-WhatIf` is a PowerShell habit worth keeping: it prints what a command _would_ do
    > without doing it. Read that list first, and keep a copy for your evidence.
 
    > **What's going on:** The domain join prompts for domain administrator credentials. It never takes a
@@ -57,14 +57,14 @@ Windows target, or skip it and `make verify` will report it as skipped rather th
 
 Save in `portfolio/evidence/17-windows-11-optional/`:
 
-| File | What it shows |
-| --- | --- |
-| `whatif.txt` | Output of the `-WhatIf` run |
-| `optimize-log.txt` | A copy of `%ProgramData%\lab\optimize-windows.log` |
-| `diagtrack.txt` | `Get-Service DiagTrack` output |
-| `computer-list.txt` | `samba-tool computer list` on the DC including `win-client01` |
-| `domain-login.png` | The Windows desktop signed in as a lab user |
-| `evidence.md` | Your filled-in evidence log (or a note that you skipped this guide and why) |
+| File                | What it shows                                                               |
+| ------------------- | --------------------------------------------------------------------------- |
+| `whatif.txt`        | Output of the `-WhatIf` run                                                 |
+| `optimize-log.txt`  | A copy of `%ProgramData%\lab\optimize-windows.log`                          |
+| `diagtrack.txt`     | `Get-Service DiagTrack` output                                              |
+| `computer-list.txt` | `samba-tool computer list` on the DC including `win-client01`               |
+| `domain-login.png`  | The Windows desktop signed in as a lab user                                 |
+| `evidence.md`       | Your filled-in evidence log (or a note that you skipped this guide and why) |
 
 ## Explain it in your own words
 

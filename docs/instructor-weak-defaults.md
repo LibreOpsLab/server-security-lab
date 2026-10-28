@@ -12,18 +12,18 @@ working, nothing hardened. A vendor-default install is not a usable platform.
 These are now built, not just planned: each row names the Ansible role or template that leaves the default
 in place. Still **unverified** on a real lab until the first build (`docs/build/STATUS.md`).
 
-| Where                        | What is open by default                                                                                | Left by (role/template)                 | Found by                | Closed in |
-| ----------------------------- | ---------------------------------------------------------------------------------------------------- | ---------------------------------------- | ----------------------- | --------- |
-| Linux hosts (SSH)             | Password login on; no lockout, short lab passwords accepted                                            | `baseline`, `samba_dc` (password policy) | Lynis, `ssh-weak-creds` | Week 15   |
-| Lab accounts                  | `lab/data/users.csv` gives most staff one shared password; two accounts (`test`, `user`) use a weaker one | `samba_dc` (`load-users.sh`)             | `ssh-weak-creds`        | Week 15   |
-| Web tier (Traefik/NextCloud)  | No HSTS, CSP, X-Frame-Options or nosniff; server banners visible                                       | `docker_host` (`dynamic.yml.j2`)         | `web-basics`, nmap      | Week 15   |
-| Postfix                       | `VRFY` enabled; relaying allowed for the whole lab subnet                                               | `mail` (`main.cf.j2`)                    | `mail-basics`           | Week 15   |
-| Samba file server             | A "notices" share with `guest ok = yes`                                                                | `files_server` (`smb.conf.j2`)           | `anon-directory`        | Week 15   |
-| pfSense                       | Default "allow LAN to any" firewall rule                                                               | `lab/pfsense/config.xml.j2`              | `enum-services`, review | Week 15   |
-| Docker socket                 | Traefik can read the Docker socket, close to root access on `docker01`                                 | `docker_host` (Traefik compose)          | student review          | Week 15   |
-| Monitoring and logs           | Loki and Alloy's metrics port accept anyone on the LAN with no login                                   | `monitoring`, `log_shipper`              | `enum-services`         | Week 15   |
-| Windows 11 (if built)         | No account lockout, default audit policy, firewall profiles as installed                               | (built by hand; no Ansible role)         | Windows audit           | Week 15   |
-| Updates                       | No automatic security updates configured on any guest                                                  | `baseline` (deliberately omitted)        | Lynis                   | Week 15   |
+| Where                        | What is open by default                                                                                   | Left by (role/template)                  | Found by                | Closed in |
+| ---------------------------- | --------------------------------------------------------------------------------------------------------- | ---------------------------------------- | ----------------------- | --------- |
+| Linux hosts (SSH)            | Password login on; no lockout, short lab passwords accepted                                               | `baseline`, `samba_dc` (password policy) | Lynis, `ssh-weak-creds` | Week 15   |
+| Lab accounts                 | `lab/data/users.csv` gives most staff one shared password; two accounts (`test`, `user`) use a weaker one | `samba_dc` (`load-users.sh`)             | `ssh-weak-creds`        | Week 15   |
+| Web tier (Traefik/NextCloud) | No HSTS, CSP, X-Frame-Options or nosniff; server banners visible                                          | `docker_host` (`dynamic.yml.j2`)         | `web-basics`, nmap      | Week 15   |
+| Postfix                      | `VRFY` enabled; relaying allowed for the whole lab subnet                                                 | `mail` (`main.cf.j2`)                    | `mail-basics`           | Week 15   |
+| Samba file server            | A "notices" share with `guest ok = yes`                                                                   | `files_server` (`smb.conf.j2`)           | `anon-directory`        | Week 15   |
+| pfSense                      | Default "allow LAN to any" firewall rule                                                                  | `lab/pfsense/config.xml.j2`              | `enum-services`, review | Week 15   |
+| Docker socket                | Traefik can read the Docker socket, close to root access on `docker01`                                    | `docker_host` (Traefik compose)          | student review          | Week 15   |
+| Monitoring and logs          | Loki and Alloy's metrics port accept anyone on the LAN with no login                                      | `monitoring`, `log_shipper`              | `enum-services`         | Week 15   |
+| Windows 11 (if built)        | No account lockout, default audit policy, firewall profiles as installed                                  | (built by hand; no Ansible role)         | Windows audit           | Week 15   |
+| Updates                      | No automatic security updates configured on any guest                                                     | `baseline` (deliberately omitted)        | Lynis                   | Week 15   |
 
 The first attack run should produce findings in all four layers (network, host, service, identity). If a
 layer is empty after the spike, add the smallest missing real default rather than a contrived hole.

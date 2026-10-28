@@ -76,14 +76,14 @@ building everything else to use it, is the point of the "business in a box" desi
 
 Save in `portfolio/evidence/07-identity/`:
 
-| File | What it shows |
-| --- | --- |
-| `reading-notes.md` | The three staff and groups you noted, and the one thing you did not understand |
-| `make-trust.txt` | Output of `make trust` ending with the recap |
-| `make-identity.txt` | Output of `make identity` ending with the recap |
-| `ldapsearch.txt` | The `ldapsearch` command and its successful output |
-| `user-list.txt` | `samba-tool user list` output (usernames only, never passwords) |
-| `evidence.md` | Your filled-in evidence log |
+| File                | What it shows                                                                  |
+| ------------------- | ------------------------------------------------------------------------------ |
+| `reading-notes.md`  | The three staff and groups you noted, and the one thing you did not understand |
+| `make-trust.txt`    | Output of `make trust` ending with the recap                                   |
+| `make-identity.txt` | Output of `make identity` ending with the recap                                |
+| `ldapsearch.txt`    | The `ldapsearch` command and its successful output                             |
+| `user-list.txt`     | `samba-tool user list` output (usernames only, never passwords)                |
+| `evidence.md`       | Your filled-in evidence log                                                    |
 
 ## Explain it in your own words
 
@@ -103,5 +103,5 @@ Save in `portfolio/evidence/07-identity/`:
   adapter's DNS is set to `10.10.10.1` (guide 02, step 7) and that pfSense forwards `lab.internal` to the
   DC (guide 08).
 - The play fails on the Samba package or the container's permissions: copy the first error and ask your
-  lecturer. The DC runs in a *privileged* container on purpose (see the design document); this is a known
+  lecturer. The DC runs in a _privileged_ container on purpose (see the design document); this is a known
   risk area for the first real build.

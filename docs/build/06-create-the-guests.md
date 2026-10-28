@@ -77,21 +77,21 @@ This guide is the first time you see that pattern.
 
 Save in `portfolio/evidence/06-create-the-guests/`:
 
-| File | What it shows |
-| --- | --- |
-| `reading-notes.md` | Your three "I understand this" points and one "I do not" about `guest.sh` |
-| `make-guests.txt` | Output of `make guests 2>&1 \| tee` (see the [welcome guide](00-welcome.md)) |
-| `make-baseline.txt` | Output of `make baseline` ending with the recap |
-| `pct-qm-list.txt` | Output of `pct list` and `qm list` run on `pve01` |
-| `pings.txt` | A ping to each guest from `admin01` |
-| `proxmox-tree.png` | The Proxmox web page with all eight guests running |
-| `evidence.md` | Your filled-in evidence log |
+| File                | What it shows                                                                |
+| ------------------- | ---------------------------------------------------------------------------- |
+| `reading-notes.md`  | Your three "I understand this" points and one "I do not" about `guest.sh`    |
+| `make-guests.txt`   | Output of `make guests 2>&1 \| tee` (see the [welcome guide](00-welcome.md)) |
+| `make-baseline.txt` | Output of `make baseline` ending with the recap                              |
+| `pct-qm-list.txt`   | Output of `pct list` and `qm list` run on `pve01`                            |
+| `pings.txt`         | A ping to each guest from `admin01`                                          |
+| `proxmox-tree.png`  | The Proxmox web page with all eight guests running                           |
+| `evidence.md`       | Your filled-in evidence log                                                  |
 
 ## Explain it in your own words
 
 1. What does "idempotent" mean? Show where `guest.sh` or Ansible does it.
 2. Why does the lab put its services in containers rather than giving each its own full VM?
-3. Why does the baseline deliberately *not* harden anything?
+3. Why does the baseline deliberately _not_ harden anything?
 
 ## If it goes wrong
 

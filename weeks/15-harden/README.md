@@ -18,6 +18,7 @@ perfect score. It is to know what each control does and what it costs.
    ```
 
    It refuses to run for a host with no week 12 report, because there would be nothing to compare.
+
 5. Copy `portfolio/templates/reflection.md` to `portfolio/reflection.md` and write the first part.
 
 > **What's going on:** Hardening means removing or restricting things so an attacker has less to work with:
@@ -30,20 +31,20 @@ perfect score. It is to know what each control does and what it costs.
 > `pre-security-baseline` snapshot until week 17 is done.
 
 > **Beginner tip:** Change **one control at a time**, then check the service still works (`make verify`
-> shows you, apart from `20-weak-defaults`, which is *expected* to start failing as you harden). Write each
+> shows you, apart from `20-weak-defaults`, which is _expected_ to start failing as you harden). Write each
 > change into `build/hardening-notes.md` as you make it: what, where, why, and what it cost. Commit after
 > every working change so you can undo one.
 
 ## Evidence to capture
 
-| Where | What it shows |
-| --- | --- |
-| `build/hardening-notes.md` | For every control: what you changed, why you picked it, what it cost |
-| `build/harden.yml` and its run output | The controls as code, and proof they ran (`ansible-playbook ... \| tee`) |
-| A "clone first" record | Output or screenshot showing you tested on a clone before the real guest |
-| `portfolio/reports/` (`hardened` reports) | The re-measurement; do not edit |
-| `portfolio/evidence/15-harden/evidence.md` | Problems you hit, including anything you broke and how you recovered |
-| `portfolio/reflection.md` (first part) | Your own words on what you found and what hardening did |
+| Where                                      | What it shows                                                            |
+| ------------------------------------------ | ------------------------------------------------------------------------ |
+| `build/hardening-notes.md`                 | For every control: what you changed, why you picked it, what it cost     |
+| `build/harden.yml` and its run output      | The controls as code, and proof they ran (`ansible-playbook ... \| tee`) |
+| A "clone first" record                     | Output or screenshot showing you tested on a clone before the real guest |
+| `portfolio/reports/` (`hardened` reports)  | The re-measurement; do not edit                                          |
+| `portfolio/evidence/15-harden/evidence.md` | Problems you hit, including anything you broke and how you recovered     |
+| `portfolio/reflection.md` (first part)     | Your own words on what you found and what hardening did                  |
 
 ## Explain it in your own words
 

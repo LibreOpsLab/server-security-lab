@@ -20,7 +20,7 @@ behind one reverse proxy is how most small teams actually deploy this kind of th
 > in one file. **Traefik** is the reverse proxy: all web traffic arrives at Traefik on `docker01`, which
 > looks at the name in the address (`cloud.lab.internal`, `pdf.lab.internal`, ...) and passes the request to
 > the right container. It also holds the certificates, which is why the browser shows a padlock. The three
-> apps are *NextCloud* (shared files), *Stirling PDF* (document tools), and *Vaultwarden* (a password
+> apps are _NextCloud_ (shared files), _Stirling PDF_ (document tools), and _Vaultwarden_ (a password
 > manager).
 
 ## Before you start
@@ -60,15 +60,15 @@ behind one reverse proxy is how most small teams actually deploy this kind of th
 
 Save in `portfolio/evidence/10-docker-vm-and-apps/`:
 
-| File | What it shows |
-| --- | --- |
-| `reading-notes.md` | The image, ports and volume you found in the compose files |
-| `make-apps.txt` | Output of `make apps` ending with the recap |
-| `docker-ps.txt` | `docker ps` on `docker01` showing the containers `Up` |
-| `nextcloud.png` | NextCloud after signing in, address bar visible |
-| `pdf.png` | Stirling PDF loaded behind the portal |
-| `vault.png` | The Vaultwarden login page (do not show any stored passwords) |
-| `evidence.md` | Your filled-in evidence log |
+| File               | What it shows                                                 |
+| ------------------ | ------------------------------------------------------------- |
+| `reading-notes.md` | The image, ports and volume you found in the compose files    |
+| `make-apps.txt`    | Output of `make apps` ending with the recap                   |
+| `docker-ps.txt`    | `docker ps` on `docker01` showing the containers `Up`         |
+| `nextcloud.png`    | NextCloud after signing in, address bar visible               |
+| `pdf.png`          | Stirling PDF loaded behind the portal                         |
+| `vault.png`        | The Vaultwarden login page (do not show any stored passwords) |
+| `evidence.md`      | Your filled-in evidence log                                   |
 
 ## Explain it in your own words
 

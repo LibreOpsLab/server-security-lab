@@ -67,13 +67,13 @@ directory and be unable to go above it.
 
 Save in `portfolio/evidence/13-file-transfer-and-shares/`:
 
-| File | What it shows |
-| --- | --- |
-| `reading-notes.md` | The three shares and who may use each |
-| `make-files.txt` | Output of `make files` ending with the recap |
-| `smbclient-list.txt` | The share list from `smbclient -N -L` |
-| `sftp-session.txt` | Your SFTP session showing `pwd`, `cd ..` and that you stayed in your own directory |
-| `evidence.md` | Your filled-in evidence log |
+| File                 | What it shows                                                                      |
+| -------------------- | ---------------------------------------------------------------------------------- |
+| `reading-notes.md`   | The three shares and who may use each                                              |
+| `make-files.txt`     | Output of `make files` ending with the recap                                       |
+| `smbclient-list.txt` | The share list from `smbclient -N -L`                                              |
+| `sftp-session.txt`   | Your SFTP session showing `pwd`, `cd ..` and that you stayed in your own directory |
+| `evidence.md`        | Your filled-in evidence log                                                        |
 
 ## Explain it in your own words
 

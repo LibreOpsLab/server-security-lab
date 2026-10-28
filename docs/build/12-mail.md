@@ -12,8 +12,8 @@ DMARC checking.
 Email is simple to set up and very easy to set up wrong, which is why it gets its own week later in the
 course. Building a working, if imperfect, mail server here gives you something real to examine then.
 
-> **What's going on:** Mail needs several pieces. **Postfix** *sends and receives* mail between servers
-> (SMTP). **Dovecot** lets people *read* their mailbox from a client (IMAP). Both ask the directory (Samba
+> **What's going on:** Mail needs several pieces. **Postfix** _sends and receives_ mail between servers
+> (SMTP). **Dovecot** lets people _read_ their mailbox from a client (IMAP). Both ask the directory (Samba
 > AD) who the users are. **SPF**, **DKIM** and **DMARC** are three DNS-based checks that help other servers
 > decide whether an email really came from your domain: SPF lists which servers may send, DKIM signs each
 > message, and DMARC says what to do when the checks fail. Real small businesses get blamed for spam they
@@ -64,14 +64,14 @@ course. Building a working, if imperfect, mail server here gives you something r
 
 Save in `portfolio/evidence/12-mail/`:
 
-| File | What it shows |
-| --- | --- |
-| `reading-notes.md` | What you think `mynetworks` and the restrictions do |
-| `make-mail.txt` | Output of `make mail` ending with the recap |
-| `swaks.txt` | The full `swaks` conversation ending in success |
+| File                | What it shows                                                 |
+| ------------------- | ------------------------------------------------------------- |
+| `reading-notes.md`  | What you think `mynetworks` and the restrictions do           |
+| `make-mail.txt`     | Output of `make mail` ending with the recap                   |
+| `swaks.txt`         | The full `swaks` conversation ending in success               |
 | `tls-handshake.txt` | The `openssl s_client` output (the first 30 lines are enough) |
-| `dns-txt.txt` | Both `dig TXT` results |
-| `evidence.md` | Your filled-in evidence log |
+| `dns-txt.txt`       | Both `dig TXT` results                                        |
+| `evidence.md`       | Your filled-in evidence log                                   |
 
 ## Explain it in your own words
 
@@ -86,6 +86,6 @@ Save in `portfolio/evidence/12-mail/`:
 - `swaks` cannot connect: check `ping mail01.lab.internal` and that `make mail` finished without a failed
   task.
 - Nothing in the mailbox: look at the log on `mail01`: `ssh -i ~/.ssh/lab_admin root@10.10.10.25 tail -50
-  /var/log/mail.log`. The line after a failed delivery says why.
+/var/log/mail.log`. The line after a failed delivery says why.
 - **Note:** `VRFY` and relaying for the lab subnet are left at Postfix's defaults on purpose; that is not a
   bug, it is this guide's contribution to the security loop later in the course.

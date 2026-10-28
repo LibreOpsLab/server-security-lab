@@ -8,7 +8,7 @@ anything you do not own or have written permission to test.
 
 > **What's going on:** Up to now you have been a builder. This week you become the person trying to break
 > in, using the same open-source tools real testers use. You are not trying to "win". You are collecting
-> evidence of how the lab looks to an outsider *before* any hardening, so that in week 17 the difference is
+> evidence of how the lab looks to an outsider _before_ any hardening, so that in week 17 the difference is
 > measurable. If you change anything on the lab while measuring, the comparison is spoiled.
 
 > **Careful:** Attacks can crash services and fill logs. Take the snapshot in step 1 first, run only the
@@ -52,9 +52,9 @@ anything you do not own or have written permission to test.
    Lynis is installed on each Linux guest you audit (`ssh root@<guest> 'apt install -y lynis'`). Do one
    guest first, check it works, then the rest.
 
-   > **Beginner tip:** *nmap* maps which doors (ports) are open on a machine. *hydra* guesses passwords at
-   > a login. *Lynis* audits a Linux machine's own settings from the inside. *curl* fetches web pages so you
-   > can read their headers. *smbclient* lists and opens Windows file shares.
+   > **Beginner tip:** _nmap_ maps which doors (ports) are open on a machine. _hydra_ guesses passwords at
+   > a login. _Lynis_ audits a Linux machine's own settings from the inside. _curl_ fetches web pages so you
+   > can read their headers. _smbclient_ lists and opens Windows file shares.
 
 6. **Run the check** for each host, from the repo root:
 
@@ -87,15 +87,15 @@ This is a stretch, not part of the evidence.
 
 ## Evidence to capture
 
-| Where | What it shows |
-| --- | --- |
-| `portfolio/threat-model.md` (committed **before** the scans) | Your predictions |
-| `portfolio/scope.txt`, `portfolio/student.toml` | Your authorisation and identity |
-| `portfolio/reports/` (`default` reports, unedited) | The audit, nmap and attack-set results for every host |
-| `portfolio/threat-model.md` (completed) | Which findings you predicted and what they would let an attacker do |
-| `portfolio/manager-briefing-1.md` | Your plain-language briefing note |
-| `portfolio/risk-register.md` | The findings you will fix, reduce or accept, and why |
-| `portfolio/evidence/12-baseline/evidence.md` | Your evidence log: problems you hit and what surprised you |
+| Where                                                        | What it shows                                                       |
+| ------------------------------------------------------------ | ------------------------------------------------------------------- |
+| `portfolio/threat-model.md` (committed **before** the scans) | Your predictions                                                    |
+| `portfolio/scope.txt`, `portfolio/student.toml`              | Your authorisation and identity                                     |
+| `portfolio/reports/` (`default` reports, unedited)           | The audit, nmap and attack-set results for every host               |
+| `portfolio/threat-model.md` (completed)                      | Which findings you predicted and what they would let an attacker do |
+| `portfolio/manager-briefing-1.md`                            | Your plain-language briefing note                                   |
+| `portfolio/risk-register.md`                                 | The findings you will fix, reduce or accept, and why                |
+| `portfolio/evidence/12-baseline/evidence.md`                 | Your evidence log: problems you hit and what surprised you          |
 
 ## Explain it in your own words
 

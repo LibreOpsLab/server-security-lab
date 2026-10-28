@@ -67,13 +67,13 @@ ends with `SUCCESS` for a user in the `wifi` group, and is rejected for one who 
 
 Save in `portfolio/evidence/14-wifi-radius/`:
 
-| File | What it shows |
-| --- | --- |
-| `reading-notes.md` | Where the domain join and the `wifi` group rule are in the role |
-| `make-radius.txt` | Output of `make radius` ending with the recap |
+| File                | What it shows                                                                      |
+| ------------------- | ---------------------------------------------------------------------------------- |
+| `reading-notes.md`  | Where the domain join and the `wifi` group rule are in the role                    |
+| `make-radius.txt`   | Output of `make radius` ending with the recap                                      |
 | `eapol-success.txt` | A `SUCCESS` result for a `wifi` user (the shared secret **must not** appear in it) |
-| `eapol-reject.txt` | A rejection for a user who is not in the `wifi` group |
-| `evidence.md` | Your filled-in evidence log |
+| `eapol-reject.txt`  | A rejection for a user who is not in the `wifi` group                              |
+| `evidence.md`       | Your filled-in evidence log                                                        |
 
 ## Explain it in your own words
 

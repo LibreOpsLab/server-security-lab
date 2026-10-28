@@ -8,9 +8,9 @@ the security tools live.
 **Time and difficulty:** 2 to 3 hours in two parts. Ubuntu's installer is friendly; the new skills are
 static IP addresses and SSH keys.
 
-> **Do this in two parts.** Part A comes *before* [02-pfsense.md](02-pfsense.md), because your Windows PC
+> **Do this in two parts.** Part A comes _before_ [02-pfsense.md](02-pfsense.md), because your Windows PC
 > cannot see the private `LAN-LAB` network, and you need a browser on that network to configure pfSense.
-> Part B comes *after* [03-proxmox.md](03-proxmox.md), because it connects to Proxmox.
+> Part B comes _after_ [03-proxmox.md](03-proxmox.md), because it connects to Proxmox.
 
 ## Why
 
@@ -36,15 +36,15 @@ real small business would run its administration.
 2. Install Ubuntu Desktop 24.04. Create your user account with a password you will remember, and write the
    username in your evidence. Skip the optional extras.
 3. **Make the lab network address permanent ("static").** Servers need fixed addresses so other machines can
-   always find them. In Ubuntu: **Settings > Network**, click the cog beside the *lab* adapter, **IPv4**
+   always find them. In Ubuntu: **Settings > Network**, click the cog beside the _lab_ adapter, **IPv4**
    tab, choose **Manual**, then:
 
-   | Field | Value |
-   | --- | --- |
-   | Address | `10.10.10.10` |
+   | Field   | Value                               |
+   | ------- | ----------------------------------- |
+   | Address | `10.10.10.10`                       |
    | Netmask | `255.255.255.0` (the same as `/24`) |
-   | Gateway | leave blank for now |
-   | DNS | leave blank for now |
+   | Gateway | leave blank for now                 |
+   | DNS     | leave blank for now                 |
 
    > **What's going on:** The lab network has no DHCP server yet, because pfSense does not exist yet. So you
    > give `admin01` its address by hand. The gateway and DNS are blank because the NAT adapter already
@@ -84,39 +84,40 @@ You can now carry on to [02-pfsense.md](02-pfsense.md).
 
 Come back here when `pve01` is installed and answering at `10.10.10.5` (guide 03).
 
-7. Install Ansible: `sudo apt install -y ansible` (or `pipx install ansible-core`).
+7.  Install Ansible: `sudo apt install -y ansible` (or `pipx install ansible-core`).
 
-   > **What's going on:** Ansible is the tool that will configure all the other machines for you. You
-   > describe the end state in files (playbooks); Ansible logs in over SSH and makes it so. Running it twice
-   > is safe, because it only changes what is not already correct.
+    > **What's going on:** Ansible is the tool that will configure all the other machines for you. You
+    > describe the end state in files (playbooks); Ansible logs in over SSH and makes it so. Running it twice
+    > is safe, because it only changes what is not already correct.
 
-8. Confirm `sudo` works without a password prompt for your user (`sudo -n true`), since several playbooks
-   use `become: true` locally on this machine (for example the certificate-issuing plays). If it asks for a
-   password, put `ANSIBLE_BECOME_ASK_PASS=true` in front of each `make` command (for example
-   `ANSIBLE_BECOME_ASK_PASS=true make baseline`) and Ansible will ask for it, or ask your lecturer about
-   passwordless sudo for this lab user.
-9. Generate the SSH key pair the automation expects. The name matters, because it is read from
-   `ansible_ssh_private_key_file` in the inventory:
+8.  Confirm `sudo` works without a password prompt for your user (`sudo -n true`), since several playbooks
+    use `become: true` locally on this machine (for example the certificate-issuing plays). If it asks for a
+    password, put `ANSIBLE_BECOME_ASK_PASS=true` in front of each `make` command (for example
+    `ANSIBLE_BECOME_ASK_PASS=true make baseline`) and Ansible will ask for it, or ask your lecturer about
+    passwordless sudo for this lab user.
+9.  Generate the SSH key pair the automation expects. The name matters, because it is read from
+    `ansible_ssh_private_key_file` in the inventory:
 
-   ```bash
-   ssh-keygen -t ed25519 -f ~/.ssh/lab_admin -N ''
-   ```
+    ```bash
+    ssh-keygen -t ed25519 -f ~/.ssh/lab_admin -N ''
+    ```
 
-   > **What's going on:** An SSH key pair is two files: a private key (`lab_admin`, never share it) and a
-   > public key (`lab_admin.pub`, safe to hand out). A machine that has your public key lets you in without a
-   > password if you hold the matching private key. Ansible will use this to log into every guest.
+    > **What's going on:** An SSH key pair is two files: a private key (`lab_admin`, never share it) and a
+    > public key (`lab_admin.pub`, safe to hand out). A machine that has your public key lets you in without a
+    > password if you hold the matching private key. Ansible will use this to log into every guest.
 
-   > **Careful:** `-N ''` makes a key with no passphrase so automation can use it unattended. That is a
-   > lab convenience. A key with no passphrase is a password-free way into every guest, so the file must
-   > never leave `admin01`, and never be committed or screenshotted.
+    > **Careful:** `-N ''` makes a key with no passphrase so automation can use it unattended. That is a
+    > lab convenience. A key with no passphrase is a password-free way into every guest, so the file must
+    > never leave `admin01`, and never be committed or screenshotted.
 
 10. Tell SSH to use this key for the lab, so plain `ssh root@10.10.10.5` works (by default SSH only tries
     keys with standard names):
 
-    ```bash
-    printf 'Host 10.10.10.* *.lab.internal
-    IdentityFile ~/.ssh/lab_admin
-' >> ~/.ssh/config
+        ```bash
+        printf 'Host 10.10.10.* *.lab.internal
+        IdentityFile ~/.ssh/lab_admin
+
+    ' >> ~/.ssh/config
     chmod 600 ~/.ssh/config
     ```
 
@@ -140,14 +141,14 @@ Come back here when `pve01` is installed and answering at `10.10.10.5` (guide 03
 
 Save in `portfolio/evidence/04-admin01/`:
 
-| File | What it shows |
-| --- | --- |
-| `vm-settings.png` | VMware VM settings with both network adapters and which network each is on |
-| `ip-addr.txt` | Output of `ip -br a` on `admin01`, with the prompt visible |
-| `ansible-version.txt` | Output of `ansible --version` |
-| `ssh-pveversion.txt` | The `ssh ... pveversion` command and its output, showing no password was asked |
+| File                         | What it shows                                                                                     |
+| ---------------------------- | ------------------------------------------------------------------------------------------------- |
+| `vm-settings.png`            | VMware VM settings with both network adapters and which network each is on                        |
+| `ip-addr.txt`                | Output of `ip -br a` on `admin01`, with the prompt visible                                        |
+| `ansible-version.txt`        | Output of `ansible --version`                                                                     |
+| `ssh-pveversion.txt`         | The `ssh ... pveversion` command and its output, showing no password was asked                    |
 | `public-key-fingerprint.txt` | Output of `ssh-keygen -lf ~/.ssh/lab_admin.pub` (the fingerprint only, **never** the private key) |
-| `evidence.md` | Your filled-in evidence log |
+| `evidence.md`                | Your filled-in evidence log                                                                       |
 
 ## Explain it in your own words
 
@@ -161,7 +162,7 @@ Save in `portfolio/evidence/04-admin01/`:
   Network**, the NAT adapter should be set to automatic (DHCP).
 - `ssh-copy-id` says `Permission denied`: you used the wrong root password, or `pve01` does not allow root
   password login yet. Re-check the password you set during the Proxmox install.
-- `gh auth login` fails or the clone says `repository not found`: check the URL is the *private* one your
+- `gh auth login` fails or the clone says `repository not found`: check the URL is the _private_ one your
   lecturer gave you, and that your GitHub account has been granted access.
 - `sudo: a password is required`: see step 8. Put `ANSIBLE_BECOME_ASK_PASS=true` in front of the `make`
   command, or ask your lecturer.
