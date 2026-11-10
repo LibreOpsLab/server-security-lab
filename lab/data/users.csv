@@ -7,6 +7,8 @@ carol,Carol Singh,finance;lab-staff,Welcome2026
 dave,Dave Okafor,finance;wifi,Welcome2026
 erin,Erin Walsh,admins;lab-staff;wifi,Welcome2026
 labadmin,Lab Administrator,admins,Welcome2026
+# Shared mailbox for the company website's contact form (info@lab.internal). Staff who answer enquiries sign in to it.
+info,Company Info,lab-staff,Shared-Inbox-2026
 # Leftover test account that nobody removed.
 test,Test Account,lab-staff,changeme
 # Shared account on the reception computer.

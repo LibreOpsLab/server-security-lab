@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="56" height="56" role="img" aria-label="Welding torch and spark">
+  <!-- Original drawing, CC0 1.0. -->
+  <circle cx="32" cy="32" r="30" fill="#7d2f12"/>
+  <path d="M14 46 L36 24 L42 30 L20 52Z" fill="#f6ede3"/>
+  <path d="M36 24 L42 18 L48 24 L42 30Z" fill="#26211d"/>
+  <path d="M46 40 L50 32 L54 40 L50 38Z M40 12 L42 6 L44 12Z M52 20 L58 18 L54 24Z" fill="#ffb347"/>
+</svg>

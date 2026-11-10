@@ -1,5 +1,5 @@
 ---
-# The Docker VM: Docker from the Ubuntu repositories, then Traefik and the three apps from lab/docker.
+# The Docker VM: Docker from the Ubuntu repositories, then Traefik and the apps from lab/docker.
 - name: Install Docker and the Compose plugin from the distribution
   ansible.builtin.apt:
     name: [docker.io, docker-compose-v2]
@@ -80,7 +80,7 @@
   ansible.builtin.command: docker compose up -d
   args:
     chdir: "{{ docker_host_dir }}/{{ item }}"
-  loop: [nextcloud, stirling-pdf, vaultwarden]
+  loop: [nextcloud, stirling-pdf, vaultwarden, brms-web]
   register: docker_host_apps
   changed_when: "'Started' in docker_host_apps.stderr or 'Created' in docker_host_apps.stderr"
 

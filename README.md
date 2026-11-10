@@ -42,7 +42,7 @@ maintenance and support burden it adds.
 | Fixed attack set | Five short, well-known attacks (service enumeration, weak SSH credentials, web headers, mail relay, anonymous shares), in [docs/attack-set.md](docs/attack-set.md) |
 | Scope guard      | Tools refuse to touch anything outside the lab ranges the learner wrote down first                                                                                 |
 | `portfolio/`     | Where the learner's generated evidence and reflection live (they own this folder)                                                                                  |
-| `docs/`          | Git workflow, the attack set, how it works, instructor notes                                                                                                       |
+| `docs/`          | Git workflow, the attack set, how it works, instructor notes, [the example company and its website](docs/boab-ridge-mining-services.md)                            |
 
 Everything is open source and lightweight: Lynis, nmap, hydra, curl and smbclient for the tooling;
 Python 3.11+ standard library only; no database, no services to run.

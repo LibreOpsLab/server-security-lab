@@ -4,6 +4,7 @@ All notable changes. Learners: read this before merging `upstream/main` into you
 
 ## Unreleased
 
+- Company website for the example business (Boab Ridge Mining Services): an Eleventy-built Home, About, Services and Contact site served by nginx on `docker01` at `www.lab.internal`, with a contact form that emails through `mail01`. New `docs/boab-ridge-mining-services.md` describes the fictional company. Built output is committed, so the lab needs no Node. Unverified on a real build.
 - Initial public version: `sslab` tool (audit, attack, compare), fixed attack set, week guides for the
   baseline attack, hardening and re-attack weeks, reflection template, scope guard.
 - Known gap: parsers are tested against hand-written sample output, not yet real tool output.

@@ -1,0 +1,57 @@
+# Boab Ridge Mining Services: the fictional company's public website (www.lab.internal).
+# Two containers behind Traefik: nginx serves the static pages built by Eleventy (./html), and a small Python
+# handler turns the contact form into an email through mail01. There is no database and no login, so there is
+# no Authelia: this is the one public page in the lab.
+services:
+  web:
+    image: nginxinc/nginx-unprivileged:1.29-alpine
+    container_name: brms-web
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - ./html:/usr/share/nginx/html:ro
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      - lab-proxy
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=lab-proxy
+      - traefik.http.routers.brms-web.rule=Host(`www.lab.internal`)
+      - traefik.http.routers.brms-web.tls=true
+      - traefik.http.routers.brms-web.service=brms-web
+      - traefik.http.services.brms-web.loadbalancer.server.port=8080
+
+  contact:
+    build: ./contact
+    image: brms-contact:1
+    container_name: brms-contact
+    restart: unless-stopped
+    read_only: true
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      SMTP_HOST: mail.lab.internal
+      SMTP_PORT: "25"
+      MAIL_FROM: website@lab.internal
+      MAIL_TO: ${CONTACT_MAIL_TO:-info@lab.internal}
+    networks:
+      - lab-proxy
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=lab-proxy
+      # Only the form's POST address reaches the handler; everything else on the site is static.
+      - traefik.http.routers.brms-contact.rule=Host(`www.lab.internal`) && Path(`/contact/send`)
+      - traefik.http.routers.brms-contact.tls=true
+      - traefik.http.routers.brms-contact.priority=100
+      - traefik.http.routers.brms-contact.service=brms-contact
+      - traefik.http.services.brms-contact.loadbalancer.server.port=8080
+
+networks:
+  lab-proxy:
+    external: true

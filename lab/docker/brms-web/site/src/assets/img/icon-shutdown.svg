@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="56" height="56" role="img" aria-label="Gear and clock">
+  <!-- Original drawing, CC0 1.0. -->
+  <circle cx="32" cy="32" r="30" fill="#7d2f12"/>
+  <path d="M28 10h8l1 5 4 2 4-3 6 6-3 4 2 4 5 1v8l-5 1-2 4 3 4-6 6-4-3-4 2-1 5h-8l-1-5-4-2-4 3-6-6 3-4-2-4-5-1v-8l5-1 2-4-3-4 6-6 4 3 4-2z" fill="#f6ede3"/>
+  <circle cx="32" cy="32" r="11" fill="#7d2f12"/>
+  <path d="M32 24v8l6 4" fill="none" stroke="#f6ede3" stroke-width="3" stroke-linecap="round"/>
+</svg>

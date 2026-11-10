@@ -17,7 +17,7 @@ row are very welcome; see [CONTRIBUTING.md](../../CONTRIBUTING.md).
 | `mail01`                            | mail       | unverified |
 | `files01`                           | files      | unverified |
 | `pbs01` (Debian 13 VM, VMware)      | backup     | unverified |
-| `docker01`                          | docker     | unverified |
+| `docker01` (incl. company website)  | docker     | unverified |
 
 ## Tooling
 

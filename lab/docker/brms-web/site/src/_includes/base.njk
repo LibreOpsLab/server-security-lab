@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% if title %}{{ title }} | {% endif %}{{ company.name }}</title>
+  <meta name="description" content="{{ company.name }}: contract maintenance and site support for mine operators in the Pilbara and Goldfields. A fictional company for teaching.">
+  <link rel="icon" href="/assets/img/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/assets/css/site.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="wrap bar">
+      <a class="brand" href="/"><img src="/assets/img/logo.svg" alt="" width="40" height="40"><span>{{ company.name }}</span></a>
+      <nav aria-label="Main">
+        {% set links = [["/", "Home"], ["/about/", "About"], ["/services/", "Services"], ["/contact/", "Contact"]] %}
+        <ul>
+          {% for l in links %}<li><a href="{{ l[0] }}"{% if page.url == l[0] %} aria-current="page"{% endif %}>{{ l[1] }}</a></li>{% endfor %}
+        </ul>
+      </nav>
+    </div>
+  </header>
+  <main id="main">
+    {{ content | safe }}
+  </main>
+  <footer class="site-footer">
+    <div class="wrap">
+      <p><strong>{{ company.name }}</strong> is a fictional company made for teaching server security. Any resemblance to a real business or person is accidental. <a href="/about/#fiction">Read more</a>.</p>
+      <p class="small">{{ company.address | join(", ") }} (invented) &middot; {{ company.phone }} (a number range reserved for fiction)</p>
+    </div>
+  </footer>
+</body>
+</html>

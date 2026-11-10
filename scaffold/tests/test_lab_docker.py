@@ -6,7 +6,7 @@ from pathlib import Path
 import pytest
 
 LAB = Path(__file__).parents[2] / "lab"
-STACKS = ["traefik", "nextcloud", "stirling-pdf", "vaultwarden"]
+STACKS = ["traefik", "nextcloud", "stirling-pdf", "vaultwarden", "brms-web"]
 ROLE = LAB / "ansible/roles/docker_host"
 
 
@@ -34,6 +34,7 @@ def test_apps_are_routed_by_traefik_on_the_expected_hostnames():
     assert "Host(`cloud.lab.internal`)" in compose("nextcloud")
     assert "Host(`pdf.lab.internal`)" in compose("stirling-pdf")
     assert "Host(`vault.lab.internal`)" in compose("vaultwarden")
+    assert "Host(`www.lab.internal`)" in compose("brms-web")
 
 
 def test_stirling_and_the_vault_web_ui_use_forward_auth_but_not_the_bitwarden_api_paths():
@@ -53,7 +54,7 @@ def test_env_examples_contain_only_placeholders():
         for ln in (LAB / "docker" / stack / ".env.example").read_text().splitlines():
             if "=" in ln and not ln.startswith("#"):
                 value = ln.split("=", 1)[1]
-                assert value in ("CHANGE-ME", "/opt/lab/certs"), (stack, ln)
+                assert value in ("CHANGE-ME", "/opt/lab/certs", "info@lab.internal"), (stack, ln)
 
 
 def test_traefik_routes_auth_and_grafana_and_has_the_authelia_middleware_but_no_security_headers():
@@ -121,3 +122,18 @@ def test_nextcloud_mounts_the_lab_ca_over_the_containers_own_system_bundle():
     # the container's own bundle at its real path for OIDC discovery to pass TLS verification.
     nc = compose("nextcloud")
     assert "/etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro" in nc
+
+
+def test_company_website_is_public_and_only_the_form_post_reaches_the_handler():
+    site = compose("brms-web")
+    assert "authelia" not in site  # the one public page: no sign-in
+    assert "Path(`/contact/send`)" in site and "brms-contact.priority=100" in site
+    assert "read_only: true" in site and "cap_drop: [ALL]" in site
+    assert (LAB / "docker/brms-web/html/index.html").is_file()  # built output is committed so the lab needs no Node
+
+
+def test_company_website_is_deployed_and_has_a_dns_name():
+    assert "brms-web" in (ROLE / "defaults/main.yml").read_text()
+    assert "brms-web" in (ROLE / "tasks/main.yml").read_text()
+    assert "www: docker01" in (LAB / "inventory/group_vars/all.yml").read_text()
+    assert (LAB / "verify/checks/21-website.sh").is_file()

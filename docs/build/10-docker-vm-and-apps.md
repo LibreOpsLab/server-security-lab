@@ -2,7 +2,7 @@
 
 ## What you will build
 
-`docker01`: Traefik, NextCloud, Stirling PDF and Vaultwarden.
+`docker01`: Traefik, NextCloud, Stirling PDF, Vaultwarden and the company website.
 
 **Time and difficulty:** 2 to 3 hours. Medium. The first run downloads several large container images and
 NextCloud takes a few minutes to start, so expect a lot of waiting.
@@ -19,9 +19,10 @@ behind one reverse proxy is how most small teams actually deploy this kind of th
 > it with one command and it behaves the same everywhere. **Docker Compose** describes several containers
 > in one file. **Traefik** is the reverse proxy: all web traffic arrives at Traefik on `docker01`, which
 > looks at the name in the address (`cloud.lab.internal`, `pdf.lab.internal`, ...) and passes the request to
-> the right container. It also holds the certificates, which is why the browser shows a padlock. The three
-> apps are _NextCloud_ (shared files), _Stirling PDF_ (document tools), and _Vaultwarden_ (a password
-> manager).
+> the right container. It also holds the certificates, which is why the browser shows a padlock. The
+> apps are _NextCloud_ (shared files), _Stirling PDF_ (document tools), _Vaultwarden_ (a password
+> manager) and the company's public website, `www.lab.internal` (see
+> [the example company](../boab-ridge-mining-services.md)).
 
 ## Before you start
 
@@ -48,13 +49,17 @@ behind one reverse proxy is how most small teams actually deploy this kind of th
 
 3. Visit each app in the browser on `admin01`: `https://cloud.lab.internal`, `https://pdf.lab.internal`
    and `https://vault.lab.internal`. Sign in through the portal where asked.
+4. Visit the company website, `https://www.lab.internal` (no sign-in). Open **Contact**, send yourself a test
+   message, and read it in the mailbox named by `lab_contact_to` (default `info@lab.internal`, the shared company mailbox). This needs
+   the mail server from guide 12; if it is not built yet, the form will say it could not send, and that is
+   fine for now.
 
 ## Check it worked
 
-- All three addresses load with a valid certificate (the lab CA, once trusted by your browser or OS; see
+- All four addresses load with a valid certificate (the lab CA, once trusted by your browser or OS; see
   guide 11, step 3).
 - You reached NextCloud by signing in through Authelia as a lab user, not with a separate NextCloud password.
-- `make verify` later checks all three automatically.
+- `make verify` later checks all of them automatically.
 
 ## Evidence to capture
 
@@ -70,12 +75,13 @@ Save in `portfolio/evidence/10-docker-vm-and-apps/`:
 | `nextcloud.png`    | NextCloud after signing in, address bar visible               |
 | `pdf.png`          | Stirling PDF loaded behind the portal                         |
 | `vault.png`        | The Vaultwarden login page (do not show any stored passwords) |
+| `website.png`      | The company website home page, address bar visible            |
 | `evidence.md`      | Your filled-in evidence log                                   |
 
 ## Explain it in your own words
 
 1. What is a container, and how is it different from the VMs and LXC containers you already have?
-2. What does Traefik do for the three apps, and how does it know where to send each request?
+2. What does Traefik do for the apps, and how does it know where to send each request?
 3. Why do you sign into NextCloud through the portal instead of with its own password?
 
 ## If it goes wrong

@@ -1,0 +1,13 @@
+{
+  "name": "brms-website",
+  "private": true,
+  "type": "module",
+  "description": "Boab Ridge Mining Services (fictional) brochure site for the security lab. Eleventy source; the built output is committed in ../html so the lab needs no Node.",
+  "scripts": {
+    "build": "eleventy",
+    "serve": "eleventy --serve"
+  },
+  "devDependencies": {
+    "@11ty/eleventy": "3.1.2"
+  }
+}
