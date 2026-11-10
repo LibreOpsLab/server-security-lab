@@ -97,5 +97,5 @@ run `make apps` to copy the new `html/` to `docker01`.
   [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) (public domain).
 - The page text is original and CC0 1.0.
 - The styling is hand-written CSS. The site loads no fonts, scripts or images from other sites.
-- There are no photographs. If you add any, use only public domain or Creative Commons images and record
+- The pictures are placeholder illustrations (`docs/company/images/`, also used by the website). If you add photographs, use only public domain or Creative Commons images and record
   the creator, title and licence of each in this section.

@@ -60,6 +60,10 @@ private copy with the full history behaves like a fork for day-to-day work (`git
    > `lab_contact_to`. Everything else reads these, and the Docker apps take the domain from it too. The test
    > `scaffold/tests/test_lab_inventory.py` checks that the names agree. Changing the domain after
    > `samba-dc01` exists means rebuilding it.
+   >
+   > You do not have to edit those lines by hand. Copy `.env.example` to `.env`, set `LAB_DOMAIN=` (and
+   > `LAB_NETBIOS=` if you want a particular short name), then run `python3 scripts/set-domain.py` to see what
+   > would change and `python3 scripts/set-domain.py --docs --apply` to change it everywhere, guides included.
 
 3. **Generate the secrets and the certificate authority** (never prints a value):
 

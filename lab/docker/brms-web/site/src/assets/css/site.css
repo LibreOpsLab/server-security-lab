@@ -35,6 +35,10 @@ main > section.wrap, .prose { padding-top: 2rem; padding-bottom: 2rem; }
 .card { background: var(--sand); border-radius: .5rem; padding: 1.25rem; }
 .card h2, .card h3 { margin: .5rem 0; }
 .band { background: var(--sand); padding: 1.5rem 0; }
+.photos { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: 1rem; margin: 1.5rem 0; }
+.photo { margin: 0; }
+.photo img { display: block; width: 100%; height: auto; border-radius: .5rem; }
+.photo figcaption { font-size: .875rem; margin-top: .35rem; }
 .facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); gap: 1rem; text-align: center; }
 .facts p { margin: 0; }
 .facts strong { display: block; font-size: 1.6rem; color: var(--earth-dark); }

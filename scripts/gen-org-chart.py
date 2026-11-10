@@ -9,6 +9,7 @@ same tree as a list for readers who cannot render Mermaid.
 """
 
 import csv
+import re
 import sys
 from pathlib import Path
 
@@ -16,6 +17,13 @@ ROOT = Path(__file__).resolve().parents[1]
 CSV = ROOT / "lab" / "data" / "users.csv"
 OUT = ROOT / "docs" / "company" / "org-chart.md"
 NOT_PEOPLE = {"Shared mailbox", "Shared account"}
+
+
+def domain():
+    """The lab's domain, from the inventory (so the addresses follow scripts/set-domain.py)."""
+    text = (ROOT / "lab" / "inventory" / "group_vars" / "all.yml").read_text(encoding="utf-8")
+    m = re.search(r"^lab_domain:\s*(\S+)", text, re.M)
+    return m.group(1) if m else "boab.lab"
 
 
 def read():
@@ -72,7 +80,7 @@ def build(rows=None):
     md += ["", "## Shared mailboxes", "", "| Mailbox | Name | Responsible person |", "| --- | --- | --- |"]
     for r in mailboxes:
         m = by_user[r["manager"]]
-        md.append(f'| `{r["username"]}@boab.lab` | {r["display_name"]} | {m["display_name"]}, {m["title"]} |')
+        md.append(f'| `{r["username"]}@{domain()}` | {r["display_name"]} | {m["display_name"]}, {m["title"]} |')
     md += ["", "Staff who answer a shared mailbox sign in to its account (see `docs/build/12-mail.md`).", ""]
     return "\n".join(md)
 

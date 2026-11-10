@@ -51,7 +51,7 @@ Windows target, or skip it and `make verify` will report it as skipped rather th
 
 - `Get-Service DiagTrack` shows `Disabled`.
 - The machine appears in `samba-tool computer list` on `samba-dc01` after the join and restart.
-- You can sign in at the Windows sign-in screen as a lab user, such as `LAB\alice`.
+- You can sign in at the Windows sign-in screen as a lab user, such as `BOAB\alice`.
 
 ## Evidence to capture
 

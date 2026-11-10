@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="800" height="450" role="img" aria-labelledby="t d">
+<title id="t">Comms cupboard</title>
+<desc id="d">A small server cupboard with one rack, a single server, a patch panel and a lone air conditioner above the door.</desc>
+<rect width="800" height="450" fill="#F3EEF7"/>
+<rect x="150" y="30" width="500" height="390" fill="#FFFFFF" stroke="#323E48" stroke-width="6"/>
+<rect x="260" y="50" width="280" height="42" rx="6" fill="#E6D9EF" stroke="#323E48" stroke-width="4"/>
+<g stroke="#323E48" stroke-width="3"><line x1="276" y1="62" x2="524" y2="62"/><line x1="276" y1="72" x2="524" y2="72"/><line x1="276" y1="82" x2="524" y2="82"/></g>
+<rect x="290" y="120" width="220" height="280" fill="#323E48"/>
+<rect x="300" y="132" width="200" height="40" fill="#8547AD"/><circle cx="320" cy="152" r="5" fill="#4CAF7A"/><circle cx="338" cy="152" r="5" fill="#4CAF7A"/>
+<rect x="300" y="182" width="200" height="22" fill="#E6D9EF"/>
+<g fill="#323E48"><rect x="308" y="188" width="14" height="10"/><rect x="328" y="188" width="14" height="10"/><rect x="348" y="188" width="14" height="10"/><rect x="368" y="188" width="14" height="10"/><rect x="388" y="188" width="14" height="10"/><rect x="408" y="188" width="14" height="10"/></g>
+<g stroke="#2F7FD1" stroke-width="5" fill="none" stroke-linecap="round"><path d="M312 204 C312 240 360 230 360 270"/><path d="M332 204 C332 244 420 236 420 290"/><path d="M352 204 C352 250 300 260 300 300"/></g>
+<rect x="300" y="330" width="200" height="60" fill="#46535E"/><circle cx="476" cy="360" r="14" fill="#E6D9EF"/>
+<rect x="180" y="150" width="70" height="250" fill="#E9D8C4" stroke="#323E48" stroke-width="3"/>
+<g stroke="#323E48" stroke-width="2"><line x1="180" y1="190" x2="250" y2="190"/><line x1="180" y1="230" x2="250" y2="230"/><line x1="180" y1="270" x2="250" y2="270"/></g>
+<rect x="556" y="260" width="70" height="140" fill="#E9D8C4" stroke="#323E48" stroke-width="3"/><circle cx="568" cy="330" r="5" fill="#323E48"/>
+<rect x="12" y="414" width="170" height="24" rx="12" fill="#323E48" opacity="0.8"/>
+<text x="97" y="430" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="700" fill="#FFFFFF" letter-spacing="1">PLACEHOLDER</text>
+</svg>

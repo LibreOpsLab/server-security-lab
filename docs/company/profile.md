@@ -14,6 +14,10 @@ Boab Ridge Mining Services is a Perth company of about 60 staff that keeps mines
 | **Clients** | Three contracts, the largest with a mine operator that is part of an international group                 |
 | **Hours**   | Perth: 7am to 5pm on weekdays. Site: 24 hours a day                                                      |
 
+![A haul truck and an excavator working on a bench in an open-cut mine](images/mine-open-cut.jpg)
+
+*An open-cut mine of the kind Boab Ridge works on. Credit: Roshan (2021).*
+
 ## Our story
 
 Boab Ridge started in 2011 as a two-person fitting and welding business in Welshpool. The founders did one thing well: they turned up, fixed the machine and went home with the job recorded properly. Word spread among Pilbara maintenance supervisors.
@@ -25,6 +29,10 @@ Boab Ridge started in 2011 as a two-person fitting and welding business in Welsh
 - **2026:** about 60 staff and three client contracts.
 
 ## What we do
+
+![A row of large haul trucks parked in the sun](images/fleet-parked-haul-trucks.jpg)
+
+*Heavy haul trucks wait their turn for servicing. Credit: Roshan (2022).*
 
 - **Fabrication:** steel and equipment repairs made to order.
 - **Fleet servicing:** scheduled servicing of heavy equipment, with every job recorded.
@@ -43,6 +51,10 @@ Each of these is a job: it is quoted, rostered, carried out, recorded and invoic
 | **Connection**   | The office network and the internet                                                               | A satellite link to Perth: slow, with a long delay, and it drops in bad weather |
 
 The site works around the clock and cannot wait for Perth to wake up. Power comes from a generator that fails now and then.
+
+![A site office with a satellite dish and a generator on red earth](images/placeholder-site-office.svg)
+
+*Placeholder illustration: the remote site office.*
 
 ## Who is who
 
@@ -69,6 +81,10 @@ Contractors have to meet the client's rules:
 - showing how the contractor compares with the ASD Essentials.
 
 > **Careful:** These are rules to meet, not options to weigh. If a design does not meet them, the connection to the client's systems may not be allowed.
+
+![A small comms cupboard with one rack, one server and a single air conditioner](images/placeholder-comms-cupboard.svg)
+
+*Placeholder illustration: the comms cupboard in the Perth head office.*
 
 ## What Boab Ridge runs today
 

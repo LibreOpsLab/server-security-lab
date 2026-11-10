@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="800" height="450" role="img" aria-labelledby="t d">
+<title id="t">Operations control room</title>
+<desc id="d">A dim operations room with a wall of status screens, a long desk and two empty chairs.</desc>
+<rect width="800" height="450" fill="#323E48"/>
+<rect x="60" y="40" width="680" height="200" rx="8" fill="#26303A" stroke="#8547AD" stroke-width="4"/>
+<rect x="80" y="58" width="200" height="80" fill="#8547AD" opacity="0.85"/>
+<polyline points="90,128 130,100 160,118 200,80 240,96 270,70" fill="none" stroke="#FFFFFF" stroke-width="4"/>
+<rect x="300" y="58" width="200" height="80" fill="#1F5F4A"/><g fill="#4CAF7A"><rect x="316" y="76" width="30" height="46"/><rect x="356" y="90" width="30" height="32"/><rect x="396" y="70" width="30" height="52"/><rect x="436" y="100" width="30" height="22"/></g>
+<rect x="520" y="58" width="200" height="80" fill="#3C4A57"/><circle cx="620" cy="98" r="30" fill="none" stroke="#E6D9EF" stroke-width="6"/><line x1="620" y1="98" x2="638" y2="82" stroke="#C8663B" stroke-width="5"/>
+<rect x="80" y="150" width="310" height="70" fill="#3C4A57"/><g fill="#E6D9EF"><rect x="96" y="166" width="120" height="8"/><rect x="96" y="184" width="200" height="8"/><rect x="96" y="202" width="160" height="8"/></g>
+<rect x="410" y="150" width="310" height="70" fill="#3C4A57"/><g fill="#C8663B"><circle cx="440" cy="186" r="10"/></g><g fill="#4CAF7A"><circle cx="476" cy="186" r="10"/><circle cx="512" cy="186" r="10"/></g>
+<rect x="100" y="320" width="600" height="26" rx="6" fill="#E9D8C4"/><rect x="120" y="346" width="12" height="70" fill="#E6D9EF"/><rect x="668" y="346" width="12" height="70" fill="#E6D9EF"/>
+<g fill="#8547AD"><rect x="200" y="260" width="80" height="50" rx="10"/><rect x="520" y="260" width="80" height="50" rx="10"/><rect x="226" y="310" width="28" height="30"/><rect x="546" y="310" width="28" height="30"/></g>
+<rect x="330" y="296" width="140" height="22" rx="4" fill="#46535E"/><rect x="346" y="276" width="108" height="20" fill="#F3EEF7" opacity="0.8"/>
+<rect x="12" y="414" width="170" height="24" rx="12" fill="#323E48" opacity="0.8"/>
+<text x="97" y="430" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="700" fill="#FFFFFF" letter-spacing="1">PLACEHOLDER</text>
+</svg>
