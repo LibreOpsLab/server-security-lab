@@ -17,7 +17,7 @@ services:
     labels:
       - traefik.enable=true
       - traefik.docker.network=lab-proxy
-      - traefik.http.routers.stirling-pdf.rule=Host(`pdf.lab.internal`)
+      - traefik.http.routers.stirling-pdf.rule=Host(`pdf.${LAB_DOMAIN:-boab.lab}`)
       - traefik.http.routers.stirling-pdf.tls=true
       - traefik.http.routers.stirling-pdf.middlewares=authelia@file
       - traefik.http.services.stirling-pdf.loadbalancer.server.port=8080

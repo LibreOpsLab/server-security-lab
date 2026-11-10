@@ -4,7 +4,7 @@
 source "${BASH_SOURCE[0]%/*}/../lib.sh"
 # The company website is public: pages load without a sign-in, and the contact form's address reaches its handler.
 need curl
-for page in "" about/ services/ contact/; do
+for page in "" about/ services/ people/ contact/; do
   code=$(curl -s --max-time 8 -o /dev/null -w '%{http_code}' "https://www.$domain/$page") || fail "https://www.$domain/$page did not answer"
   [ "$code" = 200 ] || fail "https://www.$domain/$page returned $code"
 done

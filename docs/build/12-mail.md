@@ -40,7 +40,7 @@ course. Building a working, if imperfect, mail server here gives you something r
 
    ```bash
    sudo apt install -y swaks
-   swaks --server mail01.lab.internal --from alice@lab.internal --to bob@lab.internal
+   swaks --server mail01.boab.lab --from alice@boab.lab --to bob@boab.lab
    ```
 
    > **Beginner tip:** `swaks` is a "Swiss army knife" for SMTP. It prints the whole conversation between
@@ -50,15 +50,15 @@ course. Building a working, if imperfect, mail server here gives you something r
 4. Look at the DNS records that help other servers trust the mail:
 
    ```bash
-   dig TXT lab.internal +short
-   dig TXT lab._domainkey.lab.internal +short
+   dig TXT boab.lab +short
+   dig TXT lab._domainkey.boab.lab +short
    ```
 
 ## Check it worked
 
-- `openssl s_client -connect mail01.lab.internal:993 </dev/null` completes a TLS handshake.
+- `openssl s_client -connect mail01.boab.lab:993 </dev/null` completes a TLS handshake.
 - The `swaks` run ends with a `250` response and nothing bounces.
-- `dig TXT lab.internal` shows the SPF record; `dig TXT lab._domainkey.lab.internal` shows the DKIM key.
+- `dig TXT boab.lab` shows the SPF record; `dig TXT lab._domainkey.boab.lab` shows the DKIM key.
 
 ## Evidence to capture
 
@@ -86,8 +86,8 @@ Save in `portfolio/evidence/12-mail/`:
 **Run this first:** `make preflight STAGE=services`. It checks what this guide depends on and says what to fix.
 
 - Mail "bounces" immediately: check the recipient's `mail` attribute in Samba AD matches
-  `user@lab.internal` exactly (the loader in guide 07 sets this).
-- `swaks` cannot connect: check `ping mail01.lab.internal` and that `make mail` finished without a failed
+  `user@boab.lab` exactly (the loader in guide 07 sets this).
+- `swaks` cannot connect: check `ping mail01.boab.lab` and that `make mail` finished without a failed
   task.
 - Nothing in the mailbox: read the mail log with `ssh root@10.10.10.25 journalctl -u postfix -u dovecot -n 80 --no-pager`.
   The line after a failed delivery says why. (Debian 13 keeps logs in the journal, not in `/var/log/mail.log`.)

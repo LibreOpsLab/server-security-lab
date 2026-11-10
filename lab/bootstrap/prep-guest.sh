@@ -16,7 +16,7 @@ usage() { echo "usage: sudo bash prep-guest.sh HOSTNAME 'ssh-ed25519 AAAA... com
 name=$1 pubkey=$2
 [[ $name =~ ^[a-z][a-z0-9-]{0,62}$ ]] || { echo "invalid hostname: $name" >&2; exit 2; }
 [[ $pubkey =~ ^ssh-(ed25519|rsa)\ [A-Za-z0-9+/=]+(\ .*)?$ ]] || { echo "that does not look like a PUBLIC ssh key (a .pub file)" >&2; usage; }
-domain=${DOMAIN:-lab.internal}
+domain=${DOMAIN:-boab.lab}
 
 step() { printf '== %s\n' "$*"; }
 

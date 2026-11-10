@@ -27,6 +27,13 @@ servicing of heavy equipment) and **shutdown crews** (teams that take over a pla
 Each job is quoted, rostered, carried out, recorded and invoiced. A lost or late job record costs money,
 which is why backup and availability matter to this business.
 
+## The company in detail
+
+- [Company profile](company/profile.md): the brochure (history, what the company does, who is who, the client's rules, what matters).
+- [Organisation chart](company/org-chart.md): all 60 staff, generated from `lab/data/users.csv`.
+- `lab/data/users.csv`: the staff directory that `make identity` imports into Samba AD, with email address, title, office, business unit, employee type and manager, plus the shared mailboxes `info`, `sales`, `accounts`, `service`, `security` and `hr`.
+- The lab's domain is `boab.lab` (`lab_domain` in `lab/inventory/group_vars/all.yml`); see [guide 05](build/05-the-repo-inventory-and-secrets.md) for changing it to match a different client.
+
 ## How the lab maps to the company
 
 | In the company             | In the lab                                           |
@@ -34,13 +41,13 @@ which is why backup and availability matter to this business.
 | Staff accounts and sign-in | Samba AD on `samba-dc01`, single sign-on on `auth01` |
 | Email                      | Postfix and Dovecot on `mail01`                      |
 | Shared files               | `files01` (SMB and SFTP), NextCloud on `docker01`    |
-| Public website             | `www.lab.internal` on `docker01` (see below)         |
+| Public website             | `www.boab.lab` on `docker01` (see below)             |
 | Firewall and web filtering | `pfsense01`, Squid                                   |
 | Monitoring and backup      | `mon01`, `pbs01`                                     |
 
 ## The company website
 
-`https://www.lab.internal` is a four-page brochure site: Home, About, Services and Contact. The About page
+`https://www.boab.lab` is a five-page brochure site: Home, About, Services, People and Contact. The About page
 tells visitors that the company is fictional and that every asset is public domain or Creative Commons.
 It is the only page in the lab that is public (no sign-in), which makes it a natural target for the attack
 weeks.
@@ -49,12 +56,12 @@ weeks.
 
 | Container      | What it does                                                                                            |
 | -------------- | ------------------------------------------------------------------------------------------------------- |
-| `brms-web`     | nginx serving the finished pages from `lab/docker/brms-web/html/`. Read-only, no capabilities.          |
+| `brms-web`     | nginx serving the pages that Eleventy builds when the image is built (`lab/docker/brms-web/Dockerfile`). Read-only, no capabilities. |
 | `brms-contact` | A small Python program. The Contact form posts to it; it checks the form and emails it through `mail01` |
 
 The contact email goes to the mailbox named by `lab_contact_to` in `lab/inventory/group_vars/all.yml`
-(default `info@lab.internal`, a shared mailbox: the `info` account in `lab/data/users.csv`, which several staff can sign in to with an IMAP client). It is sent
-from `website@lab.internal` with the visitor's address in `Reply-To`. The handler ignores a hidden spam-trap
+(default `info@boab.lab`, a shared mailbox: the `info` account in `lab/data/users.csv`, which several staff can sign in to with an IMAP client). It is sent
+from `website@boab.lab` with the visitor's address in `Reply-To`. The handler ignores a hidden spam-trap
 field, limits each client to five messages per ten minutes, rejects oversized forms and strips line breaks
 from names (so a visitor cannot inject mail headers). It logs what happened, never the message text.
 

@@ -10,12 +10,12 @@
     Path to the lab root CA certificate (lab-root-ca.crt), for example on a share or a USB drive.
 
 .EXAMPLE
-    Join-LabDomain.ps1 -RootCaPath 'C:\lab\lab-root-ca.crt' -DomainName 'lab.internal'
+    Join-LabDomain.ps1 -RootCaPath 'C:\lab\lab-root-ca.crt' -DomainName 'boab.lab'
 #>
 [CmdletBinding(SupportsShouldProcess)]
 param(
     [Parameter(Mandatory)][string]$RootCaPath,
-    [string]$DomainName = 'lab.internal'
+    [string]$DomainName = 'boab.lab'
 )
 
 if ($PSCmdlet.ShouldProcess($RootCaPath, 'Import as a trusted root certificate')) {

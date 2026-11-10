@@ -7,7 +7,7 @@
 **Time and difficulty:** 1.5 to 2.5 hours. Medium. Mostly a dashboard to explore, plus one experiment where
 you break something on purpose to watch an alert fire.
 
-> **Do this after guide 10.** Grafana's address (`grafana.lab.internal`) is served through Traefik on
+> **Do this after guide 10.** Grafana's address (`grafana.boab.lab`) is served through Traefik on
 > `docker01`, so the apps must exist first.
 
 ## Why
@@ -37,7 +37,7 @@ to check: did monitoring notice?
    make monitoring
    ```
 
-3. Open `https://grafana.lab.internal`, sign in, and find the **Lab overview** dashboard. Every guest
+3. Open `https://grafana.boab.lab`, sign in, and find the **Lab overview** dashboard. Every guest
    should appear as reporting.
 4. **Break something on purpose, then fix it.** Stop a harmless service on one guest and watch the alert:
 
@@ -58,7 +58,7 @@ to check: did monitoring notice?
 
 ## Check it worked
 
-- `https://grafana.lab.internal` shows the "Lab overview" dashboard with every host reporting.
+- `https://grafana.boab.lab` shows the "Lab overview" dashboard with every host reporting.
 - Stopping a guest or the right service causes an alert within a couple of minutes in Grafana or
   Alertmanager.
 - In Grafana's **Explore** page with the Loki data source, you can search for recent log lines from at least

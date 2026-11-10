@@ -1,0 +1,37 @@
+[
+  {
+    "name": "Margaret Osei",
+    "title": "General Manager",
+    "text": "Runs the company, decides what it spends and which risks it accepts."
+  },
+  {
+    "name": "Dana Whitlock",
+    "title": "Operations Manager",
+    "text": "Quotes, rosters, crews and parts. Keeps clients and crews informed."
+  },
+  {
+    "name": "Ben Fitzgerald",
+    "title": "Planning and Engineering Manager",
+    "text": "Plans shutdowns and engineering work, and keeps the job records straight."
+  },
+  {
+    "name": "Callum Reid",
+    "title": "Finance Manager",
+    "text": "Invoices, payroll and the pay run that goes out every fortnight."
+  },
+  {
+    "name": "Helen Cartwright",
+    "title": "Safety and Quality Manager",
+    "text": "Safety systems, inductions and quality records at both offices."
+  },
+  {
+    "name": "Tom Nguyen",
+    "title": "Site Supervisor",
+    "text": "Runs the day shift at our remote site office and keeps it working through storms and shift changes."
+  },
+  {
+    "name": "Ravi Kapoor",
+    "title": "Systems and Network Administrator",
+    "text": "Looks after our computers, servers and network at both offices."
+  }
+]

@@ -60,14 +60,24 @@
   no_log: true
   loop:
     - stack: traefik
-      content: "LAB_CERT_DIR={{ docker_host_dir }}/certs\n"
+      content: "LAB_CERT_DIR={{ docker_host_dir }}/certs\nLAB_DOMAIN={{ lab_domain }}\n"
     - stack: nextcloud
       content: |
+        LAB_DOMAIN={{ lab_domain }}
         NEXTCLOUD_DB_ROOT_PASS={{ lookup('ansible.builtin.file', lab_secrets_dir ~ '/nextcloud_db_root_password') }}
         NEXTCLOUD_DB_PASS={{ lookup('ansible.builtin.file', lab_secrets_dir ~ '/nextcloud_db_password') }}
         NEXTCLOUD_ADMIN_PASSWORD={{ lookup('ansible.builtin.file', lab_secrets_dir ~ '/nextcloud_admin_password') }}
     - stack: vaultwarden
-      content: "VAULTWARDEN_ADMIN_TOKEN={{ lookup('ansible.builtin.file', lab_secrets_dir ~ '/vaultwarden_admin_token') }}\n"
+      content: |
+        LAB_DOMAIN={{ lab_domain }}
+        VAULTWARDEN_ADMIN_TOKEN={{ lookup('ansible.builtin.file', lab_secrets_dir ~ '/vaultwarden_admin_token') }}
+    - stack: stirling-pdf
+      content: |
+        LAB_DOMAIN={{ lab_domain }}
+    - stack: brms-web
+      content: |
+        LAB_DOMAIN={{ lab_domain }}
+        CONTACT_MAIL_TO={{ lab_contact_to }}
 
 - name: Start Traefik first (it creates the shared lab-proxy network)
   ansible.builtin.command: docker compose up -d
@@ -76,8 +86,9 @@
   register: docker_host_traefik
   changed_when: "'Started' in docker_host_traefik.stderr or 'Created' in docker_host_traefik.stderr"
 
+# --build so a change to the company website's source (docker/brms-web/site) is rebuilt into the image.
 - name: Start the apps
-  ansible.builtin.command: docker compose up -d
+  ansible.builtin.command: docker compose up -d --build
   args:
     chdir: "{{ docker_host_dir }}/{{ item }}"
   loop: [nextcloud, stirling-pdf, vaultwarden, brms-web]

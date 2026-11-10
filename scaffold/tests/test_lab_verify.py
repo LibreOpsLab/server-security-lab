@@ -72,7 +72,7 @@ def test_a_hanging_check_is_cut_off_and_fails(tmp_path):
 def test_lib_reads_addresses_from_the_inventory_not_a_copy():
     out = subprocess.run(["bash", "-c", f'source "{LIB}"; lab_ip samba-dc01; lab_ip win-client01; lab_var lab_domain'],
                          capture_output=True, text=True, env={**os.environ, "VERIFY_ROOT": str(REPO)})
-    assert out.stdout.split() == ["10.10.10.21", "10.10.10.11", "lab.internal"]
+    assert out.stdout.split() == ["10.10.10.21", "10.10.10.11", "boab.lab"]
 
 
 def test_every_real_check_prints_one_status_line_and_never_crashes_without_the_tools(tmp_path):
@@ -121,9 +121,9 @@ def test_vrfy_check_distinguishes_disabled_vrfy_from_the_ehlo_banner(tmp_path):
         return subprocess.run(["bash", str(wrapper)], capture_output=True, text=True, env=env).stdout
 
     enabled = tmp_path / "enabled.txt"
-    enabled.write_text("250-mail.lab.internal\r\n250-PIPELINING\r\n252 2.0.0 alice\r\n221 2.0.0 Bye\r\n")
+    enabled.write_text("250-mail.boab.lab\r\n250-PIPELINING\r\n252 2.0.0 alice\r\n221 2.0.0 Bye\r\n")
     disabled = tmp_path / "disabled.txt"
-    disabled.write_text("250-mail.lab.internal\r\n250-PIPELINING\r\n502 5.5.1 VRFY command is disabled\r\n221 2.0.0 Bye\r\n")
+    disabled.write_text("250-mail.boab.lab\r\n250-PIPELINING\r\n502 5.5.1 VRFY command is disabled\r\n221 2.0.0 Bye\r\n")
 
     assert "VRFY" not in run(enabled)
     assert "VRFY" in run(disabled)

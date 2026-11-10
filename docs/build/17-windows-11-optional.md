@@ -85,5 +85,5 @@ Save in `portfolio/evidence/17-windows-11-optional/`:
 | --------------------- | ------------------------------------------- |
 | The script's log      | `%ProgramData%\lab\optimize-windows.log`    |
 | Which DNS the PC uses | `ipconfig /all` (DNS must be `10.10.10.21`) |
-| Domain reachability   | `nltest /dsgetdc:lab.internal`              |
+| Domain reachability   | `nltest /dsgetdc:boab.lab`                  |
 | Clock                 | `w32tm /query /status`                      |

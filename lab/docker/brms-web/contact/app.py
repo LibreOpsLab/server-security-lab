@@ -12,10 +12,10 @@ from email.message import EmailMessage
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs
 
-SMTP_HOST = os.environ.get("SMTP_HOST", "mail.lab.internal")
+SMTP_HOST = os.environ.get("SMTP_HOST", "mail.boab.lab")
 SMTP_PORT = int(os.environ.get("SMTP_PORT", "25"))
-MAIL_FROM = os.environ.get("MAIL_FROM", "website@lab.internal")
-MAIL_TO = os.environ.get("MAIL_TO", "info@lab.internal")
+MAIL_FROM = os.environ.get("MAIL_FROM", "website@boab.lab")
+MAIL_TO = os.environ.get("MAIL_TO", "info@boab.lab")
 MAX_BODY = 10_000
 LIMITS = {"name": 100, "email": 200, "phone": 40, "message": 3000}
 RATE_MAX, RATE_WINDOW = 5, 600  # five messages per address every ten minutes

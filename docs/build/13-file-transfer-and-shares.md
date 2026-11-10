@@ -14,7 +14,7 @@ Most small businesses need both: SMB for everyday desktop use, SFTP for scripted
 > **What's going on:** **SMB** is the protocol behind Windows file shares ("map a network drive"). **SFTP**
 > is file transfer over SSH, so it is encrypted and can be scripted. A **chroot** locks a user into one
 > folder: they see their own directory as the whole world and cannot walk up into anyone else's. The server
-> is a **domain member**: it joins `lab.internal` so staff sign in with their directory password and the
+> is a **domain member**: it joins `boab.lab` so staff sign in with their directory password and the
 > shares can be limited by group (`staff`, `finance`).
 
 ## Before you start
@@ -36,7 +36,7 @@ Most small businesses need both: SMB for everyday desktop use, SFTP for scripted
 3. List the shares without signing in:
 
    ```bash
-   smbclient -N -L //files01.lab.internal
+   smbclient -N -L //files01.boab.lab
    ```
 
    > **Beginner tip:** `-N` means "no password" and `-L` means "list". If `smbclient` is missing:
@@ -45,7 +45,7 @@ Most small businesses need both: SMB for everyday desktop use, SFTP for scripted
 4. Try SFTP as a lab user. You are inside a chroot: prove it.
 
    ```bash
-   sftp alice@files01.lab.internal
+   sftp alice@files01.boab.lab
    sftp> pwd
    sftp> cd ..
    sftp> ls
@@ -57,7 +57,7 @@ Most small businesses need both: SMB for everyday desktop use, SFTP for scripted
 ## Check it worked
 
 ```bash
-smbclient -N -L //files01.lab.internal
+smbclient -N -L //files01.boab.lab
 ```
 
 lists `staff`, `finance` and `notices`. Log in over SFTP as a staff user; you should land in your own
@@ -104,4 +104,4 @@ Save in `portfolio/evidence/13-file-transfer-and-shares/`:
 | Samba log                   | `ssh root@10.10.10.26 journalctl -u smbd -n 50 --no-pager` |
 | Domain membership           | `ssh root@10.10.10.26 net ads testjoin`                    |
 | Share settings Samba loaded | `ssh root@10.10.10.26 testparm -s`                         |
-| SFTP debugging              | `sftp -v alice@files01.lab.internal`                       |
+| SFTP debugging              | `sftp -v alice@files01.boab.lab`                           |

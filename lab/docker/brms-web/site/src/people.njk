@@ -1,0 +1,13 @@
+---
+layout: base.njk
+title: Our people
+---
+<div class="wrap prose">
+  <h1>Our people</h1>
+  <p>About 60 people work for {{ company.short }}: about 45 at our Perth head office and about 15 at the remote site office, with rostered contractors alongside. These are the people you are most likely to deal with.</p>
+  <div class="cards">
+    {% for p in people %}<article class="card"><h2>{{ p.name }}</h2><p><strong>{{ p.title }}</strong></p><p>{{ p.text }}</p></article>
+    {% endfor %}
+  </div>
+  <p class="small">All names are invented. The full staff list and organisation chart are in the lab repository (<code>docs/company/</code>).</p>
+</div>

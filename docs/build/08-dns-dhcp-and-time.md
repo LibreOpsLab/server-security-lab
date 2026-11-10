@@ -18,7 +18,7 @@ anything by name.
 > **DNS** turns names into addresses. **DHCP** gives new machines an address and tells them which DNS server
 > and gateway to use. **Time** (NTP) keeps every clock close; Kerberos tickets carry timestamps and are
 > rejected if the clocks disagree by more than about five minutes. In this lab pfSense runs DHCP and forwards
-> `lab.internal` questions to the DC; the DC keeps its time from pfSense and the other machines follow the
+> `boab.lab` questions to the DC; the DC keeps its time from pfSense and the other machines follow the
 > DC.
 
 ## Steps
@@ -29,8 +29,8 @@ full picture, then run each test below on `admin01` and record the result.
 1. **DNS from pfSense.** Ask pfSense and the DC the same question and compare:
 
    ```bash
-   dig +short samba-dc01.lab.internal @10.10.10.1
-   dig +short samba-dc01.lab.internal @10.10.10.21
+   dig +short samba-dc01.boab.lab @10.10.10.1
+   dig +short samba-dc01.boab.lab @10.10.10.21
    ```
 
    > **Beginner tip:** `dig` is a DNS question tool. `+short` prints only the answer. `@10.10.10.1` says
@@ -52,7 +52,7 @@ full picture, then run each test below on `admin01` and record the result.
 
 - A machine that gets its address by DHCP from `pfsense01` also receives `10.10.10.21` (then `10.10.10.1`)
   as its DNS servers.
-- `dig samba-dc01.lab.internal @10.10.10.1` (pfSense) returns the same answer as asking `samba-dc01`
+- `dig samba-dc01.boab.lab @10.10.10.1` (pfSense) returns the same answer as asking `samba-dc01`
   directly: pfSense forwards the lab domain to Samba.
 - `chronyc sources` on any guest other than the DC shows `samba-dc01` as its time source.
 
@@ -74,7 +74,7 @@ Save in `portfolio/evidence/08-dns-dhcp-and-time/`:
 
 ## Explain it in your own words
 
-1. Trace what happens, step by step, when `admin01` looks up `samba-dc01.lab.internal`. Which servers are
+1. Trace what happens, step by step, when `admin01` looks up `samba-dc01.boab.lab`. Which servers are
    involved?
 2. Why would Kerberos fail if one guest's clock was ten minutes wrong?
 3. Why do the servers use fixed addresses instead of DHCP?
@@ -83,7 +83,7 @@ Save in `portfolio/evidence/08-dns-dhcp-and-time/`:
 
 - Time drifted (Kerberos errors, "clock skew too great"): `chronyc makestep` on the affected guest, or
   re-run `make baseline`.
-- `dig` returns nothing from pfSense but works against the DC: pfSense is not forwarding `lab.internal`.
+- `dig` returns nothing from pfSense but works against the DC: pfSense is not forwarding `boab.lab`.
   Check the DNS forwarder settings in pfSense (**Services > DNS Resolver**) and re-import the rendered
   config if needed (guide 02).
 - `chronyc sources` shows `samba-dc01` with `?` or no replies: the DC's chrony may not be serving time yet.
@@ -91,10 +91,10 @@ Save in `portfolio/evidence/08-dns-dhcp-and-time/`:
 
 ### Where to look
 
-| What                               | Command or place                                                     |
-| ---------------------------------- | -------------------------------------------------------------------- |
-| Who answers a name                 | `dig samba-dc01.lab.internal @10.10.10.1` versus `@10.10.10.21`      |
-| Which DNS server this machine uses | `resolvectl status` (or `cat /etc/resolv.conf`)                      |
-| Forwarding in pfSense              | **Services > DNS Resolver** (the domain override for `lab.internal`) |
-| DHCP leases                        | **Status > DHCP Leases** in pfSense                                  |
-| Clock state                        | `chronyc tracking` and `chronyc sources -v`                          |
+| What                               | Command or place                                                 |
+| ---------------------------------- | ---------------------------------------------------------------- |
+| Who answers a name                 | `dig samba-dc01.boab.lab @10.10.10.1` versus `@10.10.10.21`      |
+| Which DNS server this machine uses | `resolvectl status` (or `cat /etc/resolv.conf`)                  |
+| Forwarding in pfSense              | **Services > DNS Resolver** (the domain override for `boab.lab`) |
+| DHCP leases                        | **Status > DHCP Leases** in pfSense                              |
+| Clock state                        | `chronyc tracking` and `chronyc sources -v`                      |

@@ -114,7 +114,7 @@ dated before the first scan, the briefing note, and the first draft of the risk 
 - A tool is missing: install it (step 5). A tool that did not run is recorded as `not_run`, never "clean".
 - A scan hangs or a service falls over: that is information. Note it, restore the snapshot if needed, and
   say so in your evidence.
-- A short name such as `docker01` does not resolve: use the full name (`docker01.lab.internal`) or the
+- A short name such as `docker01` does not resolve: use the full name (`docker01.boab.lab`) or the
   address from the inventory (`10.10.10.30`). Both must be inside your scope.
 - Python errors from `sslab`: you may be in the wrong folder. Run it from the repository root with
   `PYTHONPATH=scaffold`.

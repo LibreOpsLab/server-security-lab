@@ -11,15 +11,19 @@ Use this to ask someone to review and approve your work. It is also the model fo
 ## The risk, and what happens if we do nothing
 
 ## Documents attached
+
 (List with version numbers.)
 
 ## Response
+
 | Date | From | Decision (approved / changes requested / declined) | Comments |
-| --- | --- | --- | --- |
+| ---- | ---- | -------------------------------------------------- | -------- |
 
 ## My response to each comment
+
 | Comment | What I changed, or why I did not | Where in the document |
-| --- | --- | --- |
+| ------- | -------------------------------- | --------------------- |
 
 ## Risk accepted
+
 Who accepted which remaining risk, and when (in writing).

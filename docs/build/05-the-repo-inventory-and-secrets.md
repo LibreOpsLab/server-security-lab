@@ -51,6 +51,16 @@ private copy with the full history behaves like a fork for day-to-day work (`git
    > **Beginner tip:** The file is YAML: indentation matters, and `key: value` pairs describe things. You
    > will meet YAML again in every Ansible file. A tab character where spaces are expected breaks it.
 
+   > **Match the domain to the client.** The lab is built for Boab Ridge Mining Services, whose staff have
+   > addresses such as `priya.raman@boab.lab`, so the file says `lab_domain: boab.lab`. Check that this is what
+   > your client expects. If your client uses a different domain (a real company would use its own), change it
+   > **now, before anything is built**, in one block of `all.yml`: `lab_domain`, `lab_realm` (the same name in
+   > capitals), `lab_netbios` (the short name, 15 characters at most), `lab_base_dn`, `lab_users_dn`,
+   > `lab_service_dn` (each `DC=` part is one label of the domain), `lab_ldap_uri`, `lab_certificates` and
+   > `lab_contact_to`. Everything else reads these, and the Docker apps take the domain from it too. The test
+   > `scaffold/tests/test_lab_inventory.py` checks that the names agree. Changing the domain after
+   > `samba-dc01` exists means rebuilding it.
+
 3. **Generate the secrets and the certificate authority** (never prints a value):
 
    ```bash
@@ -81,6 +91,7 @@ private copy with the full history behaves like a fork for day-to-day work (`git
 - `openssl verify -CAfile lab/secrets/ca/root/certs/ca.cert.pem lab/secrets/ca/intermediate/certs/intermediate.cert.pem`
   says `OK`.
 - `git status` does not list anything inside `lab/secrets/`. Git is ignoring it as intended.
+- `lab_domain` in `lab/inventory/group_vars/all.yml` is the domain your client expects (`boab.lab` for Boab Ridge).
 - The backup file exists on the USB drive and is not empty (`ls -l`).
 
 ## Evidence to capture

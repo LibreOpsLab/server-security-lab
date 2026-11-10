@@ -96,7 +96,7 @@
     enabled: true
     masked: false
 
-# A domain controller asks its own DNS: Samba's internal DNS answers lab.internal and forwards everything else
+# A domain controller asks its own DNS: Samba's internal DNS answers boab.lab and forwards everything else
 # to the firewall (the forwarder above). Until now the machine used whatever the installer configured.
 - name: Make the domain controller use its own DNS
   ansible.builtin.copy:

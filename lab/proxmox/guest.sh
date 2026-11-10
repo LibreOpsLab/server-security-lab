@@ -9,7 +9,7 @@
 # If the guest already exists the script prints "kept NAME" and changes nothing.
 #
 # Environment (all optional): STORAGE (local-lvm), BRIDGE (vmbr0), GATEWAY (10.10.10.1), DNS1 (10.10.10.21),
-# DNS2 (10.10.10.1), DOMAIN (lab.internal), SSH_KEY (/root/.ssh/lab_admin.pub), CLOUD_IMAGE (path of the
+# DNS2 (10.10.10.1), DOMAIN (boab.lab), SSH_KEY (/root/.ssh/lab_admin.pub), CLOUD_IMAGE (path of the
 # Ubuntu cloud image; downloaded if missing).
 set -euo pipefail
 
@@ -25,7 +25,7 @@ case $kind in lxc | vm) ;; *) usage ;; esac
 for v in "$ram" "$cores" "$disk"; do [[ $v =~ ^[0-9]+$ ]] || { echo "RAM, cores and disk must be numbers" >&2; exit 2; }; done
 
 storage=${STORAGE:-local-lvm} bridge=${BRIDGE:-vmbr0} gateway=${GATEWAY:-10.10.10.1}
-dns1=${DNS1:-10.10.10.21} dns2=${DNS2:-10.10.10.1} domain=${DOMAIN:-lab.internal}
+dns1=${DNS1:-10.10.10.21} dns2=${DNS2:-10.10.10.1} domain=${DOMAIN:-boab.lab}
 ssh_key=${SSH_KEY:-/root/.ssh/lab_admin.pub}
 image=${CLOUD_IMAGE:-/var/lib/vz/template/iso/resolute-server-cloudimg-amd64.img}
 

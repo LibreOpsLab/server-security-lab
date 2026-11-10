@@ -63,7 +63,7 @@ With the Windows host (about 4 GB) the total is about 26.5 GB with Windows 11 ru
 
 ### Proxmox guests
 
-All on `lab.internal` (realm `LAB.INTERNAL`, NetBIOS `LAB`), network `10.10.10.0/24`, gateway `pfsense01` at `10.10.10.1`.
+All on `boab.lab` (realm `BOAB.LAB`, NetBIOS `LAB`), network `10.10.10.0/24`, gateway `pfsense01` at `10.10.10.1`.
 
 | Guest      | Type            | Role                                                                             | RAM    | Address |
 | ---------- | --------------- | -------------------------------------------------------------------------------- | ------ | ------- |
@@ -155,7 +155,7 @@ Numbered, in the order a learner works, in a friendly second-person voice, each 
 - **Samba AD DC:** a native **Debian 13 VM in VMware**, outside Proxmox. It is the most critical machine, so it must not depend on the hypervisor it might need to rebuild; a normal VM also gives Samba a real kernel and filesystem (ACLs, xattrs, time) with no container workarounds. The student installs the OS by hand and `lab/bootstrap/prep-guest.sh` finishes the preparation over SSH.
 - **`pbs01`:** a native Debian 13 VM running Proxmox Backup Server 4, for the same reason: backups must not live on the machine they protect.
 - **`radius01`:** an unprivileged LXC that joins the domain as a member with `net ads join` and runs `winbindd`, so FreeRADIUS can use `ntlm_auth` for PEAP-MSCHAPv2.
-- **Squid on pfSense:** an explicit forward proxy on port 3128 for the LAN, no SSL interception, from the pfSense CE package. The `config.xml` template covers interfaces, DHCP (DNS handed out as `.21` first, `.1` second), the DNS forwarder to `samba-dc01` for `lab.internal`, and NAT. Servers use static addresses set inside the guests, not DHCP.
+- **Squid on pfSense:** an explicit forward proxy on port 3128 for the LAN, no SSL interception, from the pfSense CE package. The `config.xml` template covers interfaces, DHCP (DNS handed out as `.21` first, `.1` second), the DNS forwarder to `samba-dc01` for `boab.lab`, and NAT. Servers use static addresses set inside the guests, not DHCP.
 - **`make verify`:** each check prints PASS, FAIL or SKIP. A missing optional component (Windows 11, the access point) is SKIP and does not fail the run; any FAIL exits non-zero.
 
 ## The lab must be weak in the ways the security loop expects
@@ -212,7 +212,7 @@ Validation done in the build environment: Ansible syntax and lint, YAML lint, `d
 
 ## Decisions made (designer's calls, open to change)
 
-1. Domain `lab.internal` and `10.10.10.0/24`, to match `lab-small-business` so its configuration lifts cleanly.
+1. Domain `boab.lab` and `10.10.10.0/24`, to match `lab-small-business` so its configuration lifts cleanly.
 2. Current software throughout: Debian 13 for LXC containers and the two hand-built VMs, Proxmox VE 9 and Backup Server 4, and the Ubuntu 26.04 LTS cloud image for the Docker VM and desktop image for `admin01`.
 3. `eapol_test` is the default way to demonstrate WPA-Enterprise; a hardware access point is an optional extra.
 4. Vaultwarden is behind forward auth for its web vault only; its apps use their own master password.

@@ -6,7 +6,7 @@ Two scripts, run on `win-client01` after it is built from media:
    consumer features, and removes the OneDrive sync client. Run with `-WhatIf` first to see what it would
    change, then without it. It logs every change to `%ProgramData%\lab\optimize-windows.log` and is safe to
    run again.
-2. `Join-LabDomain.ps1 -RootCaPath <path to lab-root-ca.crt>` trusts the lab CA, then joins `lab.internal`.
+2. `Join-LabDomain.ps1 -RootCaPath <path to lab-root-ca.crt>` trusts the lab CA, then joins `boab.lab`.
    It asks for domain administrator credentials interactively; it never takes a password as an argument.
 
 **Status: unverified.** These scripts have been written and reviewed, but not run against a real Windows 11

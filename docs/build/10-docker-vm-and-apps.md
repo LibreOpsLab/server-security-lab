@@ -18,15 +18,15 @@ behind one reverse proxy is how most small teams actually deploy this kind of th
 > **What's going on:** A **Docker container** packages an application with everything it needs, so you start
 > it with one command and it behaves the same everywhere. **Docker Compose** describes several containers
 > in one file. **Traefik** is the reverse proxy: all web traffic arrives at Traefik on `docker01`, which
-> looks at the name in the address (`cloud.lab.internal`, `pdf.lab.internal`, ...) and passes the request to
+> looks at the name in the address (`cloud.boab.lab`, `pdf.boab.lab`, ...) and passes the request to
 > the right container. It also holds the certificates, which is why the browser shows a padlock. The
 > apps are _NextCloud_ (shared files), _Stirling PDF_ (document tools), _Vaultwarden_ (a password
-> manager) and the company's public website, `www.lab.internal` (see
+> manager) and the company's public website, `www.boab.lab` (see
 > [the example company](../boab-ridge-mining-services.md)).
 
 ## Before you start
 
-- Guide 11 is complete: `https://auth.lab.internal` loads.
+- Guide 11 is complete: `https://auth.boab.lab` loads.
 - Take a snapshot of `pve01` called `before-make-apps`.
 
 ## Steps
@@ -47,12 +47,37 @@ behind one reverse proxy is how most small teams actually deploy this kind of th
    > `ssh -i ~/.ssh/lab_admin ubuntu@10.10.10.30 docker ps` (run it every minute). Containers appear as they
    > start. `STATUS` should say `Up`, not `Restarting`.
 
-3. Visit each app in the browser on `admin01`: `https://cloud.lab.internal`, `https://pdf.lab.internal`
-   and `https://vault.lab.internal`. Sign in through the portal where asked.
-4. Visit the company website, `https://www.lab.internal` (no sign-in). Open **Contact**, send yourself a test
-   message, and read it in the mailbox named by `lab_contact_to` (default `info@lab.internal`, the shared company mailbox). This needs
+3. Visit each app in the browser on `admin01`: `https://cloud.boab.lab`, `https://pdf.boab.lab`
+   and `https://vault.boab.lab`. Sign in through the portal where asked.
+4. Visit the company website, `https://www.boab.lab` (no sign-in). Open **Contact**, send yourself a test
+   message, and read it in the mailbox named by `lab_contact_to` (default `info@boab.lab`, the shared company mailbox). This needs
    the mail server from guide 12; if it is not built yet, the form will say it could not send, and that is
    fine for now.
+
+5. **Build the company website from the brochure.** The website is not a folder of ready-made pages: it is
+   an **Eleventy** project that Docker builds into the image. Read `docs/company/profile.md` (the
+   company's brochure) and open `lab/docker/brms-web/site/src`. Find where the company name, the opening hours
+   and the shared mailboxes (`info@`, `sales@`, `service@`, `accounts@`, `hr@`, `security@`) come from
+   (`_data/company.js`), and where the leadership team comes from (`_data/people.json`).
+
+   Make the site agree with the brochure and the directory:
+
+   - Check each fact on the **About**, **Services** and **People** pages against the brochure. Fix anything that
+     differs (a wrong year, a person in the wrong job).
+   - Check that every person on **People** is in `lab/data/users.csv` with the same job title.
+   - Check the email domain on **Contact** matches `lab_domain` (it comes from `LAB_DOMAIN`, which Ansible
+     writes into the stack's `.env`).
+
+   Rebuild and redeploy with `make apps`. The image is rebuilt (`docker compose up -d --build`), so your changes
+   appear at `https://www.boab.lab`.
+
+   > **What's going on:** The image has two stages. The first runs `npm run build` (Eleventy turns the
+   > templates into plain HTML files). The second is a small nginx image that copies in only those files. The
+   > running container has no Node, no source and no way to write to its own disk, which is a good habit for a
+   > public web server.
+
+   > **Beginner tip:** Do not edit pages inside the running container: they would be lost the next time it is
+   > rebuilt. Change the source in the repo, commit it, and redeploy.
 
 ## Check it worked
 
@@ -105,4 +130,4 @@ Save in `portfolio/evidence/10-docker-vm-and-apps/`:
 | One app's log         | `cd /opt/lab/<stack> && docker compose logs --tail 50`           |
 | Traefik's view        | `docker logs traefik --tail 50` (it names the routers it loaded) |
 | Disk space            | `ssh ubuntu@10.10.10.30 df -h /`                                 |
-| Is the name resolved? | `getent hosts cloud.lab.internal` on `admin01`                   |
+| Is the name resolved? | `getent hosts cloud.boab.lab` on `admin01`                       |

@@ -96,15 +96,15 @@ def test_backup_and_restore_roundtrip_without_overwriting(secrets, tmp_path):
 def test_issue_cert_signs_a_server_cert_the_chain_verifies(secrets):
     d, _ = secrets
     issue = REPO / "lab" / "pki" / "issue-cert.sh"
-    first = run(issue, str(d / "ca"), "docker01.lab.internal", "DNS:docker01.lab.internal,DNS:*.lab.internal")
+    first = run(issue, str(d / "ca"), "docker01.boab.lab", "DNS:docker01.boab.lab,DNS:*.boab.lab")
     assert first.returncode == 0 and "created" in first.stdout, first.stderr
-    out = d / "ca" / "issued" / "docker01.lab.internal"
+    out = d / "ca" / "issued" / "docker01.boab.lab"
     v = subprocess.run(["openssl", "verify", "-CAfile", str(d / "ca/root/certs/ca.cert.pem"),
                         "-untrusted", str(d / "ca/intermediate/certs/intermediate.cert.pem"), str(out / "cert.pem")],
                        capture_output=True, text=True)
     assert v.returncode == 0, v.stderr
     assert oct((out / "key.pem").stat().st_mode)[-3:] == "600"
-    assert "kept" in run(issue, str(d / "ca"), "docker01.lab.internal").stdout
+    assert "kept" in run(issue, str(d / "ca"), "docker01.boab.lab").stdout
 
 
 def test_issue_cert_rejects_a_hostile_common_name(secrets):

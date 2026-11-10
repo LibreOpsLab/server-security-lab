@@ -51,7 +51,7 @@ def test_storage_is_sqlite_and_sessions_stay_in_memory():
 def test_nextcloud_oidc_client_has_the_expected_redirect():
     _, cfg = render()
     client = next(c for c in cfg["identity_providers"]["oidc"]["clients"] if c["client_id"] == "nextcloud")
-    assert "https://cloud.lab.internal/apps/oidc_login/oidc" in client["redirect_uris"]
+    assert "https://cloud.boab.lab/apps/oidc_login/oidc" in client["redirect_uris"]
     assert {"openid", "profile", "email", "groups"} <= set(client["scopes"])
 
 
@@ -65,7 +65,7 @@ def test_every_secret_comes_from_a_lookup_never_a_literal():
 def test_session_cookie_covers_the_lab_domain_and_the_portal_url():
     _, cfg = render()
     cookie = cfg["session"]["cookies"][0]
-    assert cookie["domain"] == "lab.internal" and cookie["authelia_url"] == "https://auth.lab.internal"
+    assert cookie["domain"] == "boab.lab" and cookie["authelia_url"] == "https://auth.boab.lab"
 
 
 def test_package_is_installed_from_a_pinned_release_and_config_is_validated():

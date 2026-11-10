@@ -1,24 +1,24 @@
 ---
 # Single source of truth for the lab. Docs, scripts, templates and tests all read these values.
-lab_domain: lab.internal
-lab_realm: LAB.INTERNAL
-lab_netbios: LAB
+lab_domain: boab.lab
+lab_realm: BOAB.LAB
+lab_netbios: BOAB
 lab_subnet: 10.10.10.0/24
 lab_gateway: 10.10.10.1
 lab_dns: [10.10.10.21, 10.10.10.1]
 
 # Real upstream resolvers and time servers, used only where a guest genuinely needs internet-facing
-# ones: pfSense's own default forwarder (everything not covered by the lab.internal forward-zone) and
+# ones: pfSense's own default forwarder (everything not covered by the boab.lab forward-zone) and
 # its NTP source. Never the DC, and never pfSense's own address: both would create a resolution/time loop.
 pfsense_upstream_dns: [1.1.1.1, 9.9.9.9]
 pfsense_upstream_ntp: pool.ntp.org
 proxmox_host_ip: 10.10.10.5
 
 # Directory names derived from the domain (LDAP search bases and the service-account location).
-lab_base_dn: DC=lab,DC=internal
-lab_users_dn: OU=LabUsers,DC=lab,DC=internal
-lab_service_dn: OU=LabService,DC=lab,DC=internal
-lab_ldap_uri: ldaps://samba-dc01.lab.internal
+lab_base_dn: DC=boab,DC=lab
+lab_users_dn: OU=LabUsers,DC=boab,DC=lab
+lab_service_dn: OU=LabService,DC=boab,DC=lab
+lab_ldap_uri: ldaps://samba-dc01.boab.lab
 lab_mail_account: svc-mail
 
 # Accounts that services use to read the directory, each with the generated secret that holds its password.
@@ -28,12 +28,12 @@ lab_service_accounts:
 
 # Server certificates issued by the lab CA on admin01, and who needs which names.
 lab_certificates:
-  - {cn: mail01.lab.internal, san: "DNS:mail01.lab.internal,DNS:mail.lab.internal"}
-  - {cn: auth01.lab.internal, san: "DNS:auth01.lab.internal,DNS:auth.lab.internal"}
-  - {cn: radius01.lab.internal, san: "DNS:radius01.lab.internal"}
-  - {cn: mon01.lab.internal, san: "DNS:mon01.lab.internal,DNS:grafana.lab.internal"}
-  - {cn: files01.lab.internal, san: "DNS:files01.lab.internal,DNS:files.lab.internal"}
-  - {cn: docker01.lab.internal, san: "DNS:docker01.lab.internal,DNS:*.lab.internal"}
+  - {cn: mail01.boab.lab, san: "DNS:mail01.boab.lab,DNS:mail.boab.lab"}
+  - {cn: auth01.boab.lab, san: "DNS:auth01.boab.lab,DNS:auth.boab.lab"}
+  - {cn: radius01.boab.lab, san: "DNS:radius01.boab.lab"}
+  - {cn: mon01.boab.lab, san: "DNS:mon01.boab.lab,DNS:grafana.boab.lab"}
+  - {cn: files01.boab.lab, san: "DNS:files01.boab.lab,DNS:files.boab.lab"}
+  - {cn: docker01.boab.lab, san: "DNS:docker01.boab.lab,DNS:*.boab.lab"}
 dhcp_pool: {start: 10.10.10.100, end: 10.10.10.199}
 
 # The domain controller and the backup server are native VMware VMs running Debian 13, outside Proxmox, as they
@@ -48,7 +48,7 @@ ram_budget_mb: {vmware: 28672, proxmox: 10752}
 lab_aliases: {www: docker01, cloud: docker01, pdf: docker01, vault: docker01, auth: docker01, grafana: docker01, mail: mail01, files: files01}
 
 # Mailbox that receives the contact form on the company website (www). A shared mailbox: the `info` account in lab/data/users.csv.
-lab_contact_to: info@lab.internal
+lab_contact_to: info@boab.lab
 
 # Where `scripts/gen-secrets.sh` keeps the generated secrets and the CA (gitignored).
 lab_secrets_dir: "{{ playbook_dir }}/../../secrets"

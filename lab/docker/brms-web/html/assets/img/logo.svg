@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Boab Ridge Mining Services logo">
-  <!-- Original drawing, CC0 1.0. A boab tree on a ridge. -->
-  <rect width="64" height="64" rx="10" fill="#b5471f"/>
-  <path d="M0 50 L18 36 L30 44 L46 30 L64 46 V64 H0Z" fill="#7d2f12"/>
-  <path d="M26 52 C24 44 25 38 27 33 C22 32 17 28 15 23 M27 33 C27 28 25 24 22 20 M32 52 C31 42 31 34 32 28 C32 22 31 17 29 13 M32 28 C36 24 40 22 46 21 M37 52 C37 44 36 38 34 33" fill="none" stroke="#f6ede3" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M25 52 C24 42 27 36 32 34 C37 36 40 42 39 52Z" fill="#f6ede3"/>
-</svg>

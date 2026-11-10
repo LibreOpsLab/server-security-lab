@@ -1,15 +1,75 @@
-username,display_name,groups,initial_password
-# The lab's staff. Initial passwords are a documented lab convention (see docs/instructor-weak-defaults.md):
-# most staff share one, and two accounts are the kind real networks forget about, so the baseline attack finds them.
-alice,Alice Nguyen,lab-staff;wifi,Welcome2026
-bob,Bob Tran,lab-staff;wifi,Welcome2026
-carol,Carol Singh,finance;lab-staff,Welcome2026
-dave,Dave Okafor,finance;wifi,Welcome2026
-erin,Erin Walsh,admins;lab-staff;wifi,Welcome2026
-labadmin,Lab Administrator,admins,Welcome2026
-# Shared mailbox for the company website's contact form (info@lab.internal). Staff who answer enquiries sign in to it.
-info,Company Info,lab-staff,Shared-Inbox-2026
-# Leftover test account that nobody removed.
-test,Test Account,lab-staff,changeme
-# Shared account on the reception computer.
-user,Reception Kiosk,lab-staff,password
+username,display_name,groups,initial_password,title,department,office,employee_type,manager
+# Boab Ridge Mining Services: the whole company, 60 staff (45 in Perth, 15 at the remote site) plus the shared
+# mailboxes and three shared or leftover accounts. Everyone is fictional (docs/company/profile.md). The org chart in
+# docs/company/org-chart.md is generated from the manager column. Initial passwords are a documented lab convention
+# (docs/instructor-weak-defaults.md): staff share one, and the last three accounts are the kind real networks forget.
+# alice, bob, carol, dave and erin keep first-name usernames, as long-serving staff often do: other pages use them.
+margaret.osei,Margaret Osei,lab-staff;wifi,Welcome2026,General Manager,Executive,Perth head office,Permanent full-time,
+alice,Alice Nguyen,lab-staff;wifi,Welcome2026,Executive Assistant,Executive,Perth head office,Permanent full-time,margaret.osei
+gail.sutherland,Gail Sutherland,lab-staff;wifi,Welcome2026,Office Manager,Office Administration,Perth head office,Permanent full-time,margaret.osei
+hamish.mcleod,Hamish McLeod,lab-staff;wifi,Welcome2026,Receptionist,Office Administration,Perth head office,Permanent part-time,gail.sutherland
+sofia.rossi,Sofia Rossi,lab-staff;wifi,Welcome2026,Administration Officer,Office Administration,Perth head office,Permanent full-time,gail.sutherland
+tyler.barnes,Tyler Barnes,lab-staff;wifi,Welcome2026,Trainee Administration Officer,Office Administration,Perth head office,Apprentice or trainee,gail.sutherland
+callum.reid,Callum Reid,finance;lab-staff;wifi,Welcome2026,Finance Manager,Finance and Payroll,Perth head office,Permanent full-time,margaret.osei
+priya.raman,Priya Raman,finance;lab-staff;wifi,Welcome2026,Payroll Officer,Finance and Payroll,Perth head office,Permanent full-time,callum.reid
+carol,Carol Singh,finance;lab-staff,Welcome2026,Accounts Receivable Officer,Finance and Payroll,Perth head office,Permanent full-time,callum.reid
+dave,Dave Okafor,finance;wifi,Welcome2026,Accounts Payable Officer,Finance and Payroll,Perth head office,Permanent full-time,callum.reid
+leila.haddad,Leila Haddad,lab-staff;wifi,Welcome2026,HR Adviser,People and Culture,Perth head office,Permanent full-time,margaret.osei
+mei.chen,Mei Chen,lab-staff;wifi,Welcome2026,Recruitment and Training Coordinator,People and Culture,Perth head office,Permanent part-time,leila.haddad
+jorge.alvarez,Jorge Alvarez,lab-staff;wifi,Welcome2026,Procurement Manager,Procurement,Perth head office,Permanent full-time,margaret.osei
+tamsin.clarke,Tamsin Clarke,lab-staff;wifi,Welcome2026,Procurement Officer,Procurement,Perth head office,Permanent full-time,jorge.alvarez
+raj.patel,Raj Patel,lab-staff;wifi,Welcome2026,Buyer,Procurement,Perth head office,Permanent full-time,jorge.alvarez
+olivia.brandt,Olivia Brandt,lab-staff;wifi,Welcome2026,Business Development Manager,Business Development,Perth head office,Permanent full-time,margaret.osei
+samuel.adeyemi,Samuel Adeyemi,lab-staff;wifi,Welcome2026,Contracts Administrator,Business Development,Perth head office,Permanent full-time,olivia.brandt
+chloe.dubois,Chloe Dubois,lab-staff;wifi,Welcome2026,Bid and Tender Coordinator,Business Development,Perth head office,Permanent full-time,olivia.brandt
+dana.whitlock,Dana Whitlock,lab-staff;wifi,Welcome2026,Operations Manager,Operations,Perth head office,Permanent full-time,margaret.osei
+bob,Bob Tran,lab-staff;wifi,Welcome2026,Fleet Service Planner,Operations,Perth head office,Permanent full-time,dana.whitlock
+ethan.park,Ethan Park,lab-staff;wifi,Welcome2026,Shutdown Coordinator,Operations,Perth head office,Permanent full-time,dana.whitlock
+isla.mcgregor,Isla McGregor,lab-staff;wifi,Welcome2026,Rostering Coordinator,Operations,Perth head office,Permanent full-time,dana.whitlock
+fatima.ali,Fatima Ali,lab-staff;wifi,Welcome2026,Rostering Officer,Operations,Perth head office,Permanent part-time,isla.mcgregor
+liam.oconnor,Liam O'Connor,lab-staff;wifi,Welcome2026,Logistics and Dispatch Coordinator,Operations,Perth head office,Permanent full-time,dana.whitlock
+zoe.kowalski,Zoe Kowalski,lab-staff;wifi,Welcome2026,Customer Service Coordinator,Operations,Perth head office,Permanent full-time,dana.whitlock
+kieran.doyle,Kieran Doyle,lab-staff;wifi,Welcome2026,Customer Service Officer,Operations,Perth head office,Permanent part-time,zoe.kowalski
+anika.sharma,Anika Sharma,lab-staff;wifi,Welcome2026,Operations Administrator,Operations,Perth head office,Permanent full-time,dana.whitlock
+marcus.lee,Marcus Lee,lab-staff;wifi,Welcome2026,Fabrication Coordinator,Operations,Perth head office,Permanent full-time,dana.whitlock
+helen.cartwright,Helen Cartwright,lab-staff;wifi,Welcome2026,Safety and Quality Manager,Safety and Quality,Perth head office,Permanent full-time,margaret.osei
+dmitri.volkov,Dmitri Volkov,lab-staff;wifi,Welcome2026,Safety Adviser,Safety and Quality,Perth head office,Permanent full-time,helen.cartwright
+ben.fitzgerald,Ben Fitzgerald,lab-staff;wifi,Welcome2026,Planning and Engineering Manager,Planning and Engineering,Perth head office,Permanent full-time,margaret.osei
+grace.tanaka,Grace Tanaka,lab-staff;wifi,Welcome2026,Senior Planner,Planning and Engineering,Perth head office,Permanent full-time,ben.fitzgerald
+owen.hughes,Owen Hughes,lab-staff;wifi,Welcome2026,Maintenance Planner,Planning and Engineering,Perth head office,Permanent full-time,ben.fitzgerald
+priscilla.ndlovu,Priscilla Ndlovu,lab-staff;wifi,Welcome2026,Maintenance Planner,Planning and Engineering,Perth head office,Permanent full-time,ben.fitzgerald
+yusuf.khan,Yusuf Khan,lab-staff;wifi,Welcome2026,Mechanical Engineer,Planning and Engineering,Perth head office,Permanent full-time,ben.fitzgerald
+hannah.berg,Hannah Berg,lab-staff;wifi,Welcome2026,Structural Engineer,Planning and Engineering,Perth head office,Permanent full-time,ben.fitzgerald
+vikram.nair,Vikram Nair,lab-staff;wifi,Welcome2026,Reliability Engineer,Planning and Engineering,Perth head office,Permanent full-time,ben.fitzgerald
+ruby.sullivan,Ruby Sullivan,lab-staff;wifi,Welcome2026,Senior Drafter,Planning and Engineering,Perth head office,Permanent full-time,ben.fitzgerald
+callan.wright,Callan Wright,lab-staff;wifi,Welcome2026,Drafter,Planning and Engineering,Perth head office,Permanent full-time,ruby.sullivan
+anh.pham,Anh Pham,lab-staff;wifi,Welcome2026,Estimator,Planning and Engineering,Perth head office,Permanent full-time,ben.fitzgerald
+jasmine.cole,Jasmine Cole,lab-staff;wifi,Welcome2026,Document Controller,Planning and Engineering,Perth head office,Permanent part-time,ben.fitzgerald
+noah.bennett,Noah Bennett,lab-staff;wifi,Welcome2026,Apprentice Draftsperson,Planning and Engineering,Perth head office,Apprentice or trainee,ruby.sullivan
+mia.fernandez,Mia Fernandez,lab-staff;wifi,Welcome2026,Graduate Engineer,Planning and Engineering,Perth head office,Fixed-term contract,yusuf.khan
+ravi.kapoor,Ravi Kapoor,admins;lab-staff;wifi,Welcome2026,Systems and Network Administrator,Information Technology,Perth head office,Permanent full-time,margaret.osei
+erin,Erin Walsh,admins;lab-staff;wifi,Welcome2026,IT Support Officer,Information Technology,Perth head office,Permanent full-time,ravi.kapoor
+tom.nguyen,Tom Nguyen,lab-staff;wifi,Welcome2026,Site Supervisor (day shift),Site Operations,Remote site office,Permanent full-time,dana.whitlock
+shane.kelly,Shane Kelly,lab-staff;wifi,Welcome2026,Site Supervisor (night shift),Site Operations,Remote site office,Permanent full-time,dana.whitlock
+nikki.ward,Nikki Ward,lab-staff;wifi,Welcome2026,Site Safety Officer,Safety and Quality,Remote site office,Permanent full-time,tom.nguyen
+trent.jackson,Trent Jackson,lab-staff;wifi,Welcome2026,Site Planner (days),Site Operations,Remote site office,Permanent full-time,tom.nguyen
+lucia.moretti,Lucia Moretti,lab-staff;wifi,Welcome2026,Site Planner (nights),Site Operations,Remote site office,Permanent full-time,shane.kelly
+jarrah.cooper,Jarrah Cooper,lab-staff;wifi,Welcome2026,Site Administration and Timesheets Clerk,Site Operations,Remote site office,Permanent full-time,tom.nguyen
+wendy.holloway,Wendy Holloway,lab-staff;wifi,Welcome2026,Storeperson,Site Operations,Remote site office,Permanent full-time,tom.nguyen
+darren.pike,Darren Pike,lab-staff;wifi,Welcome2026,Leading Hand (Fleet Servicing),Fleet Servicing,Remote site office,Permanent full-time,tom.nguyen
+sione.tuilagi,Sione Tuilagi,lab-staff;wifi,Welcome2026,Leading Hand (Fabrication),Fabrication,Remote site office,Permanent full-time,shane.kelly
+billy.watson,Billy Watson,lab-staff;wifi,Welcome2026,Heavy Diesel Fitter,Fleet Servicing,Remote site office,Permanent full-time,darren.pike
+aroha.rangi,Aroha Rangi,lab-staff;wifi,Welcome2026,Heavy Diesel Fitter,Fleet Servicing,Remote site office,Permanent full-time,darren.pike
+jack.ferris,Jack Ferris,lab-staff;wifi,Welcome2026,Fitter,Fleet Servicing,Remote site office,Permanent full-time,darren.pike
+lachlan.dwyer,Lachlan Dwyer,lab-staff;wifi,Welcome2026,Apprentice Fitter,Fleet Servicing,Remote site office,Apprentice or trainee,darren.pike
+nathan.coker,Nathan Coker,lab-staff;wifi,Welcome2026,Boilermaker Welder,Fabrication,Remote site office,Permanent full-time,sione.tuilagi
+kelsey.murray,Kelsey Murray,lab-staff;wifi,Welcome2026,Boilermaker Welder,Fabrication,Remote site office,Permanent full-time,sione.tuilagi
+info,Company Info,lab-staff;shared-mailbox,Shared-Inbox-2026,Shared mailbox,Information Technology,Perth head office,Shared mailbox,gail.sutherland
+sales,Sales Enquiries,lab-staff;shared-mailbox,Shared-Inbox-2026,Shared mailbox,Business Development,Perth head office,Shared mailbox,olivia.brandt
+accounts,Accounts Team,lab-staff;shared-mailbox,Shared-Inbox-2026,Shared mailbox,Finance and Payroll,Perth head office,Shared mailbox,callum.reid
+service,Customer Service,lab-staff;shared-mailbox,Shared-Inbox-2026,Shared mailbox,Operations,Perth head office,Shared mailbox,zoe.kowalski
+security,IT Security,lab-staff;shared-mailbox,Shared-Inbox-2026,Shared mailbox,Information Technology,Perth head office,Shared mailbox,ravi.kapoor
+hr,Human Resources,lab-staff;shared-mailbox,Shared-Inbox-2026,Shared mailbox,People and Culture,Perth head office,Shared mailbox,leila.haddad
+labadmin,Lab Administrator,admins,Welcome2026,Shared administrator account,Information Technology,Perth head office,Shared account,ravi.kapoor
+test,Test Account,lab-staff,changeme,Leftover test account,Information Technology,Perth head office,Shared account,ravi.kapoor
+user,Reception Kiosk,lab-staff,password,Reception computer sign-in,Office Administration,Perth head office,Shared account,gail.sutherland

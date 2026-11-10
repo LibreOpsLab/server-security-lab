@@ -2,15 +2,16 @@
 
 Keep it short, in plain words, with rules that can be followed and checked. Adapt a template to the business; do not copy it unchanged.
 
-| Field | Entry |
-| --- | --- |
-| Owner, version, date | |
-| Applies to | |
-| Review date | |
+| Field                | Entry |
+| -------------------- | ----- |
+| Owner, version, date |       |
+| Applies to           |       |
+| Review date          |       |
 
 ## Purpose
 
 ## Rules
+
 (Numbered. Each rule must be checkable.)
 
 ## Responsibilities

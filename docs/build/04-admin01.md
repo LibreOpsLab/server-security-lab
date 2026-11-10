@@ -114,7 +114,7 @@ Come back here when `pve01` is installed and answering at `10.10.10.5` (guide 03
     keys with standard names):
 
         ```bash
-        printf 'Host 10.10.10.* *.lab.internal
+        printf 'Host 10.10.10.* *.boab.lab
         IdentityFile ~/.ssh/lab_admin
 
     ' >> ~/.ssh/config

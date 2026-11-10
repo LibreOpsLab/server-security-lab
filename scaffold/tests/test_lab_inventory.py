@@ -82,8 +82,8 @@ def test_ldap_names_are_derived_consistently_from_the_domain():
 
 def test_certificates_cover_the_aliases_and_wildcard_for_the_web_tier():
     certs = {c["cn"]: c["san"] for c in VARS["lab_certificates"]}
-    assert certs["mail01.lab.internal"].count("DNS:") >= 2 and "DNS:*.lab.internal" in certs["docker01.lab.internal"]
-    assert {"mail01.lab.internal", "auth01.lab.internal", "docker01.lab.internal", "mon01.lab.internal"} <= set(certs)
+    assert certs["mail01.boab.lab"].count("DNS:") >= 2 and "DNS:*.boab.lab" in certs["docker01.boab.lab"]
+    assert {"mail01.boab.lab", "auth01.boab.lab", "docker01.boab.lab", "mon01.boab.lab"} <= set(certs)
 
 
 def test_every_service_account_secret_is_one_gen_secrets_creates():

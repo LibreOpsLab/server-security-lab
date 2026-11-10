@@ -2,7 +2,7 @@
   "name": "brms-website",
   "private": true,
   "type": "module",
-  "description": "Boab Ridge Mining Services (fictional) brochure site for the security lab. Eleventy source; the built output is committed in ../html so the lab needs no Node.",
+  "description": "Boab Ridge Mining Services (fictional) brochure site for the security lab. Eleventy source; the Docker image builds it (see ../Dockerfile).",
   "scripts": {
     "build": "eleventy",
     "serve": "eleventy --serve"

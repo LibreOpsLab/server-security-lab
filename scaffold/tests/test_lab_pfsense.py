@@ -30,7 +30,7 @@ def test_lan_dhcp_dns_and_domain_come_from_the_inventory():
     assert root.find("interfaces/lan/ipaddr").text == "10.10.10.1" and root.find("interfaces/lan/subnet").text == "24"
     assert root.find("dhcpd/lan/range/from").text == "10.10.10.100" and root.find("dhcpd/lan/range/to").text == "10.10.10.199"
     assert [e.text for e in root.findall("dhcpd/lan/dnsserver")] == ["10.10.10.21", "10.10.10.1"]
-    assert root.find("dhcpd/lan/domain").text == "lab.internal"
+    assert root.find("dhcpd/lan/domain").text == "boab.lab"
     assert "forward-addr: 10.10.10.21" in root.find("unbound/custom_options").text
 
 

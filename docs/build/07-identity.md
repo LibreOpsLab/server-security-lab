@@ -17,7 +17,7 @@ building everything else to use it, is the point of the "business in a box" desi
 > computers. **Active Directory** is Microsoft's version; **Samba** is the open-source version of it. A
 > **domain controller (DC)** is the server that holds the directory and answers "is this password right?".
 > Applications talk to it using **LDAP** (to ask who someone is and which groups they are in) and
-> **Kerberos** (to prove who someone is with tickets). The DC also runs DNS for `lab.internal`, which is why
+> **Kerberos** (to prove who someone is with tickets). The DC also runs DNS for `boab.lab`, which is why
 > AD and DNS are bound together: clients find the DC by name.
 
 > **Why is the domain controller outside Proxmox?** It is the most critical machine in the lab: if it is down,
@@ -60,7 +60,7 @@ building everything else to use it, is the point of the "business in a box" desi
    make identity    # builds samba-dc01, DNS records, and the lab's users and groups
    ```
 
-   This provisions the domain `lab.internal`, installs the DC's certificate, and creates the users and
+   This provisions the domain `boab.lab`, installs the DC's certificate, and creates the users and
    groups in `lab/data/users.csv`.
 
    > **What's going on:** `make trust` copies the lab's root certificate to every guest (including the DC) and
@@ -74,14 +74,14 @@ building everything else to use it, is the point of the "business in a box" desi
 5. Test that the directory answers. On `admin01`:
 
    ```bash
-   ldapsearch -x -H ldaps://samba-dc01.lab.internal -s base -b "" namingContexts
+   ldapsearch -x -H ldaps://samba-dc01.boab.lab -s base -b "" namingContexts
    ```
 
    > **What's going on:** This asks the directory a harmless question ("what do you hold?") over an
    > encrypted connection. If the answer comes back, three things are true at once: DNS found the DC, the
    > DC is listening, and `admin01` trusts its certificate.
 
-   > **Beginner tip:** Read the output. A line such as `namingContexts: DC=lab,DC=internal` is the success
+   > **Beginner tip:** Read the output. A line such as `namingContexts: DC=boab,DC=lab` is the success
    > message. If you only see an error, copy it into your evidence and read "If it goes wrong".
 
 ## Check it worked
@@ -113,7 +113,7 @@ Save in `portfolio/evidence/07-identity/`:
 ## Explain it in your own words
 
 1. What is a domain controller, and what do the other servers in the lab ask it?
-2. Why does DNS for `lab.internal` live on the domain controller?
+2. Why does DNS for `boab.lab` live on the domain controller?
 3. The password policy is deliberately weak. Give one reason a business might leave it that way, and one
    reason an attacker would love it.
 
@@ -126,13 +126,13 @@ Save in `portfolio/evidence/07-identity/`:
   (destructive), or restore the snapshot you took before this guide.
 - LDAPS fails with a certificate error: run `make trust` again and confirm it ran for `admin01` too.
 - `ldapsearch: command not found`: `sudo apt install -y ldap-utils` on `admin01`.
-- Name not found for `samba-dc01.lab.internal`: `admin01` is not asking the lab's DNS. Check the lab
-  adapter's DNS is set to `10.10.10.1` (guide 02, step 7) and that pfSense forwards `lab.internal` to the
+- Name not found for `samba-dc01.boab.lab`: `admin01` is not asking the lab's DNS. Check the lab
+  adapter's DNS is set to `10.10.10.1` (guide 02, step 7) and that pfSense forwards `boab.lab` to the
   DC (guide 08).
 - The play fails installing Samba packages: the DC cannot reach the internet. On the DC, `ping 1.1.1.1`, then
   `getent hosts deb.debian.org`. Fix the gateway and DNS (both `10.10.10.1`) before the DC provisions itself.
 - `samba-tool domain provision` fails: read the last error line. Common causes are a leftover
-  `/etc/samba/smb.conf` or a wrong hostname. `hostname -f` on the DC must print `samba-dc01.lab.internal`.
+  `/etc/samba/smb.conf` or a wrong hostname. `hostname -f` on the DC must print `samba-dc01.boab.lab`.
 
 ### Where to look
 
@@ -140,7 +140,7 @@ Save in `portfolio/evidence/07-identity/`:
 | ------------------- | --------------------------------------------------------------------------------------- |
 | Is the DC running?  | `systemctl status samba-ad-dc`                                                          |
 | Service log         | `journalctl -u samba-ad-dc -n 50 --no-pager`                                            |
-| DNS answers locally | `host samba-dc01.lab.internal 127.0.0.1`                                                |
+| DNS answers locally | `host samba-dc01.boab.lab 127.0.0.1`                                                    |
 | Kerberos works      | `kinit administrator`, then `klist` (the password is in `lab/secrets/`; never paste it) |
 | Domain health       | `samba-tool domain info 127.0.0.1`                                                      |
 | Directory content   | `samba-tool user list`, `samba-tool group list`                                         |

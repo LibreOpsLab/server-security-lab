@@ -23,7 +23,7 @@ word is new. If a word is missing, ask your lecturer and add it (see [CONTRIBUTI
 | **IP address**                | A computer's address on a network, such as `10.10.10.5`.                                                                             |
 | **Subnet / `/24`**            | A block of addresses that belong together. `10.10.10.0/24` means `10.10.10.0` to `10.10.10.255`.                                     |
 | **Gateway**                   | The address of the router that leads out of the subnet. In the lab it is pfSense, `10.10.10.1`.                                      |
-| **DNS**                       | The phone book that turns a name (`samba-dc01.lab.internal`) into an IP address.                                                     |
+| **DNS**                       | The phone book that turns a name (`samba-dc01.boab.lab`) into an IP address.                                                         |
 | **DHCP**                      | The service that hands out addresses automatically to machines that ask. Servers in this lab use fixed ("static") addresses instead. |
 | **NAT**                       | Lets machines on a private network reach the internet through one shared address.                                                    |
 | **Firewall**                  | Rules that allow or block traffic. pfSense is the lab's firewall.                                                                    |

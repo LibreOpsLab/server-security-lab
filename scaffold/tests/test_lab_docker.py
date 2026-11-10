@@ -31,10 +31,10 @@ def test_no_latest_image_tags_and_services_restart(stack):
 
 
 def test_apps_are_routed_by_traefik_on_the_expected_hostnames():
-    assert "Host(`cloud.lab.internal`)" in compose("nextcloud")
-    assert "Host(`pdf.lab.internal`)" in compose("stirling-pdf")
-    assert "Host(`vault.lab.internal`)" in compose("vaultwarden")
-    assert "Host(`www.lab.internal`)" in compose("brms-web")
+    assert "Host(`cloud.${LAB_DOMAIN:-boab.lab}`)" in compose("nextcloud")
+    assert "Host(`pdf.${LAB_DOMAIN:-boab.lab}`)" in compose("stirling-pdf")
+    assert "Host(`vault.${LAB_DOMAIN:-boab.lab}`)" in compose("vaultwarden")
+    assert "Host(`www.${LAB_DOMAIN:-boab.lab}`)" in compose("brms-web")
 
 
 def test_stirling_and_the_vault_web_ui_use_forward_auth_but_not_the_bitwarden_api_paths():
@@ -54,13 +54,13 @@ def test_env_examples_contain_only_placeholders():
         for ln in (LAB / "docker" / stack / ".env.example").read_text().splitlines():
             if "=" in ln and not ln.startswith("#"):
                 value = ln.split("=", 1)[1]
-                assert value in ("CHANGE-ME", "/opt/lab/certs", "info@lab.internal"), (stack, ln)
+                assert value in ("CHANGE-ME", "/opt/lab/certs", "info@boab.lab", "boab.lab"), (stack, ln)
 
 
 def test_traefik_routes_auth_and_grafana_and_has_the_authelia_middleware_but_no_security_headers():
     dyn = (ROLE / "templates/dynamic.yml.j2").read_text()
     assert "forwardAuth" in dyn and ":9091/api/authz/forward-auth" in dyn and "auth01" in dyn
-    assert "auth.lab.internal" in dyn.replace("{{ lab_domain }}", "lab.internal") or "authelia_portal_host" in dyn
+    assert "auth.boab.lab" in dyn.replace("{{ lab_domain }}", "boab.lab") or "authelia_portal_host" in dyn
     assert "grafana" in dyn and "headers:" not in dyn.replace("authResponseHeaders", "")  # no header-hardening middleware
 
 
@@ -129,7 +129,10 @@ def test_company_website_is_public_and_only_the_form_post_reaches_the_handler():
     assert "authelia" not in site  # the one public page: no sign-in
     assert "Path(`/contact/send`)" in site and "brms-contact.priority=100" in site
     assert "read_only: true" in site and "cap_drop: [ALL]" in site
-    assert (LAB / "docker/brms-web/html/index.html").is_file()  # built output is committed so the lab needs no Node
+    docker = (LAB / "docker/brms-web/Dockerfile").read_text()
+    assert "AS build" in docker and "npm run build" in docker and "nginx" in docker  # the image builds the Eleventy site
+    assert "build:" in site and "LAB_DOMAIN" in site and "./html" not in site
+    assert (LAB / "docker/brms-web/site/src/index.njk").is_file()
 
 
 def test_company_website_is_deployed_and_has_a_dns_name():

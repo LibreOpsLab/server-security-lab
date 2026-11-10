@@ -44,7 +44,7 @@ def test_grafana_has_both_datasources_and_the_admin_password_comes_from_the_secr
     ds = yaml.safe_load(render(MON, "datasources.yml.j2"))["datasources"]
     assert {d["type"] for d in ds} == {"prometheus", "loki"}
     ini = (MON / "templates/grafana-admin.ini.j2").read_text()
-    assert "grafana_admin_password" in ini and "grafana.lab.internal" in ini.replace("{{ lab_domain }}", "lab.internal")
+    assert "grafana_admin_password" in ini and "grafana.boab.lab" in ini.replace("{{ lab_domain }}", "boab.lab")
 
 
 def test_alloy_on_every_guest_ships_ssh_journal_logs_and_counts_failed_logins():

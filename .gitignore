@@ -6,3 +6,4 @@ __pycache__/
 .venv/
 lab/secrets/
 node_modules/
+lab/docker/brms-web/site/_site/

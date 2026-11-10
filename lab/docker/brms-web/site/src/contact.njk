@@ -22,6 +22,11 @@ title: Contact
       <h2>Find us</h2>
       <p><strong>Perth head office</strong><br>{{ company.address | join("<br>") | safe }}<br>{{ company.phone }}</p>
       <p>{{ company.hours }}</p>
+      <h2>Email us</h2>
+      <ul class="plain">
+        {% for m in company.mailboxes %}<li><a href="mailto:{{ m.name }}@{{ company.domain }}">{{ m.name }}@{{ company.domain }}</a><br><span class="small">{{ m.use }}</span></li>
+        {% endfor %}
+      </ul>
       <p class="small">All details on this page are invented. See <a href="/about/#fiction">About</a>.</p>
     </aside>
   </div>

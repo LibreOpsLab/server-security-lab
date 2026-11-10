@@ -14,7 +14,7 @@
     <div class="wrap bar">
       <a class="brand" href="/"><img src="/assets/img/logo.svg" alt="" width="40" height="40"><span>{{ company.name }}</span></a>
       <nav aria-label="Main">
-        {% set links = [["/", "Home"], ["/about/", "About"], ["/services/", "Services"], ["/contact/", "Contact"]] %}
+        {% set links = [["/", "Home"], ["/about/", "About"], ["/services/", "Services"], ["/people/", "People"], ["/contact/", "Contact"]] %}
         <ul>
           {% for l in links %}<li><a href="{{ l[0] }}"{% if page.url == l[0] %} aria-current="page"{% endif %}>{{ l[1] }}</a></li>{% endfor %}
         </ul>

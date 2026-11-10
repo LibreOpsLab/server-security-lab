@@ -102,10 +102,81 @@ def test_at_least_two_users_use_the_attack_wordlists():
 
 def test_csv_uses_only_lab_internal_data():
     text = CSV.read_text()
-    assert "@" not in text.replace("@lab.internal", "")
+    assert "@" not in text.replace("@boab.lab", "")
 
 
 def test_users_get_a_mail_address_in_the_lab_domain(loader):
     r, log = loader(HEADER + "alice,Alice Nguyen,lab-staff,Welcome2026\n")
     assert r.returncode == 0
-    assert "--mail-address=alice@lab.internal" in log
+    assert "--mail-address=alice@boab.lab" in log
+
+
+# ---- the Boab Ridge directory (60 staff, shared mailboxes, org chart)
+import csv  # noqa: E402
+import sys  # noqa: E402
+
+EXT_HEADER = "username,display_name,groups,initial_password,title,department,office,employee_type,manager\n"
+
+
+def _directory():
+    lines = [ln for ln in CSV.read_text().splitlines() if ln and not ln.startswith("#")]
+    return list(csv.DictReader(lines))
+
+
+def test_directory_has_sixty_staff_in_two_places():
+    people = [r for r in _directory() if r["employee_type"] not in ("Shared mailbox", "Shared account")]
+    assert len(people) == 60
+    assert sum(r["office"] == "Perth head office" for r in people) == 45
+    assert sum(r["office"] == "Remote site office" for r in people) == 15
+    assert all(r["title"] and r["department"] and r["employee_type"] for r in people)
+
+
+def test_every_manager_is_a_user_and_there_is_one_top_person():
+    rows = _directory()
+    users = {r["username"] for r in rows}
+    assert all(r["manager"] in users | {""} for r in rows)
+    people = [r for r in rows if r["employee_type"] not in ("Shared mailbox", "Shared account")]
+    assert [r["username"] for r in people if not r["manager"]] == ["margaret.osei"]
+
+
+def test_shared_mailboxes_exist():
+    boxes = {r["username"] for r in _directory() if r["employee_type"] == "Shared mailbox"}
+    assert boxes == {"info", "sales", "accounts", "service", "security", "hr"}
+
+
+def test_usernames_are_unique():
+    names = [r["username"] for r in _directory()]
+    assert len(names) == len(set(names))
+
+
+def test_extended_columns_are_stored_and_manager_is_set_by_ldif(tmp_path):
+    fake = tmp_path / "samba-tool"
+    fake.write_text(FAKE)
+    fake.chmod(0o755)
+    ldb = tmp_path / "ldbmodify"
+    ldb.write_text('#!/usr/bin/env bash\ncp "${@: -1}" "$LDIF_OUT"\n')
+    ldb.chmod(0o755)
+    csv_file = tmp_path / "u.csv"
+    csv_file.write_text(
+        EXT_HEADER
+        + "boss,Bea Boss,lab-staff,Welcome2026,General Manager,Executive,Perth head office,Permanent full-time,\n"
+        + "emp,Eli Emp,lab-staff,Welcome2026,Payroll Officer,Finance,Perth head office,Permanent part-time,boss\n"
+    )
+    env = {**os.environ, "SAMBA_TOOL": str(fake), "LDBMODIFY": str(ldb), "LOG": str(tmp_path / "log"), "LDIF_OUT": str(tmp_path / "ldif")}
+    r = subprocess.run([str(LOADER), str(csv_file)], env=env, capture_output=True, text=True)
+    assert r.returncode == 0, r.stderr
+    log = (tmp_path / "log").read_text()
+    assert "--job-title=Payroll Officer" in log and "--department=Finance" in log
+    ldif = (tmp_path / "ldif").read_text()
+    assert "manager: CN=Bea Boss,OU=LabUsers,DC=boab,DC=lab" in ldif and "employeeType: Permanent part-time" in ldif
+
+
+def test_unknown_manager_is_rejected_before_any_call(loader):
+    row = "emp,Eli Emp,lab-staff,Welcome2026,Payroll Officer,Finance,Perth head office,Permanent full-time,ghost\n"
+    r, log = loader(EXT_HEADER + row)
+    assert r.returncode == 2 and log == ""
+
+
+def test_org_chart_is_in_sync_with_the_csv():
+    script = REPO / "scripts" / "gen-org-chart.py"
+    assert subprocess.run([sys.executable, str(script), "--check"]).returncode == 0

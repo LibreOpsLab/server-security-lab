@@ -41,7 +41,7 @@ Running it nested means the whole estate fits on one shared workstation.
 
 3. Power on and install Proxmox VE from the ISO, with a static address `10.10.10.5/24`, gateway `10.10.10.1`.
    Use DNS `10.10.10.1` for now. Set a root password you will remember and an email address (any address
-   will do for the lab, such as `root@lab.internal`). Choose the hostname `pve01.lab.internal`.
+   will do for the lab, such as `root@boab.lab`). Choose the hostname `pve01.boab.lab`.
 
    > **Careful:** The installer erases the disk it uses. In a VM that is the 160 GB virtual disk, which is
    > what you want. Never run a Proxmox install on a real machine you care about.

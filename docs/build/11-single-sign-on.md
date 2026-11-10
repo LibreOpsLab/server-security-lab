@@ -50,7 +50,7 @@ most (the `admins` group).
    > (release checksums occasionally change when a release is re-cut). A checksum is a fingerprint of a file:
    > it proves the download is the one the author intended.
 
-3. Try it. In a browser on `admin01`, open `https://auth.lab.internal`. If the browser warns about the
+3. Try it. In a browser on `admin01`, open `https://auth.boab.lab`. If the browser warns about the
    certificate, it does not trust the lab's root CA yet; the browser on `admin01` needs
    `lab/secrets/ca/root/certs/ca.cert.pem` imported (Firefox: **Settings > Privacy & Security >
    Certificates > View Certificates > Authorities > Import**). Note that `make trust` handled the _system_
@@ -65,7 +65,7 @@ most (the `admins` group).
 
 ## Check it worked
 
-- `https://auth.lab.internal` shows the Authelia sign-in page.
+- `https://auth.boab.lab` shows the Authelia sign-in page.
 - Signing in as a user in the `admins` group asks for a TOTP code; signing in as any other user does not.
 
 ## Evidence to capture
@@ -74,14 +74,14 @@ most (the `admins` group).
 
 Save in `portfolio/evidence/11-single-sign-on/`:
 
-| File                    | What it shows                                                                |
-| ----------------------- | ---------------------------------------------------------------------------- |
-| `reading-notes.md`      | Where the LDAP server and the second-factor rule live in the config          |
-| `make-sso.txt`          | Output of `make sso` ending with the recap                                   |
-| `portal.png`            | The sign-in page with the padlock and `auth.lab.internal` in the address bar |
-| `normal-login.png`      | An ordinary user signed in, with no second-factor prompt                     |
-| `admin-totp-prompt.png` | An `admins` user being asked for a code (do not show the QR code or secret)  |
-| `evidence.md`           | Your filled-in evidence log                                                  |
+| File                    | What it shows                                                               |
+| ----------------------- | --------------------------------------------------------------------------- |
+| `reading-notes.md`      | Where the LDAP server and the second-factor rule live in the config         |
+| `make-sso.txt`          | Output of `make sso` ending with the recap                                  |
+| `portal.png`            | The sign-in page with the padlock and `auth.boab.lab` in the address bar    |
+| `normal-login.png`      | An ordinary user signed in, with no second-factor prompt                    |
+| `admin-totp-prompt.png` | An `admins` user being asked for a code (do not show the QR code or secret) |
+| `evidence.md`           | Your filled-in evidence log                                                 |
 
 ## Explain it in your own words
 
@@ -104,9 +104,9 @@ Save in `portfolio/evidence/11-single-sign-on/`:
 
 ### Where to look
 
-| What                        | Command or place                                                                                |
-| --------------------------- | ----------------------------------------------------------------------------------------------- |
-| Authelia service            | `ssh root@10.10.10.22 systemctl status authelia`                                                |
-| Authelia log                | `ssh root@10.10.10.22 journalctl -u authelia -n 50 --no-pager`                                  |
-| Configuration check         | `ssh root@10.10.10.22 authelia validate-config --config /etc/authelia/configuration.yml`        |
-| Can it reach the directory? | From `admin01`: `ldapsearch -x -H ldaps://samba-dc01.lab.internal -s base -b "" namingContexts` |
+| What                        | Command or place                                                                            |
+| --------------------------- | ------------------------------------------------------------------------------------------- |
+| Authelia service            | `ssh root@10.10.10.22 systemctl status authelia`                                            |
+| Authelia log                | `ssh root@10.10.10.22 journalctl -u authelia -n 50 --no-pager`                              |
+| Configuration check         | `ssh root@10.10.10.22 authelia validate-config --config /etc/authelia/configuration.yml`    |
+| Can it reach the directory? | From `admin01`: `ldapsearch -x -H ldaps://samba-dc01.boab.lab -s base -b "" namingContexts` |
