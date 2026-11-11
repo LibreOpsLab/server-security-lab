@@ -5,7 +5,7 @@
 `admin01`: an Ubuntu Desktop VM. This is where you run every `make` command from here on, and later where
 the security tools live.
 
-**Time and difficulty:** 2 to 3 hours in two parts. Ubuntu's installer is friendly; the new skills are
+**Time and difficulty:** About 60 minutes for both parts together. Ubuntu's installer is friendly; the new skills are
 static IP addresses and SSH keys.
 
 > **Do this in two parts.** Part A comes _before_ [02-pfsense.md](02-pfsense.md), because your Windows PC

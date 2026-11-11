@@ -4,7 +4,7 @@
 
 `pfsense01`: the lab's firewall, DHCP server and DNS forwarder, and later the Squid filtering proxy.
 
-**Time and difficulty:** 2 to 3 hours. This is your first real network device. The installer is simple;
+**Time and difficulty:** 30 to 45 minutes. This is your first real network device. The installer is simple;
 the new skill is working out which network adapter is which.
 
 > **Do this first:** you need a computer on the private `LAN-LAB` network to open pfSense's web page, and
