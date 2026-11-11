@@ -52,7 +52,7 @@ Each of these is a job: it is quoted, rostered, carried out, recorded and invoic
 
 The site works around the clock and cannot wait for Perth to wake up. Power comes from a generator that fails now and then.
 
-![A site office with a satellite dish and a generator on red earth](images/placeholder-site-office.svg)
+![An aerial view of a remote site camp of white demountable buildings on red earth](images/site-office-camp.jpg)
 
 *Placeholder illustration: the remote site office.*
 
